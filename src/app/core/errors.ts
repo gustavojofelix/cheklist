@@ -13,7 +13,9 @@ export function errorKey(err: unknown): string {
     'otp_too_soon', 'otp_too_many', 'otp_invalid', 'not_found', 'no_platform_consent', 'reason_required', 'version_not_offered',
     'template_empty', 'template_item_needs_code_and_category', 'published_version_immutable', 'user_not_found',
     'cannot_change_own_role', 'cannot_change_own_status', 'user_exists', 'invite_failed', 'organization_name_required',
-    'gateway_not_configured', 'gateway_error', 'invalid_voucher', 'nothing_to_cancel', 'nothing_to_buy', 'invalid_method'];
+    'gateway_not_configured', 'gateway_error', 'invalid_voucher', 'nothing_to_cancel', 'nothing_to_buy', 'invalid_method',
+    'ai_not_configured', 'ai_disabled', 'ai_read_only', 'ai_forbidden', 'ai_refused', 'ai_busy', 'ai_error',
+    'ocr_unsupported_type', 'question_required', 'invalid_action'];
   const hit = known.find((k) => msg.startsWith(k));
   if (hit) return 'errors.' + hit;
   if (e.code === '42501' || msg.includes('row-level security')) return 'errors.forbidden';

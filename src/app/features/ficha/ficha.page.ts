@@ -18,6 +18,9 @@ import { Icon } from '../../shared/ui/icon';
 import { AddDocumentDialog, AddDocumentData } from './add-document.dialog';
 import { Category, FichaDocument, FichaItem } from './ficha.types';
 
+interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: string; source_quote: string | null; page: number | null;
+  documents: { original_name: string } | null; checklist_items: { catalog_code: string | null; title: string } | null }
+
 @Component({
   selector: 'app-ficha',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,6 +48,28 @@ import { Category, FichaDocument, FichaItem } from './ficha.types';
         <span class="flex-1">{{ 'version.banner' | transloco: { n: o.version_number, template: o.template_name } }}</span>
         <a class="btn-primary !py-1" [routerLink]="['/entities', id(), 'version']">{{ 'version.review' | transloco }}</a>
       </div>
+    }
+    @if (proposals().length) {
+      <section class="card mb-4 border-violet-200 p-4">
+        <h2 class="flex items-center gap-2 font-semibold text-violet-900"><app-icon name="sparkles" [size]="16" /> {{ 'ocr.reviewTitle' | transloco: { n: proposals().length } }}</h2>
+        <p class="text-xs text-slate-500">{{ 'ocr.reviewHint' | transloco }}</p>
+        <ul class="mt-3 divide-y divide-slate-100">
+          @for (pr of proposals(); track pr.id) {
+            <li class="grid gap-2 py-3 text-sm md:grid-cols-[1fr_16rem_auto] md:items-center">
+              <div>
+                <p><span class="font-mono text-xs text-brand-700">{{ pr.checklist_items?.catalog_code }}</span> {{ pr.checklist_items?.title }}
+                  · <span class="text-slate-500">{{ ('ai.field.' + pr.field) | transloco }}</span></p>
+                <p class="mt-1 text-xs text-slate-500">“{{ pr.source_quote }}” — {{ pr.documents?.original_name }}, {{ 'ocr.page' | transloco }} {{ pr.page }}</p>
+              </div>
+              <input class="input !py-1" [type]="pr.field === 'due_date' ? 'date' : 'text'" [value]="pr.proposed_value" #val [attr.aria-label]="'ocr.value' | transloco" />
+              <div class="flex gap-2">
+                <button type="button" class="btn-primary !py-1" [disabled]="!canWrite()" (click)="acceptProposal(pr.id, val.value)">{{ 'ocr.accept' | transloco }}</button>
+                <button type="button" class="btn-secondary !py-1" [disabled]="!canWrite()" (click)="rejectProposal(pr.id)">{{ 'ai.reject' | transloco }}</button>
+              </div>
+            </li>
+          }
+        </ul>
+      </section>
     }
     <!-- filters -->
     <div class="card mb-4 flex flex-wrap items-center gap-2 p-3">
@@ -142,6 +167,10 @@ import { Category, FichaDocument, FichaItem } from './ficha.types';
                         <div class="flex items-center gap-1 text-xs">
                           <button type="button" class="truncate text-left text-brand-700 hover:underline" (click)="download(d)" [title]="d.original_name">
                             <app-icon name="file" [size]="12" /> {{ d.original_name }}</button>
+                          @if (canWrite() && readable(d)) {
+                            <button type="button" class="text-violet-500 hover:text-violet-700 disabled:opacity-40" [disabled]="reading() === d.id"
+                                    (click)="readDoc(d)" [title]="'ocr.read' | transloco" [attr.aria-label]="'ocr.read' | transloco"><app-icon name="sparkles" [size]="12" /></button>
+                          }
                           @if (canWrite()) {
                             <button type="button" class="text-slate-400 hover:text-red-600" (click)="deleteDoc(d)" [attr.aria-label]="'common.delete' | transloco">✕</button>
                           }
@@ -197,6 +226,8 @@ export class FichaPage {
   protected readonly items = signal<FichaItem[]>([]);
   protected readonly docs = signal<FichaDocument[]>([]);
   protected readonly editMode = signal(false);
+  protected readonly proposals = signal<Proposal[]>([]);
+  protected readonly reading = signal<string | null>(null);
   protected readonly offer = signal<{ version_number: number; template_name: string } | null>(null);
   protected readonly editingAnswer = signal<string | null>(null);
   protected readonly collapsed = signal(new Set<string>());
@@ -279,6 +310,7 @@ export class FichaPage {
       .map((d) => ({ ...d, item_ids: d.document_items.map((x) => x.checklist_item_id) })));
     this.loading.set(false);
     this.subscribe(orgId);
+    void this.loadProposals(orgId);
     this.sb.rpc<{ version_number: number; template_name: string } | null>('version_offer', { org: orgId })
       .then((o) => this.offer.set(o)).catch(() => this.offer.set(null));
   }
@@ -293,6 +325,7 @@ export class FichaPage {
     this.channel = this.sb.client.channel(`ficha:${orgId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'checklist_items', filter: `organization_id=eq.${orgId}` }, refresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'documents', filter: `organization_id=eq.${orgId}` }, refresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'item_proposals', filter: `organization_id=eq.${orgId}` }, refresh)
       .subscribe();
   }
 
@@ -364,6 +397,45 @@ export class FichaPage {
     } catch (e) {
       this.toast.error(errorKey(e));
     }
+  }
+
+  protected readable(d: FichaDocument): boolean {
+    return d.mime_type === 'application/pdf' || d.mime_type === 'image/png' || d.mime_type === 'image/jpeg';
+  }
+
+  private async loadProposals(orgId: string): Promise<void> {
+    const { data } = await this.sb.client.from('item_proposals')
+      .select('id, field, proposed_value, source_quote, page, documents(original_name), checklist_items(catalog_code, title)')
+      .eq('organization_id', orgId).eq('status', 'pending').order('created_at');
+    this.proposals.set((data ?? []) as unknown as Proposal[]);
+  }
+
+  /** Claude reads the document and proposes values; nothing is applied until a user accepts. */
+  protected async readDoc(d: FichaDocument): Promise<void> {
+    this.reading.set(d.id);
+    try {
+      const res = await this.sb.fn<{ proposals: number }>('ocr-extract', { document_id: d.id });
+      this.toast.success(res.proposals ? 'ocr.done' : 'ocr.nothing', { n: res.proposals });
+      await this.loadProposals(this.id());
+    } catch (e) {
+      this.toast.error(errorKey(e));
+    } finally {
+      this.reading.set(null);
+    }
+  }
+
+  protected async acceptProposal(id: string, value: string): Promise<void> {
+    try {
+      await this.sb.rpc('accept_proposal', { p_id: id, p_value: value });
+      await this.load(this.id());
+    } catch (e) { this.toast.error(errorKey(e)); }
+  }
+
+  protected async rejectProposal(id: string): Promise<void> {
+    try {
+      await this.sb.rpc('reject_proposal', { p_id: id });
+      await this.loadProposals(this.id());
+    } catch (e) { this.toast.error(errorKey(e)); }
   }
 
   protected async deleteDoc(d: FichaDocument): Promise<void> {

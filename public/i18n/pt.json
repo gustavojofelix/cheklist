@@ -173,7 +173,9 @@
       "documents": "Atingiu o limite de documentos do plano.",
       "storage": "Atingiu o limite de armazenamento do plano.",
       "file_size": "O ficheiro excede o tamanho máximo permitido.",
-      "subscription": "A organização não tem subscrição activa."
+      "subscription": "A organização não tem subscrição activa.",
+      "ocr": "Atingiu o limite de leituras de documentos do plano.",
+      "ia": "Atingiu o limite de perguntas à IA do plano."
     },
     "otp_too_soon": "Aguarde um minuto antes de pedir outro código.",
     "otp_too_many": "Demasiadas tentativas. Tente novamente mais tarde.",
@@ -195,7 +197,17 @@
     "invalid_voucher": "Voucher inválido ou expirado.",
     "nothing_to_cancel": "Não há subscrição activa para cancelar.",
     "nothing_to_buy": "Escolha um plano.",
-    "invalid_method": "Método de pagamento inválido."
+    "invalid_method": "Método de pagamento inválido.",
+    "ai_not_configured": "O assistente de IA ainda não está configurado.",
+    "ai_disabled": "O assistente de IA está desactivado para esta conta.",
+    "ai_read_only": "A conta está em modo só leitura.",
+    "ai_forbidden": "Não tem acesso a estes dados.",
+    "ai_refused": "O pedido não pôde ser processado pela IA.",
+    "ai_busy": "A IA está ocupada. Tente novamente dentro de momentos.",
+    "ai_error": "Ocorreu um erro na IA. Tente novamente.",
+    "ocr_unsupported_type": "Só é possível ler PDF e imagens.",
+    "question_required": "Escreva uma pergunta.",
+    "invalid_action": "Acção inválida."
   },
   "compliance": {
     "regular": "Regular",
@@ -349,7 +361,8 @@
       "operator.access_start": "Acesso de operador iniciado",
       "operator.access_end": "Acesso de operador terminado",
       "admin.company_created": "Empresa criada pela plataforma",
-      "payment.confirmed": "Pagamento confirmado"
+      "payment.confirmed": "Pagamento confirmado",
+      "ocr.extract": "Documento lido pela IA"
     },
     "table": {
       "null": "",
@@ -702,5 +715,37 @@
     "adminOnly": "Apenas um administrador pode aplicar a nova versão.",
     "none": "Não há uma versão nova para rever.",
     "applied": "Nova versão aplicada."
+  },
+  "ai": {
+    "new": "Nova conversa",
+    "history": "Histórico de conversas",
+    "untitled": "Conversa sem título",
+    "noConversations": "Ainda não há conversas.",
+    "disclaimer": "As respostas são informativas e baseiam-se nos dados desta conta. Não constituem aconselhamento jurídico.",
+    "welcome": "Faça perguntas sobre as checklists e documentos desta conta.",
+    "proposal": "Proposta de alteração",
+    "field": {
+      "answer": "Descritivo",
+      "due_date": "Validade"
+    },
+    "reject": "Rejeitar",
+    "status": {
+      "accepted": "Aplicada",
+      "rejected": "Rejeitada"
+    },
+    "thinking": "A pensar…",
+    "ask": "Faça uma pergunta…",
+    "send": "Perguntar",
+    "applied": "Alteração aplicada."
+  },
+  "ocr": {
+    "read": "Ler documento (IA)",
+    "done": "{{n}} proposta(s) para rever.",
+    "nothing": "Não foram encontrados valores no documento.",
+    "reviewTitle": "{{n}} valor(es) lidos de documentos para rever",
+    "reviewHint": "Os valores só são guardados depois de os aceitar. Pode corrigi-los antes.",
+    "page": "pág.",
+    "value": "Valor proposto",
+    "accept": "Aceitar"
   }
 }

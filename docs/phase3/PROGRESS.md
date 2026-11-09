@@ -125,6 +125,23 @@
 - pgTAP: 57/57 passing on the hosted project.
 - **Needs from you:** Stripe test keys (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, plus a webhook endpoint pointing at `/functions/v1/stripe-webhook`), the SISLOG and Officegest API documentation, and the real bank details (Back office → Settings → General: `bank_details`).
 
+## Iteration 7 (OCR and AI assistant with Claude): deployed to checklist-legal-dev
+- **Model:** Claude Opus 5.5 (`claude-opus-5-5`), configurable in `platform_settings.claude_model`. Effort is `medium`, and server-side refusal fallbacks are on (`fallbacks: "default"`). The SDK is pinned at `@anthropic-ai/sdk@1.2.0`.
+- **Document reading** (`ocr-extract`):
+  - Claude reads a PDF or image and proposes the description and/or validity date for the items the document is linked to;
+  - each proposal carries the exact quote and page, and uses structured JSON output;
+  - proposals appear in the entity checklist; the user can correct a value, then accepts or rejects it;
+  - **nothing is saved without that validation** (rule IA: OCR final validation cannot be disabled);
+  - applying a proposal uses the user's own permissions (RLS).
+- **Assistant** (`ai-chat`):
+  - answers only from the account's data, read with the caller's permissions;
+  - cites item codes, which become chips linking to the entity checklist;
+  - can only *propose* changes through a strict tool; changes are applied when the user clicks Confirm;
+  - keeps conversation history, and the "not legal advice" notice is always shown.
+- **Controls:** global and per-organization switches, plan quotas per period (OCR readings, AI questions), and read-only accounts blocked. Usage can only be recorded by the server.
+- pgTAP: 67/67 passing on the hosted project. All Edge Functions type-check with `deno check`.
+- **Needs from you:** `ANTHROPIC_API_KEY` as an Edge Function secret (see docs/runbooks/secrets.md). Until then the screens report "not configured".
+
 ### Next
 - Iteration 5: back office (templates and versioning, plans, vouchers, operator access, settings).
 - Iteration 6: billing (Stripe, SISLOG, manual invoices, lifecycle cron, Officegest).

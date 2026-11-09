@@ -173,7 +173,9 @@
       "documents": "You have reached your plan's document limit.",
       "storage": "You have reached your plan's storage limit.",
       "file_size": "The file exceeds the maximum allowed size.",
-      "subscription": "The organization has no active subscription."
+      "subscription": "The organization has no active subscription.",
+      "ocr": "You have reached your plan's document-reading limit.",
+      "ia": "You have reached your plan's AI question limit."
     },
     "otp_too_soon": "Wait a minute before requesting another code.",
     "otp_too_many": "Too many attempts. Try again later.",
@@ -195,7 +197,17 @@
     "invalid_voucher": "Invalid or expired voucher.",
     "nothing_to_cancel": "There is no active subscription to cancel.",
     "nothing_to_buy": "Choose a plan.",
-    "invalid_method": "Invalid payment method."
+    "invalid_method": "Invalid payment method.",
+    "ai_not_configured": "The AI assistant is not configured yet.",
+    "ai_disabled": "The AI assistant is disabled for this account.",
+    "ai_read_only": "The account is read-only.",
+    "ai_forbidden": "You do not have access to this data.",
+    "ai_refused": "The AI could not process this request.",
+    "ai_busy": "The AI is busy. Try again in a moment.",
+    "ai_error": "The AI failed. Please try again.",
+    "ocr_unsupported_type": "Only PDFs and images can be read.",
+    "question_required": "Type a question.",
+    "invalid_action": "Invalid action."
   },
   "compliance": {
     "regular": "Compliant",
@@ -349,7 +361,8 @@
       "operator.access_start": "Operator access started",
       "operator.access_end": "Operator access ended",
       "admin.company_created": "Company created by the platform",
-      "payment.confirmed": "Payment confirmed"
+      "payment.confirmed": "Payment confirmed",
+      "ocr.extract": "Document read by AI"
     },
     "table": {
       "null": "",
@@ -702,5 +715,37 @@
     "adminOnly": "Only an administrator can apply the new version.",
     "none": "There is no new version to review.",
     "applied": "New version applied."
+  },
+  "ai": {
+    "new": "New conversation",
+    "history": "Conversation history",
+    "untitled": "Untitled conversation",
+    "noConversations": "No conversations yet.",
+    "disclaimer": "Answers are informational and based on this account's data. They are not legal advice.",
+    "welcome": "Ask questions about this account's checklists and documents.",
+    "proposal": "Proposed change",
+    "field": {
+      "answer": "Description",
+      "due_date": "Validity"
+    },
+    "reject": "Reject",
+    "status": {
+      "accepted": "Applied",
+      "rejected": "Rejected"
+    },
+    "thinking": "Thinking…",
+    "ask": "Ask a question…",
+    "send": "Ask",
+    "applied": "Change applied."
+  },
+  "ocr": {
+    "read": "Read document (AI)",
+    "done": "{{n}} proposal(s) to review.",
+    "nothing": "No values were found in the document.",
+    "reviewTitle": "{{n}} value(s) read from documents to review",
+    "reviewHint": "Values are saved only after you accept them. You can correct them first.",
+    "page": "p.",
+    "value": "Proposed value",
+    "accept": "Accept"
   }
 }

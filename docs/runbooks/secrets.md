@@ -31,6 +31,14 @@ Queued e-mails are delivered by the next `email-dispatch` run (every 10 minutes)
 ## 3. Supabase Auth e-mails (sign-up confirmation, password reset)
 These use Supabase's built-in sender, which has a low hourly limit. For production, set **Authentication → Emails → SMTP** to the same provider (Resend SMTP: `smtp.resend.com`, port 465, user `resend`, password = API key).
 
+## 4. Payments and AI
+```bash
+npx supabase secrets set ANTHROPIC_API_KEY=<key> --project-ref <PROJECT_REF>          # OCR + assistant (Claude)
+npx supabase secrets set STRIPE_SECRET_KEY=sk_test_... STRIPE_WEBHOOK_SECRET=whsec_... --project-ref <PROJECT_REF>
+```
+Stripe webhook endpoint: `https://<PROJECT_REF>.supabase.co/functions/v1/stripe-webhook`. Events: `checkout.session.completed`,
+`checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`.
+
 ## Check
 ```sql
 select jobname, schedule, active from cron.job;                                   -- 3 active jobs

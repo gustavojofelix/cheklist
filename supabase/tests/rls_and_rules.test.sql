@@ -11,7 +11,7 @@ begin
   select n.nspname into s from pg_extension e join pg_namespace n on n.oid = e.extnamespace where e.extname = 'pgtap';
   perform set_config('search_path', 'public, extensions, ' || quote_ident(s), true);
 end $$;
-select plan(57);
+select plan(67);
 
 -- ---------------------------------------------------------------- fixtures
 create schema tests;
@@ -141,6 +141,49 @@ select is((select count(*)::int from public.checklist_items where organization_i
 select lives_ok($$ select public.operator_access_end() $$, 'operator leaves');
 select tests.login('10000000-0000-4000-a000-00000000000a');
 select throws_ok($$ select public.set_platform_role('b@test.local', 'superadmin') $$, '42501', null, 'customers cannot grant platform roles');
+
+-- ------------------------------------------------------- iteration 7: OCR & AI
+select is(public.ai_check((select org_a from tests.ids), 'ia'), 'ok', 'AI is available on the trial plan');
+select tests.login('10000000-0000-4000-a000-00000000000b');
+select is(public.ai_check((select org_a from tests.ids), 'ia'), 'forbidden', 'another account cannot use A''s AI');
+select tests.logout();
+insert into public.usage_events (organization_id, metric) select (select org_a from tests.ids), 'ia' from generate_series(1, 10);
+update public.organizations set ai_enabled = false where id = (select org_b from tests.ids);
+select tests.login('10000000-0000-4000-a000-00000000000a');
+select is(public.ai_check((select org_a from tests.ids), 'ia'), 'quota', 'the plan''s AI question limit is enforced');
+select tests.login('10000000-0000-4000-a000-00000000000b');
+select is(public.ai_check((select org_b from tests.ids), 'ia'), 'disabled', 'the organization switch disables the assistant');
+select tests.logout();
+insert into public.documents (organization_id, storage_path, original_name, mime_type, size_bytes, uploaded_by)
+values ((select org_a from tests.ids), (select org_a from tests.ids)::text || '/t/alvara.pdf', 'alvara.pdf', 'application/pdf', 100,
+        '10000000-0000-4000-a000-00000000000a');
+insert into public.item_proposals (organization_id, document_id, checklist_item_id, field, proposed_value, source_quote, page)
+select (select org_a from tests.ids), d.id, i.id, 'due_date', '2027-01-31', 'Válido até 31/01/2027', 1
+  from public.documents d, public.checklist_items i
+ where d.original_name = 'alvara.pdf' and i.organization_id = (select org_a from tests.ids) and i.catalog_code in ('LIC-01', 'LIC-02');
+insert into public.ai_conversations (id, organization_id, user_id, title)
+values ('20000000-0000-4000-a000-000000000001', (select org_a from tests.ids), '10000000-0000-4000-a000-00000000000a', 't');
+insert into public.ai_messages (id, conversation_id, role, content)
+values ('20000000-0000-4000-a000-000000000002', '20000000-0000-4000-a000-000000000001', 'assistant', 'x');
+insert into public.ai_proposed_actions (id, message_id, organization_id, checklist_item_id, action)
+select '20000000-0000-4000-a000-000000000003', '20000000-0000-4000-a000-000000000002', (select org_a from tests.ids), i.id,
+       '{"field":"answer","value":"Alvará n.º 99/2026"}'::jsonb
+  from public.checklist_items i where i.organization_id = (select org_a from tests.ids) and i.catalog_code = 'LIC-01';
+select tests.login('10000000-0000-4000-a000-00000000000b');
+select throws_ok($$ select public.accept_proposal((select p.id from public.item_proposals p join public.checklist_items i on i.id = p.checklist_item_id
+                                                   where i.catalog_code = 'LIC-02' and p.organization_id = (select org_a from tests.ids))) $$,
+                 'P0002', null, 'another account cannot accept A''s proposals');
+select tests.logout();
+select set_config('test.prop', (select p.id::text from public.item_proposals p join public.checklist_items i on i.id = p.checklist_item_id
+                                 where i.catalog_code = 'LIC-01' and p.organization_id = (select org_a from tests.ids)), false);
+select tests.login('10000000-0000-4000-a000-00000000000a');
+select lives_ok($$ select public.accept_proposal(current_setting('test.prop')::uuid) $$, 'the user accepts a document proposal');
+select is((select due_date from public.checklist_items where organization_id = (select org_a from tests.ids) and catalog_code = 'LIC-01'),
+          '2027-01-31'::date, 'the accepted validity date is saved');
+select lives_ok($$ select public.ai_action_decide('20000000-0000-4000-a000-000000000003', true) $$, 'the user confirms an AI proposal');
+select is((select answer from public.checklist_items where organization_id = (select org_a from tests.ids) and catalog_code = 'LIC-01'),
+          'Alvará n.º 99/2026', 'the confirmed AI proposal is applied');
+select throws_ok($$ select public.ai_record_usage((select org_a from tests.ids), 'ia') $$, '42501', null, 'usage can only be recorded by the server');
 
 -- ------------------------------------------------------- read-only mode
 select tests.logout();
