@@ -45,11 +45,11 @@ const openAct = async (page) => { await page.getByRole('link', { name: new RegEx
     await p.mouse.wheel(0, -2000);
     await p.getByRole('button', { name: 'Adicionar documento' }).click();
     const dlg = p.getByRole('dialog', { name: 'Adicionar documento' });
-    await dlg.getByLabel('Alteração').check();
-    await dlg.getByLabel('Diploma').fill('Decreto-Lei n.º 1/2013, de 4 de Julho');
-    await dlg.getByLabel('Publicação').fill('Boletim da República, I Série, n.º 53');
-    await dlg.getByLabel('Data de publicação').fill('2013-07-04');
-    await dlg.getByLabel('O que altera').fill('Revoga os artigos 147.º e 148.º do Código das Execuções Fiscais.');
+    await dlg.getByLabel('Alteração', { exact: true }).check();
+    await dlg.getByLabel('Diploma', { exact: true }).fill('Decreto-Lei n.º 1/2013, de 4 de Julho');
+    await dlg.getByLabel('Publicação', { exact: true }).fill('Boletim da República, I Série, n.º 53');
+    await dlg.getByLabel('Data de publicação', { exact: true }).fill('2013-07-04');
+    await dlg.getByLabel('O que altera', { exact: true }).fill('Revoga os artigos 147.º e 148.º do Código das Execuções Fiscais.');
   });
   await ctx.close();
 }

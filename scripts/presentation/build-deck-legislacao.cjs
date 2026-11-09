@@ -31,9 +31,9 @@ sec('Abertura');
   const s = content('O problema', 'Um diploma raramente fica como foi publicado',
     'O Código das Execuções Fiscais foi aprovado em 1950 e alterado em 1951, 1966 e 2013, por diplomas diferentes, publicados em jornais oficiais diferentes. Para saber o texto em vigor é preciso juntar as peças pela ordem certa.');
   const years = [['1950', 'Original', 'FCD116', '141414'], ['1951', 'Alteração', '0D7744', 'FFFFFF'], ['1966', 'Alteração', '0D7744', 'FFFFFF'], ['2013', 'Alteração', '0D7744', 'FFFFFF']];
-  s.addShape(pres.shapes.LINE, { x: 1.2, y: 2.75, w: 9.6, h: 0, line: { color: 'C9BC9F', width: 3 } });
+  s.addShape(pres.shapes.LINE, { x: 1.2, y: 2.75, w: 9.4, h: 0, line: { color: 'C9BC9F', width: 3 } });
   years.forEach(([y, l, fill, ink], i) => {
-    const x = 0.75 + i * 3.1;
+    const x = 0.75 + i * 2.6;
     s.addShape(pres.shapes.OVAL, { x: x + 0.45, y: 2.25, w: 1.0, h: 1.0, fill: { color: fill }, line: { color: 'FFFFFF', width: 3 } });
     s.addText(y, { x, y: 3.4, w: 1.9, h: 0.5, fontSize: 22, bold: true, color: C.text2, align: 'center', margin: 0, isTextBox: true });
     s.addText(l, { x, y: 3.9, w: 1.9, h: 0.35, fontSize: 13, color: C.accent6, align: 'center', margin: 0, isTextBox: true });

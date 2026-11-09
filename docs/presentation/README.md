@@ -7,6 +7,8 @@
 | `…-ptBR-WhatsApp.mp4` / `…-ptBR-HD.mp4` | Smaller copies: 1280×720 at 15 fps (14 MB, plays inside a WhatsApp chat) and 1600×900 at 1 Mbit/s (39 MB, sent as a document). Not committed. |
 | `narracao/` | The narration as MP3: `Checklist-Legal-Narracao-ptBR.mp3` (the full 5:23 track, timed to the video), the 44 per-scene clips (`NN-<scene>.mp3`, also zipped), and `LEIA-ME.txt` with each clip's start time and text. Made by `node scripts/presentation/narration-mp3.mjs`. Not committed. |
 | `Checklist-Legal-Video.webm` | The same walkthrough without audio, an intermediate file. Not committed. |
+| `Checklist-Legal-Acasalamento.pptx` | 13-slide deck on document pairing in the Legislação module (original + alterations → revised text), with the LACI047 example (Decreto n.º 38.088, Código das Execuções Fiscais). |
+| `Checklist-Legal-Acasalamento-ptBR.mp4` / `…-WhatsApp.mp4` | 3:02 narrated video of the pairing (65 MB / 8 MB). Made by `legislation-demo.mjs reset`, `VIDEO=legislacao narration.mjs`, `record-legislacao.mjs` and `VIDEO=legislacao mux-video.mjs`. Not committed. |
 | `screens/desktop`, `screens/mobile` | Raw screen captures (29 desktop, 11 phone). |
 | `assets/` | Logo, capulana backgrounds and framed screens used by the deck. |
 

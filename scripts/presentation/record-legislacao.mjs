@@ -90,11 +90,11 @@ async function addDoc(d, roleLabel, { submit = true } = {}) {
   const dlg = page.getByRole('dialog', { name: 'Adicionar documento' });
   await dlg.waitFor();
   await wait(400);
-  await click(dlg.getByLabel(roleLabel));
-  await type(dlg.getByLabel('Diploma'), d.diploma, 18);
-  if (d.publication) await type(dlg.getByLabel('Publicação'), d.publication, 12);
-  if (d.published_on) { await click(dlg.getByLabel('Data de publicação')); await dlg.getByLabel('Data de publicação').fill(d.published_on); }
-  if (d.effect) await type(dlg.getByLabel('O que altera'), d.effect, 10);
+  await click(dlg.getByLabel(roleLabel, { exact: true }));
+  await type(dlg.getByLabel('Diploma', { exact: true }), d.diploma, 18);
+  if (d.publication) await type(dlg.getByLabel('Publicação', { exact: true }), d.publication, 12);
+  if (d.published_on) { await click(dlg.getByLabel('Data de publicação', { exact: true })); await dlg.getByLabel('Data de publicação', { exact: true }).fill(d.published_on); }
+  if (d.effect) await type(dlg.getByLabel('O que altera', { exact: true }), d.effect, 10);
   await dlg.locator('input[type=file]').setInputFiles(filePath(d));
   await wait(600);
   if (!submit) return dlg;
@@ -132,11 +132,10 @@ await scene('bo', async () => {
 });
 await scene('new-act', async () => {
   await click(page.getByRole('button', { name: 'Novo diploma' })); await wait(400);
-  await type(page.getByLabel('Título'), ACT.title, 25);
-  await type(page.getByLabel('Referência'), ACT.reference, 40);
-  await type(page.getByLabel('Área'), ACT.area, 40);
-  await page.getByLabel('Tipo').selectOption(ACT.kind);
-  await type(page.getByLabel('Número'), ACT.number, 50);
+  await type(page.getByLabel('Título', { exact: true }), ACT.title, 25);
+  await type(page.getByLabel('Referência', { exact: true }), ACT.reference, 40);
+  await type(page.getByLabel('Área', { exact: true }), ACT.area, 40);
+  await type(page.getByLabel('Número', { exact: true }), ACT.number, 50);
   await click(page.getByLabel('Data', { exact: true })); await page.getByLabel('Data', { exact: true }).fill(ACT.act_date);
   await wait(500);
   await click(page.getByRole('button', { name: 'Criar' }));

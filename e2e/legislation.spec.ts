@@ -8,8 +8,8 @@ test('legislation: staff pair an original with its alterations; customers read t
   await login(page, 'superadmin');
   await page.goto('/admin/legislation');
   await page.getByRole('button', { name: 'Novo diploma' }).click();
-  await page.getByLabel('Título').fill(title);
-  await page.getByLabel('Número').fill('1.000');
+  await page.getByLabel('Título', { exact: true }).fill(title);
+  await page.getByLabel('Número', { exact: true }).fill('1.000');
   await page.getByLabel('Data', { exact: true }).fill('1950-12-12');
   await page.getByRole('button', { name: 'Criar' }).click();
   await expect(page.getByRole('heading', { name: title })).toBeVisible();
@@ -17,9 +17,9 @@ test('legislation: staff pair an original with its alterations; customers read t
   const add = async (role: string, diploma: string, date: string, file: string) => {
     await page.getByRole('button', { name: 'Adicionar documento' }).click();
     const dlg = page.getByRole('dialog', { name: 'Adicionar documento' });
-    await dlg.getByLabel(role).check();
-    await dlg.getByLabel('Diploma').fill(diploma);
-    await dlg.getByLabel('Data de publicação').fill(date);
+    await dlg.getByLabel(role, { exact: true }).check();
+    await dlg.getByLabel('Diploma', { exact: true }).fill(diploma);
+    await dlg.getByLabel('Data de publicação', { exact: true }).fill(date);
     await dlg.locator('input[type=file]').setInputFiles(pdf(file));
     await dlg.getByRole('button', { name: 'Carregar' }).click();
     return dlg;
