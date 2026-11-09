@@ -2,6 +2,13 @@
 -- Run with:  npx supabase test db
 begin;
 create extension if not exists pgtap with schema extensions;
+-- pgTAP may already exist in another schema (the runner can pre-install it): put that schema on the path.
+do $$
+declare s text;
+begin
+  select n.nspname into s from pg_extension e join pg_namespace n on n.oid = e.extnamespace where e.extname = 'pgtap';
+  perform set_config('search_path', 'public, extensions, ' || quote_ident(s), false);
+end $$;
 select plan(24);
 
 -- ---------------------------------------------------------------- fixtures
