@@ -96,6 +96,35 @@
 - pgTAP: 47/47 passing on the hosted project.
 - Not yet: e-mail OTP for back-office logins (the setting is hidden until it is enforced), MFA for staff, and voucher redemption at checkout (iteration 6).
 
+## Iteration 6 (billing): deployed to checklist-legal-dev
+- **Server-side pricing** (`checkout_quote`): the plan price per period or the +5 GB add-on, with vouchers (percentage or fixed, plan restriction, validity window, maximum uses). The browser never decides the amount.
+- **One confirmation path for every gateway** (`private.confirm_payment`):
+  - idempotent;
+  - activates or extends the subscription (renewing the same plan extends from the current end date);
+  - applies the storage add-on;
+  - redeems the voucher exactly once;
+  - marks the invoice paid, queues the Officegest sync, and writes the audit log.
+- **Stripe:**
+  - Checkout Session, one payment per billing period, with an idempotency key;
+  - `stripe-webhook` verifies the signature (HMAC, 5-minute tolerance) and stores each event once;
+  - forged calls are logged under random ids, and failed events are re-processed when Stripe retries;
+  - activation happens only through the webhook.
+- **Bank transfer:** a sequential invoice (`CL-YYYY-NNNNNN`) with bank details and a due date; a superadmin marks it paid in Back office → Payments.
+- **SISLOG (M-Pesa / e-Mola) and Officegest:**
+  - the queue, retries, webhook logging and back-office visibility are complete;
+  - the provider-specific calls are stubs that wait for the API specifications;
+  - nothing is activated or synced until they are implemented. In the UI the SISLOG option shows "being configured".
+- **Lifecycle** (hourly):
+  - trial → expired;
+  - active → past_due with grace days (e-mail to admins);
+  - past_due or canceled → expired (read-only).
+  - Cancelling takes effect at the end of the paid period.
+- **Quota warnings** at 80% and 95% (documents, storage, users), sent once per threshold per period. **Monthly compliance digest** on the 1st of each month.
+- **Screens:** Subscriptions (period toggle, voucher, payment method, invoices, payments, cancel, +5 GB) and Back office → Payments (pending transfers, payments with Officegest status, webhook log).
+- **Security fixes found by the tests** (migrations 0015/0016): `checkout_quote` authorised any caller. `is_service()` is always true inside SECURITY DEFINER functions, and a NULL role comparison inside an `IF NOT (...)` never raised. Both are fixed and the rule is documented on the function.
+- pgTAP: 57/57 passing on the hosted project.
+- **Needs from you:** Stripe test keys (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, plus a webhook endpoint pointing at `/functions/v1/stripe-webhook`), the SISLOG and Officegest API documentation, and the real bank details (Back office → Settings → General: `bank_details`).
+
 ### Next
 - Iteration 5: back office (templates and versioning, plans, vouchers, operator access, settings).
 - Iteration 6: billing (Stripe, SISLOG, manual invoices, lifecycle cron, Officegest).

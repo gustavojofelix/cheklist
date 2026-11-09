@@ -189,7 +189,13 @@
     "cannot_change_own_role": "Não pode alterar a sua própria função.",
     "cannot_change_own_status": "Não pode alterar o seu próprio estado.",
     "invite_failed": "Não foi possível enviar o convite.",
-    "organization_name_required": "Indique o nome da organização."
+    "organization_name_required": "Indique o nome da organização.",
+    "gateway_not_configured": "Este método de pagamento ainda não está configurado.",
+    "gateway_error": "O fornecedor de pagamento recusou o pedido.",
+    "invalid_voucher": "Voucher inválido ou expirado.",
+    "nothing_to_cancel": "Não há subscrição activa para cancelar.",
+    "nothing_to_buy": "Escolha um plano.",
+    "invalid_method": "Método de pagamento inválido."
   },
   "compliance": {
     "regular": "Regular",
@@ -342,7 +348,8 @@
       "template.upgrade": "Versão do modelo aplicada",
       "operator.access_start": "Acesso de operador iniciado",
       "operator.access_end": "Acesso de operador terminado",
-      "admin.company_created": "Empresa criada pela plataforma"
+      "admin.company_created": "Empresa criada pela plataforma",
+      "payment.confirmed": "Pagamento confirmado"
     },
     "table": {
       "null": "",
@@ -396,7 +403,7 @@
     "upToUsers": "Até {{n}} utilizadores",
     "upToBranches": "Até {{n}} sucursais",
     "upToDocs": "Até {{n}} documentos",
-    "checkoutSoon": "Pagamentos (Stripe, M-Pesa/e-Mola via SISLOG e transferência) chegam na iteração 6.",
+    "checkoutSoon": "Os pagamentos por M-Pesa/e-Mola (SISLOG) ficam disponíveis quando a integração estiver configurada.",
     "readOnlyBadge": "Só leitura",
     "readOnlyBanner": "A subscrição expirou: a conta está em modo só de leitura.",
     "choosePlan": "Escolher plano",
@@ -411,6 +418,49 @@
       "past_due": "Pagamento em atraso",
       "canceled": "Cancelada",
       "expired": "Expirada"
+    },
+    "checkout": "Pagamento",
+    "voucher": "Código de voucher",
+    "apply": "Aplicar",
+    "invalidVoucher": "Voucher inválido ou expirado.",
+    "method": "Método de pagamento",
+    "proceed": "Continuar para pagamento",
+    "addStorage": "Adicionar 5 GB",
+    "recycledNote": "Os documentos apagados não contam para a quota até serem restaurados.",
+    "methods": {
+      "stripe": "Cartão de crédito/débito",
+      "stripeHint": "Pagamento seguro via Stripe.",
+      "sislog": "M-Pesa / e-Mola",
+      "sislogHint": "Via SISLOG — em configuração.",
+      "manual": "Transferência bancária",
+      "manualHint": "Gera uma factura; o plano é activado quando o pagamento for confirmado."
+    },
+    "invoiceCreated": "Factura {{number}} criada",
+    "invoiceHint": "Transfira {{amount}} {{currency}} até {{due}} usando os dados abaixo e indique o número da factura.",
+    "notInPeriod": "não disponível neste período",
+    "invoices": "Facturas",
+    "payments": "Pagamentos",
+    "amount": "Valor",
+    "due": "Vencimento",
+    "date": "Data",
+    "description": "Descrição",
+    "cancel": "Cancelar subscrição",
+    "cancelTitle": "Cancelar a subscrição?",
+    "cancelBody": "O acesso mantém-se até ao fim do período pago; depois a conta passa a só leitura.",
+    "canceled": "Subscrição cancelada.",
+    "paidToast": "Pagamento recebido. A subscrição é activada assim que o fornecedor confirmar.",
+    "invoiceStatus": {
+      "draft": "Rascunho",
+      "pending": "Pendente",
+      "paid": "Paga",
+      "overdue": "Vencida",
+      "void": "Anulada"
+    },
+    "paymentStatus": {
+      "pending": "Pendente",
+      "paid": "Pago",
+      "failed": "Falhou",
+      "refunded": "Reembolsado"
     }
   },
   "placeholder": {
@@ -436,7 +486,8 @@
       "emails": "E-mails",
       "vouchers": "Vouchers",
       "staff": "Equipa da plataforma",
-      "settings": "Definições"
+      "settings": "Definições",
+      "payments": "Pagamentos"
     },
     "kpi": {
       "customers": "Clientes",
@@ -591,6 +642,20 @@
         "province": "Províncias",
         "sector": "Sectores"
       }
+    },
+    "payments": {
+      "subtitle": "Pagamentos, facturas por transferência, sincronização Officegest e notificações dos fornecedores.",
+      "pendingInvoices": "Facturas por transferência pendentes",
+      "markPaid": "Marcar como paga",
+      "noPending": "Sem facturas pendentes.",
+      "markPaidTitle": "Confirmar pagamento da factura {{number}}?",
+      "markPaidBody": "A subscrição de {{org}} é activada de imediato. Esta acção fica registada.",
+      "activated": "Pagamento confirmado e subscrição activada.",
+      "webhooks": "Notificações dos fornecedores (webhooks)",
+      "provider": "Fornecedor",
+      "event": "Evento",
+      "signature": "Assinatura",
+      "handled": "Processado"
     }
   },
   "otp": {

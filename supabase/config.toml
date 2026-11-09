@@ -427,3 +427,13 @@ verify_jwt = false
 
 [functions.recycle-purge]
 verify_jwt = false
+
+# Payment providers call these directly (no user JWT); each verifies its own signature/secret.
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.sislog-webhook]
+verify_jwt = false
+
+[functions.officegest-sync]
+verify_jwt = false

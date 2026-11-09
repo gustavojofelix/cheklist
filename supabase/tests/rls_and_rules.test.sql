@@ -11,7 +11,7 @@ begin
   select n.nspname into s from pg_extension e join pg_namespace n on n.oid = e.extnamespace where e.extname = 'pgtap';
   perform set_config('search_path', 'public, extensions, ' || quote_ident(s), true);
 end $$;
-select plan(47);
+select plan(57);
 
 -- ---------------------------------------------------------------- fixtures
 create schema tests;
@@ -150,6 +150,45 @@ select results_eq($$ with u as (update public.checklist_items set notes = 'x' wh
                      select count(*)::int from u $$, $$ values (0) $$, 'expired trial is read-only');
 select ok((select count(*) from public.checklist_items where organization_id = (select org_a from tests.ids)) > 0,
           'expired trial can still read');
+
+-- ------------------------------------------------------- iteration 6: billing
+select tests.logout();
+insert into public.vouchers (code, name, discount_type, discount_value) values ('TEST10', 'Test', 'percentage', 10);
+select set_config('test.price', (select pp.id::text from public.plan_prices pp join public.plans p on p.id = pp.plan_id
+                                  where p.slug = 'essencial' and pp.period = 'monthly'), false);
+select tests.login('10000000-0000-4000-a000-00000000000a');
+select is((public.checkout_quote((select org_a from tests.ids), current_setting('test.price')::uuid)->>'amount')::numeric, 2000::numeric,
+          'the price is computed on the server');
+select is((public.checkout_quote((select org_a from tests.ids), current_setting('test.price')::uuid, null, 'test10')->>'amount')::numeric, 1800::numeric,
+          'a 10% voucher is applied');
+select tests.login('10000000-0000-4000-a000-00000000000b');
+select throws_ok($$ select public.checkout_quote((select org_a from tests.ids), current_setting('test.price')::uuid) $$,
+                 '42501', null, 'another account cannot buy for A');
+select tests.logout();
+insert into public.payments (organization_id, plan_price_id, gateway, amount, amount_discounted, voucher_id, kind, created_by)
+select (select org_a from tests.ids), current_setting('test.price')::uuid, 'manual', 1800, 200,
+       (select id from public.vouchers where code = 'TEST10'), 'subscription', '10000000-0000-4000-a000-00000000000a';
+insert into public.invoices (organization_id, payment_id, amount, status)
+select (select org_a from tests.ids), id, 1800, 'pending' from public.payments where organization_id = (select org_a from tests.ids);
+select tests.login('10000000-0000-4000-a000-00000000000c');
+select lives_ok($$ select public.admin_mark_invoice_paid((select id from public.invoices where organization_id = (select org_a from tests.ids))) $$,
+                'superadmin confirms the bank transfer');
+select tests.logout();
+select private.confirm_payment((select id from public.payments where organization_id = (select org_a from tests.ids)));
+select is((select s.status::text || '/' || p.slug from public.subscriptions s join public.plans p on p.id = s.plan_id
+            where s.organization_id = (select org_a from tests.ids)), 'active/essencial', 'the paid plan is active');
+select is((select uses_count from public.vouchers where code = 'TEST10'), 1, 'the voucher is redeemed exactly once (confirmation is idempotent)');
+select ok(exists (select 1 from public.officegest_sync s join public.payments p on p.id = s.payment_id
+                   where p.organization_id = (select org_a from tests.ids)), 'the payment is queued for Officegest');
+select tests.login('10000000-0000-4000-a000-00000000000a');
+select throws_ok($$ select public.webhook_confirm_payment(gen_random_uuid(), 'x') $$, '42501', null, 'customers cannot confirm payments');
+select lives_ok($$ select public.cancel_subscription((select org_a from tests.ids)) $$, 'the admin cancels at period end');
+select tests.logout();
+update public.subscriptions set current_period_end = now() - interval '1 minute', current_period_start = now() - interval '1 month'
+ where organization_id = (select org_a from tests.ids);
+select private.subscription_lifecycle();
+select is((select status::text from public.subscriptions where organization_id = (select org_a from tests.ids)), 'expired',
+          'a canceled subscription expires at the end of the period');
 
 -- ------------------------------------------------------- platform staff
 select tests.login('10000000-0000-4000-a000-00000000000c');

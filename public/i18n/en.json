@@ -189,7 +189,13 @@
     "cannot_change_own_role": "You cannot change your own role.",
     "cannot_change_own_status": "You cannot change your own status.",
     "invite_failed": "The invitation could not be sent.",
-    "organization_name_required": "Enter the organization name."
+    "organization_name_required": "Enter the organization name.",
+    "gateway_not_configured": "This payment method is not configured yet.",
+    "gateway_error": "The payment provider rejected the request.",
+    "invalid_voucher": "Invalid or expired voucher.",
+    "nothing_to_cancel": "There is no active subscription to cancel.",
+    "nothing_to_buy": "Choose a plan.",
+    "invalid_method": "Invalid payment method."
   },
   "compliance": {
     "regular": "Compliant",
@@ -342,7 +348,8 @@
       "template.upgrade": "Template version applied",
       "operator.access_start": "Operator access started",
       "operator.access_end": "Operator access ended",
-      "admin.company_created": "Company created by the platform"
+      "admin.company_created": "Company created by the platform",
+      "payment.confirmed": "Payment confirmed"
     },
     "table": {
       "null": "",
@@ -396,7 +403,7 @@
     "upToUsers": "Up to {{n}} users",
     "upToBranches": "Up to {{n}} branches",
     "upToDocs": "Up to {{n}} documents",
-    "checkoutSoon": "Payments (Stripe, M-Pesa/e-Mola via SISLOG and bank transfer) arrive in iteration 6.",
+    "checkoutSoon": "M-Pesa/e-Mola payments (SISLOG) become available once the integration is configured.",
     "readOnlyBadge": "Read only",
     "readOnlyBanner": "The subscription has expired: the account is read-only.",
     "choosePlan": "Choose a plan",
@@ -411,6 +418,49 @@
       "past_due": "Past due",
       "canceled": "Canceled",
       "expired": "Expired"
+    },
+    "checkout": "Checkout",
+    "voucher": "Voucher code",
+    "apply": "Apply",
+    "invalidVoucher": "Invalid or expired voucher.",
+    "method": "Payment method",
+    "proceed": "Proceed to payment",
+    "addStorage": "Add 5 GB",
+    "recycledNote": "Deleted documents do not count toward quota until restored.",
+    "methods": {
+      "stripe": "Credit/debit card",
+      "stripeHint": "Secure payment via Stripe.",
+      "sislog": "M-Pesa / e-Mola",
+      "sislogHint": "Via SISLOG — being configured.",
+      "manual": "Bank transfer",
+      "manualHint": "Creates an invoice; the plan activates when the payment is confirmed."
+    },
+    "invoiceCreated": "Invoice {{number}} created",
+    "invoiceHint": "Transfer {{amount}} {{currency}} by {{due}} using the details below and quote the invoice number.",
+    "notInPeriod": "not offered for this period",
+    "invoices": "Invoices",
+    "payments": "Payments",
+    "amount": "Amount",
+    "due": "Due",
+    "date": "Date",
+    "description": "Description",
+    "cancel": "Cancel subscription",
+    "cancelTitle": "Cancel the subscription?",
+    "cancelBody": "Access continues until the end of the paid period; then the account becomes read-only.",
+    "canceled": "Subscription canceled.",
+    "paidToast": "Payment received. The subscription activates as soon as the provider confirms.",
+    "invoiceStatus": {
+      "draft": "Draft",
+      "pending": "Pending",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "void": "Void"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "failed": "Failed",
+      "refunded": "Refunded"
     }
   },
   "placeholder": {
@@ -436,7 +486,8 @@
       "emails": "Emails",
       "vouchers": "Vouchers",
       "staff": "Platform staff",
-      "settings": "Settings"
+      "settings": "Settings",
+      "payments": "Payments"
     },
     "kpi": {
       "customers": "Customers",
@@ -591,6 +642,20 @@
         "province": "Provinces",
         "sector": "Sectors"
       }
+    },
+    "payments": {
+      "subtitle": "Payments, bank-transfer invoices, Officegest sync and provider notifications.",
+      "pendingInvoices": "Pending bank-transfer invoices",
+      "markPaid": "Mark as paid",
+      "noPending": "No pending invoices.",
+      "markPaidTitle": "Confirm payment of invoice {{number}}?",
+      "markPaidBody": "The subscription of {{org}} activates immediately. This action is logged.",
+      "activated": "Payment confirmed and subscription activated.",
+      "webhooks": "Provider notifications (webhooks)",
+      "provider": "Provider",
+      "event": "Event",
+      "signature": "Signature",
+      "handled": "Handled"
     }
   },
   "otp": {

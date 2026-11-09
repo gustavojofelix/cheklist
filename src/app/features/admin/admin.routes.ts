@@ -10,5 +10,6 @@ export const ADMIN_ROUTES: Routes = [
   { path: 'vouchers', title: 'admin.nav.vouchers', loadComponent: () => import('./admin-vouchers.page').then((m) => m.AdminVouchersPage) },
   { path: 'staff', title: 'admin.nav.staff', loadComponent: () => import('./admin-staff.page').then((m) => m.AdminStaffPage) },
   { path: 'settings', title: 'admin.nav.settings', loadComponent: () => import('./admin-settings.page').then((m) => m.AdminSettingsPage) },
+  { path: 'payments', title: 'admin.nav.payments', loadComponent: () => import('./admin-payments.page').then((m) => m.AdminPaymentsPage) },
   { path: 'audit', title: 'admin.nav.audit', loadComponent: () => import('./admin-audit.page').then((m) => m.AdminAuditPage) },
 ];
