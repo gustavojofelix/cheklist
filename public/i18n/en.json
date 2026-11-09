@@ -1,0 +1,189 @@
+{
+  "common": {
+    "close": "Close", "wait": "Please wait…", "loading": "Loading…", "next": "Next", "back": "Back", "and": "and",
+    "select": "Select", "save": "Save", "saved": "Changes saved.", "cancel": "Cancel", "confirm": "Confirm",
+    "create": "Create", "delete": "Delete", "remove": "Remove", "seeAll": "See all", "clearFilters": "Clear filters",
+    "name": "Name", "status": "Status", "loadMore": "Load more"
+  },
+  "nav": {
+    "main": "Main navigation", "open": "Open menu", "frontOffice": "Front Office", "backOffice": "Back Office",
+    "activeOrg": "Active organization", "dashboard": "Dashboard", "company": "Company", "entities": "Entities",
+    "ai": "AI Assistant", "recycle": "Deleted documents", "reports": "Reports", "audit": "Logs",
+    "profile": "Settings", "billing": "Subscriptions", "templates": "Checklist templates", "plans": "Plans",
+    "adminAudit": "Platform logs"
+  },
+  "auth": {
+    "email": "Email address", "password": "Password", "confirmPassword": "Confirm password",
+    "newPassword": "New password", "fullName": "Full name", "phone": "Phone number",
+    "terms": "Terms and Conditions", "privacy": "Privacy Policy", "logout": "Log out",
+    "hero": {
+      "kicker": "Built for legal teams", "title": "Checklists with full traceability.",
+      "body": "Organization-scoped checklists, templates, attached documents and a complete audit log for every action.",
+      "versions": "Templates with version history", "documents": "Documents linked to checklist items",
+      "roles": "Role-based permissions across organizations",
+      "footer": "Multi-tenant platform for compliant legal operations."
+    },
+    "login": {
+      "title": "Welcome back", "subtitle": "Sign in to your account to continue.", "forgot": "Forgot your password?",
+      "submit": "Sign in", "noAccount": "No account yet?", "createOne": "Create one",
+      "suspended": "Your account is suspended. Contact your administrator."
+    },
+    "register": {
+      "title": "Create account", "subtitle": "Create your account and organization to get started. Includes a 14-day trial.",
+      "step1": "1. Personal", "step2": "2. Company", "accept": "I accept the", "mustAccept": "You must accept the Terms and Conditions and the Privacy Policy.",
+      "submit": "Create account", "already": "Already registered?", "doneTitle": "Account created",
+      "doneBody": "We sent you a confirmation email. After confirming, sign in — you have a 14-day trial."
+    },
+    "forgot": {
+      "title": "Reset password", "subtitle": "Enter your email and we will send you a link to set a new password.",
+      "submit": "Send link", "sent": "If an account exists for this email, you will receive a link shortly."
+    },
+    "reset": {
+      "title": "Set a new password", "submit": "Save password", "done": "Password updated.",
+      "invalidLink": "This link is invalid or has expired. Request a new recovery link."
+    },
+    "invite": {
+      "unavailable": "Invitation unavailable", "invalid": "This invitation is not valid.", "expired": "This invitation has expired or was already used.",
+      "title": "Join {{org}}", "as": "Invitation for {{email}} as {{role}}.", "accept": "Accept invitation",
+      "createAndAccept": "Create account and accept", "haveAccount": "Already have an account?",
+      "confirmEmail": "Confirm your email; the confirmation link brings you back here to accept the invitation."
+    },
+    "onboarding": {
+      "title": "Create your organization", "subtitle": "You need an organization to keep using Checklist Legal.",
+      "submit": "Create organization"
+    }
+  },
+  "org": {
+    "name": "Organization name", "type": "Organization type", "subtype": "Entity subtype", "size": "Company size",
+    "sector": "Activity sector", "email": "Organization email", "phone": "Phone", "address": "Address",
+    "province": "Province", "postalBox": "Postal box", "constitutionDate": "Incorporation date", "shareCapital": "Share capital (MZN)",
+    "shareholders": "Partners / shareholders", "fiscalStart": "Fiscal activity start", "socialObject": "Corporate purpose"
+  },
+  "roles": { "admin": "Administrator", "manager": "Manager", "user": "User" },
+  "status": { "active": "Active", "suspended": "Suspended" },
+  "validation": {
+    "required": "Required field.", "email": "Enter a valid email.", "nuit": "NUIT must be exactly 9 digits.",
+    "phone": "Phone must have 9 digits.", "minlength": "At least {{min}} characters.", "mismatch": "Values do not match.",
+    "range": "Value out of the allowed range.", "invalid": "Invalid value."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.", "forbidden": "You do not have permission for this action.",
+    "invalid_credentials": "Wrong email or password.", "email_not_confirmed": "Confirm your email before signing in.",
+    "user_exists": "An account with this email already exists.", "weak_password": "The password does not meet the requirements (minimum 8 characters).",
+    "duplicate": "A record with these details already exists.", "invalid_value": "One of the values is invalid.",
+    "catalogue_item_not_renamable": "Catalogue items cannot be renamed.",
+    "stale_row": "This item was changed by someone else. The view has been refreshed.",
+    "last_admin": "The organization must keep at least one administrator.",
+    "account_already_has_entity": "This account already has its main entity. For another entity, create a new account.",
+    "branch_of_branch_not_allowed": "A branch cannot have branches.",
+    "invitation_invalid": "Invalid invitation.", "invitation_expired": "The invitation has expired.",
+    "invitation_wrong_account": "This invitation was sent to a different email.", "already_member": "This user is already a member.",
+    "invalid_email": "Invalid email.", "select_at_least_one_item": "Select at least one item.",
+    "protected_field": "This field cannot be changed here.", "otp_required": "A verification code is required to download.",
+    "quota": {
+      "users": "You have reached your plan's user limit. Upgrade to invite more.",
+      "branches": "You have reached your plan's branch limit.", "documents": "You have reached your plan's document limit.",
+      "storage": "You have reached your plan's storage limit.", "file_size": "The file exceeds the maximum allowed size.",
+      "subscription": "The organization has no active subscription."
+    }
+  },
+  "compliance": { "regular": "Compliant", "atencao": "Attention", "critico": "Critical" },
+  "dashboard": {
+    "greeting": "Hello, {{name}} — status of {{org}}", "status": "Compliance status", "live": "live",
+    "compliant": "compliant", "recent": "Recent activity", "noActivity": "No recent activity.",
+    "critical": "Attention and critical points", "noCritical": "No critical points in this window.",
+    "kpi": {
+      "total": "Total items", "totalHint": "{{n}} entity(ies)", "compliant": "Compliant", "compliantHint": "{{pct}}% of total",
+      "expiring": "About to expire", "expiringHint": "30 to 90 day window", "expired": "Expired", "expiredHint": "immediate action"
+    }
+  },
+  "company": {
+    "subtitle": "Company details, users, logs and notifications.",
+    "tabs": { "dados": "Company details", "utilizadores": "Users / Profiles", "registos": "Logs", "notificacoes": "Automatic notifications" },
+    "platformAccess": {
+      "title": "Platform access", "label": "Allow platform operators to access this account",
+      "hint": "Operators can open this account only while this box is checked. Every visit is written to the organization log."
+    },
+    "aiEnabled": "AI assistant enabled for this organization",
+    "members": {
+      "title": "Members", "role": "Role", "lastAccess": "Last access", "invite": "Send invitation", "invited": "Invitation created.",
+      "linkHint": "Invitation link (email delivery is wired up in the next iteration):", "pending": "Pending invitations",
+      "expires": "expires {{date}}", "revoke": "Cancel invitation", "removeTitle": "Remove {{name}}?",
+      "removeBody": "The user will lose access to this organization."
+    },
+    "notif": {
+      "attention": "Attention days", "critical": "Critical days", "thresholdError": "Critical days must be lower than attention days.",
+      "intervals": "Warning intervals (days before due date)", "emails": "Destination emails", "emailsHint": "comma separated",
+      "repeat": "Repeat while critical", "notifyAdmin": "Also notify the administrator", "digest": "Monthly compliance digest"
+    }
+  },
+  "entities": {
+    "subtitle": "Parent entity and branches of the {{name}} account", "addBranch": "Add branch",
+    "singleParent": "One parent entity per account. This account already has its main entity — only branches can be added. To register a different entity, create a new account.",
+    "parent": "Parent entity", "branch": "Branch", "items": "Items", "open": "Open entity file",
+    "branchCreated": "Branch created.", "deleteBranch": "Delete branch", "deleteBranchBody": "The branch «{{name}}» and its file will no longer be available."
+  },
+  "ficha": {
+    "title": "Entity file — {{name}}", "summary": "{{items}} items in {{categories}} categories",
+    "edit": "Edit checklist", "done": "Done", "addDocument": "Add document",
+    "addDocumentHint": "Choose the items this document belongs to, then upload the file.",
+    "search": "Search item…", "allStates": "All states", "validity": "Validity", "attachment": "Attachment",
+    "item": "Item", "descriptive": "Description", "state": "State", "itemsCount": "{{n}} items",
+    "applicable": "Applies to this entity", "boundHint": "filled from the company data", "attach": "Attach",
+    "noItems": "No items in this category.", "addItem": "Add item", "addCategory": "Add category",
+    "newItemPrompt": "Name of the new item", "newCategoryPrompt": "Name of the new category",
+    "removeItem": "Remove this item?", "removeCategory": "Remove this category and its items?",
+    "dropHere": "Drop a file here or click to browse", "relateTo": "Relate this document to",
+    "badType": "File type not allowed.", "upload": "Upload", "uploading": "Uploading…", "uploaded": "Document uploaded.",
+    "deleteDoc": "Delete «{{name}}»?", "deleteDocBody": "The document goes to Deleted documents and can be restored during the retention period.",
+    "docDeleted": "Document moved to Deleted documents."
+  },
+  "recycle": {
+    "subtitle": "Deleted documents stay here during the retention period.", "file": "File", "deletedAt": "Deleted at",
+    "daysLeft": "Days left", "restore": "Restore", "restored": "Document restored.", "empty": "No deleted documents found.",
+    "note": "Deleted documents do not count toward quota until restored. After the period they are permanently removed."
+  },
+  "audit": {
+    "subtitle": "Tamper-evident log of every action.", "allEvents": "All events", "ip": "IP address", "from": "From", "to": "To",
+    "export": "Export CSV", "when": "Timestamp", "user": "User", "org": "Organization", "detail": "Detail",
+    "system": "System", "empty": "No logs found.",
+    "event": {
+      "label": "Event", "auth.login": "Signed in", "auth.logout": "Signed out", "insert": "Created",
+      "update": "Updated", "delete": "Deleted", "document.download": "Document downloaded"
+    },
+    "table": {
+      "null": "", "sessions": "Session", "profiles": "User", "organizations": "Organization", "memberships": "Member",
+      "invitations": "Invitation", "checklists": "Checklist", "checklist_items": "Item", "documents": "Document",
+      "document_items": "Document link", "subscriptions": "Subscription", "payments": "Payment", "plans": "Plan",
+      "operator_sessions": "Operator access", "platform_settings": "Setting", "item_proposals": "Proposal"
+    }
+  },
+  "profile": {
+    "info": "Profile information", "emailHint": "If you change your email we will send a confirmation to the new address.",
+    "emailSent": "Confirm the new email in your inbox.", "password": "Update password",
+    "passwordHint": "Use a long, unique password.", "updatePassword": "Update password"
+  },
+  "billing": {
+    "subtitle": "Plan, usage and payments of the organization.", "currentPlan": "Current plan", "trialEnds": "Trial ends on",
+    "periodEnds": "Current period ends on", "plans": "Available plans", "month": "month", "choose": "Choose plan",
+    "upToUsers": "Up to {{n}} users", "upToBranches": "Up to {{n}} branches", "upToDocs": "Up to {{n}} documents",
+    "checkoutSoon": "Payments (Stripe, M-Pesa/e-Mola via SISLOG and bank transfer) arrive in iteration 6.",
+    "readOnlyBadge": "Read only", "readOnlyBanner": "The subscription has expired: the account is read-only.", "choosePlan": "Choose a plan",
+    "usage": { "users": "Users", "documents": "Documents", "storage": "Storage" },
+    "status": { "trial": "Trial", "active": "Active", "past_due": "Past due", "canceled": "Canceled", "expired": "Expired" }
+  },
+  "placeholder": { "body": "This screen is built in iteration {{n}} of the plan." },
+  "legal": {
+    "terms": { "title": "Terms and Conditions", "body": "Placeholder text. The final text will be supplied by Mobilelegis." },
+    "privacy": { "title": "Privacy Policy", "body": "Placeholder text. The final text will be supplied by Mobilelegis." }
+  },
+  "admin": {
+    "nav": { "dashboard": "Dashboard", "organizations": "Organizations", "templates": "Checklist templates", "plans": "Plans", "audit": "Logs" },
+    "kpi": { "customers": "Customers", "active": "Active", "trial": "On trial", "expired": "Expired / canceled" },
+    "orgs": {
+      "subtitle": "Customer accounts on the platform — {{n}} organizations", "search": "Search by name or NUIT…", "org": "Organization",
+      "plan": "Plan", "branches": "Branches", "access": "Access", "created": "Created", "authorized": "Authorized", "notAuthorized": "Not authorized",
+      "consentNote": "Operators open a customer account only with recorded consent; every visit is written to that organization's log."
+    }
+  }
+}
