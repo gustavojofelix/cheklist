@@ -4,6 +4,7 @@
 |---|---|
 | `Checklist-Legal-Apresentacao.pptx` | 32-slide deck in Portuguese, with speaker notes on every slide: overview, front office, phone, back office, technology and security, plans and next steps. |
 | `Checklist-Legal-Video-ptBR.mp4` | 5:23 walkthrough with a Brazilian Portuguese voice-over (Microsoft Francisca neural voice) and on-screen captions, 1600×900, H.264 + AAC. It covers the desktop front office, the phone (the app inside a phone frame) and the back office. Not committed, because of its size (about 115 MB). |
+| `…-ptBR-WhatsApp.mp4` / `…-ptBR-HD.mp4` | Smaller copies: 1280×720 at 15 fps (14 MB, plays inside a WhatsApp chat) and 1600×900 at 1 Mbit/s (39 MB, sent as a document). Not committed. |
 | `Checklist-Legal-Video.webm` | The same walkthrough without audio, an intermediate file. Not committed. |
 | `screens/desktop`, `screens/mobile` | Raw screen captures (29 desktop, 11 phone). |
 | `assets/` | Logo, capulana backgrounds and framed screens used by the deck. |
@@ -39,4 +40,4 @@ Everything is regenerated from the DEV seed data, with the dev server running on
    node scripts/presentation/mux-video.mjs
    ```
 
-To make the MP4 smaller, lower `videoBitsPerSecond` in `mux-video.mjs`. It is set to 4 Mbit/s.
+For the smaller copies, set `MUX_PRESET=whatsapp` or `MUX_PRESET=hd` before running `mux-video.mjs`.
