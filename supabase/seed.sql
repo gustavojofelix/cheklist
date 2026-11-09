@@ -1,6 +1,9 @@
 -- =====================================================================
--- Seed data (local / staging). Production gets the reference data and
--- template through the same statements minus the demo users at the end.
+-- Reference data (every environment, including production).
+-- Idempotent: safe to run again; existing rows are left untouched.
+--   local/dev : applied automatically by `supabase db reset` / `db push --include-seed`
+--   production: npx supabase db query --remote --yes -f supabase/seed.sql   (see docs/runbooks/production.md)
+-- Demo users live in seed.dev.sql and must NEVER be applied to production.
 -- =====================================================================
 
 -- ------------------------------------------------------- reference lists
@@ -29,12 +32,14 @@ insert into public.reference_lists (list_key, value, label, parent_value, extra,
   ('company_size','micro','{"pt":"Micro empresa","en":"Micro company"}',null,'{"definition":{"pt":"Até 10 trabalhadores","en":"Up to 10 employees"}}',1),
   ('company_size','pequena','{"pt":"Pequena empresa","en":"Small company"}',null,'{"definition":{"pt":"11 a 30 trabalhadores","en":"11 to 30 employees"}}',2),
   ('company_size','media','{"pt":"Média empresa","en":"Medium company"}',null,'{"definition":{"pt":"31 a 100 trabalhadores","en":"31 to 100 employees"}}',3),
-  ('company_size','grande','{"pt":"Grande empresa","en":"Large company"}',null,'{"definition":{"pt":"Mais de 100 trabalhadores","en":"More than 100 employees"}}',4);
+  ('company_size','grande','{"pt":"Grande empresa","en":"Large company"}',null,'{"definition":{"pt":"Mais de 100 trabalhadores","en":"More than 100 employees"}}',4)
+on conflict do nothing;
 
 insert into public.reference_lists (list_key, value, label, sort_order)
 select 'province', v, jsonb_build_object('pt', v, 'en', v), ord
   from unnest(array['Cabo Delgado','Niassa','Nampula','Zambézia','Tete','Manica','Sofala','Inhambane','Gaza',
-                    'Maputo Província','Maputo Cidade']) with ordinality as t(v, ord);
+                    'Maputo Província','Maputo Cidade']) with ordinality as t(v, ord)
+on conflict do nothing;
 
 insert into public.reference_lists (list_key, value, label, sort_order)
 select 'sector', ord::text, jsonb_build_object('pt', ord || '. ' || pt, 'en', ord || '. ' || en), ord
@@ -58,11 +63,13 @@ select 'sector', ord::text, jsonb_build_object('pt', ord || '. ' || pt, 'en', or
           'Real estate activities','Professional, scientific and technical activities','Administrative and support services',
           'Public administration and defence; compulsory social security','Education','Human health and social work',
           'Arts, entertainment and recreation','Other service activities','Activities of households as employers',
-          'Extraterritorial organisations']) with ordinality as t(pt, en, ord);
+          'Extraterritorial organisations']) with ordinality as t(pt, en, ord)
+on conflict do nothing;
 
 insert into public.reference_lists (list_key, value, label, sort_order)
 select 'notification_day', d::text, jsonb_build_object('pt', d || ' dias', 'en', d || ' days'), ord
-  from unnest(array[90,60,30,15,1]) with ordinality as t(d, ord);
+  from unnest(array[90,60,30,15,1]) with ordinality as t(d, ord)
+on conflict do nothing;
 
 -- ------------------------------------------------------ platform settings
 insert into public.platform_settings (key, value) values
@@ -71,7 +78,8 @@ insert into public.platform_settings (key, value) values
   ('ai_welcome', '{"pt":"Faça perguntas sobre as checklists e documentos desta conta.","en":"Ask questions about this account''s checklists and documents."}'),
   ('ai_suggestions', '{"pt":["Que documentos expiram nos próximos 90 dias?"],"en":["Which documents expire in the next 90 days?"]}'),
   ('quota_warnings_enabled', 'true'),
-  ('claude_model', '"claude-sonnet-5-5"');
+  ('claude_model', '"claude-sonnet-5-5"')
+on conflict do nothing;
 
 -- ------------------------------------------------------------------ plans
 insert into public.plans (slug, name, description, sort_order, max_users, max_branches, max_documents, max_storage_bytes,
@@ -83,7 +91,8 @@ insert into public.plans (slug, name, description, sort_order, max_users, max_br
   ('profissional','Profissional','Plano avançado com sucursais, OCR ilimitado e Assistente de IA.',3, 5, 3, 5120, 10737418240, null, 100, null, true, 1000, 500,
      '{"en":{"name":"Professional","description":"Advanced plan with branches, unlimited OCR and AI assistant."}}'),
   ('empresarial','Empresarial','Plano corporativo com sucursais ilimitadas e IA ilimitada.',4, 10, null, 25600, 53687091200, null, null, null, true, 300, null,
-     '{"en":{"name":"Enterprise","description":"Corporate plan with unlimited branches and AI."}}');
+     '{"en":{"name":"Enterprise","description":"Corporate plan with unlimited branches and AI."}}')
+on conflict do nothing;
 
 insert into public.plan_prices (plan_id, period, amount)
 select p.id, x.period::public.billing_period, x.amount
@@ -92,14 +101,19 @@ select p.id, x.period::public.billing_period, x.amount
                ('essencial','monthly',2000),('essencial','semestral',10800),('essencial','annual',19200),
                ('profissional','monthly',3500),('profissional','semestral',18900),('profissional','annual',33600),
                ('empresarial','monthly',8500),('empresarial','semestral',45900),('empresarial','annual',81600)
-       ) as x(slug, period, amount) on x.slug = p.slug;
+       ) as x(slug, period, amount) on x.slug = p.slug
+on conflict do nothing;
 
-insert into public.addons (code, amount) values ('storage_5gb', 300), ('extra_user', 1000), ('extra_branch', 500);
+insert into public.addons (code, amount) values ('storage_5gb', 300), ('extra_user', 1000), ('extra_branch', 500)
+on conflict do nothing;
 
 -- ------------------------------------------- default template "Obrigações Gerais" v1
 do $$
 declare v_tpl uuid; v_ver uuid; c record; v_cat uuid;
 begin
+  if exists (select 1 from public.checklist_templates where name = 'Obrigações Gerais' and organization_id is null) then
+    return;   -- already installed
+  end if;
   insert into public.checklist_templates (name, description, sector, status)
   values ('Obrigações Gerais', 'Catálogo de conformidade da entidade.', null, 'published') returning id into v_tpl;
   insert into public.template_versions (template_id, version_number) values (v_tpl, 1) returning id into v_ver;
@@ -167,61 +181,3 @@ begin
   update public.template_versions set is_published = true, published_at = now() where id = v_ver;
 end $$;
 
--- ================================================================ DEMO USERS
--- Local test accounts only (never run against production):
---   superadmin@checklist.test / Checklist#Admin2026   (platform superadmin)
---   demo@checklist.test       / Checklist#Demo2026    (admin of "Demo Consultores, Lda")
---   gestor@checklist.test     / Checklist#Demo2026    (manager in the same organization)
-do $$
-declare
-  v_admin uuid := '00000000-0000-4000-a000-000000000001';
-  v_demo  uuid := '00000000-0000-4000-a000-000000000002';
-  v_mgr   uuid := '00000000-0000-4000-a000-000000000003';
-  v_org   uuid;
-  u record;
-begin
-  for u in select * from (values
-      (v_admin, 'superadmin@checklist.test', 'Checklist#Admin2026', '{"full_name":"Super Admin","accepted_terms":true}'::jsonb),
-      (v_demo,  'demo@checklist.test', 'Checklist#Demo2026',
-         '{"full_name":"Ana Demo","phone_number":"841234567","accepted_terms":true,
-           "organization":{"name":"Demo Consultores, Lda","email":"geral@demo.test","type":"commercial","entity_subtype":"lda",
-                           "company_size":"pequena","sector":"13","tax_id":"400123456","address":"Av. Julius Nyerere, 100",
-                           "country":"MZ","province":"Maputo Cidade","phone":"841234567"}}'::jsonb),
-      (v_mgr,   'gestor@checklist.test', 'Checklist#Demo2026', '{"full_name":"Bruno Gestor","accepted_terms":true}'::jsonb)
-    ) as t(id, email, pw, meta)
-  loop
-    insert into auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
-                            raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
-                            confirmation_token, recovery_token, email_change_token_new, email_change)
-    values ('00000000-0000-0000-0000-000000000000', u.id, 'authenticated', 'authenticated', u.email,
-            extensions.crypt(u.pw, extensions.gen_salt('bf')), now(),
-            '{"provider":"email","providers":["email"]}', u.meta, now(), now(), '', '', '', '');
-    insert into auth.identities (id, provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
-    values (gen_random_uuid(), u.id::text, u.id, jsonb_build_object('sub', u.id::text, 'email', u.email, 'email_verified', true),
-            'email', now(), now(), now());
-  end loop;
-
-  update public.profiles set platform_role = 'superadmin' where id = v_admin;
-
-  select org_id into v_org from public.memberships where user_id = v_demo;
-  -- demo plan: Profissional (allows 5 users and 3 branches) so every feature can be shown
-  update public.subscriptions
-     set plan_id = (select id from public.plans where slug = 'profissional'),
-         plan_price_id = (select pp.id from public.plan_prices pp join public.plans p on p.id = pp.plan_id
-                           where p.slug = 'profissional' and pp.period = 'annual'),
-         status = 'active', trial_ends_at = null, current_period_start = now(),
-         current_period_end = now() + interval '1 year'
-   where organization_id = v_org;
-  insert into public.memberships (org_id, user_id, role) values (v_org, v_mgr, 'manager');
-
-  -- some realistic dates so the dashboard shows every state
-  update public.checklist_items set answer = 'Demo Consultores, Lda' where organization_id = v_org and catalog_code = 'LEG-01';
-  update public.checklist_items set answer = '100123456' where organization_id = v_org and catalog_code = 'LEG-03';
-  update public.checklist_items set answer = '400123456' where organization_id = v_org and catalog_code = 'FIS-01';
-  update public.checklist_items set due_date = private.today() + 400, answer = 'Ana Demo (100%)' where organization_id = v_org and catalog_code = 'LEG-11';
-  update public.checklist_items set due_date = private.today() + 60,  answer = 'Conselho de Administração (3 membros)' where organization_id = v_org and catalog_code = 'SOC-01';
-  update public.checklist_items set due_date = private.today() + 10,  answer = 'Mandato 2023–2026' where organization_id = v_org and catalog_code = 'SOC-03';
-  update public.checklist_items set due_date = private.today() - 5,   answer = 'Alvará n.º 1234/2021' where organization_id = v_org and catalog_code = 'LIC-01';
-  update public.checklist_items set due_date = private.today() + 75 where organization_id = v_org and catalog_code = 'FIS-03';
-  update public.checklist_items set is_applicable = false where organization_id = v_org and catalog_code in ('PI-02','PI-03');
-end $$;

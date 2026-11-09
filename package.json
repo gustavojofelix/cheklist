@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "build:netlify": "node scripts/build-env.mjs && ng build --configuration production && node scripts/write-headers.mjs",
+    "e2e": "playwright test"
   },
   "private": true,
   "packageManager": "npm@11.19.1",

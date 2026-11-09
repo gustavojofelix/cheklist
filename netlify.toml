@@ -1,6 +1,9 @@
-# Netlify build & hosting for the Angular SPA (Supabase is the backend).
+# Netlify build for the Angular SPA. The same repository serves several Netlify sites:
+#   dev/staging site  → no variables needed (falls back to the dev Supabase project)
+#   production site   → set APP_ENV=production, SUPABASE_URL, SUPABASE_ANON_KEY in Site settings → Environment variables
+# Security and cache headers are generated per site into _headers (scripts/write-headers.mjs).
 [build]
-  command = "npm ci && npx ng build --configuration production"
+  command = "npm ci && npm run build:netlify"
   publish = "dist/checklist-legal/browser"
 
 [build.environment]
@@ -12,46 +15,3 @@
   from = "/*"
   to = "/index.html"
   status = 200
-
-# Security headers for every response.
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
-    X-Content-Type-Options = "nosniff"
-    X-Frame-Options = "DENY"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(self)"
-    Content-Security-Policy = """
-      default-src 'self';
-      script-src 'self';
-      style-src 'self' 'unsafe-inline';
-      img-src 'self' data: blob: https://baojazqhxrhayipiylbh.supabase.co;
-      font-src 'self' data:;
-      connect-src 'self' https://baojazqhxrhayipiylbh.supabase.co wss://baojazqhxrhayipiylbh.supabase.co;
-      frame-src https://baojazqhxrhayipiylbh.supabase.co;
-      object-src 'none';
-      base-uri 'self';
-      form-action 'self';
-      frame-ancestors 'none'
-    """
-
-# Hashed build assets never change → cache for a year.
-[[headers]]
-  for = "/*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-[[headers]]
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-# Not hashed → always revalidate so new deploys show up immediately.
-[[headers]]
-  for = "/index.html"
-  [headers.values]
-    Cache-Control = "no-cache"
-[[headers]]
-  for = "/i18n/*"
-  [headers.values]
-    Cache-Control = "no-cache"

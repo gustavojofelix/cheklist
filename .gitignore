@@ -53,3 +53,8 @@ supabase/functions/.env
 # Playwright
 /e2e-report
 /test-results
+
+# Generated at build time
+src/environments/environment.prod.ts
+.build-env.json
+.deploy

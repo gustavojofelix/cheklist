@@ -26,6 +26,11 @@ npm start                   # http://localhost:4200
 | `gestor@checklist.test` | `Checklist#Demo2026` | Manager in the same organization |
 | `superadmin@checklist.test` | `Checklist#Admin2026` | Platform superadmin (back office) |
 
+## Environments
+- **Dev:** Supabase `checklist-legal-dev` + Netlify (`npm run build:netlify` falls back to the dev project).
+- **Production:** a separate Supabase project and Netlify site; follow [docs/runbooks/production.md](docs/runbooks/production.md) (`scripts/deploy-production.mjs`).
+- `supabase/seed.sql` holds reference data (all environments, idempotent); `supabase/seed.dev.sql` holds demo accounts (**dev/local only**).
+
 ## Tests
 ```bash
 npx supabase test db        # pgTAP: tenant isolation, roles, business rules, audit immutability
