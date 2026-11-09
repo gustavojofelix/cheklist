@@ -18,7 +18,8 @@
     "clearFilters": "Limpar filtros",
     "name": "Nome",
     "status": "Estado",
-    "loadMore": "Carregar mais"
+    "loadMore": "Carregar mais",
+    "open": "Abrir"
   },
   "nav": {
     "main": "Navegação principal",
@@ -177,7 +178,18 @@
     "otp_too_soon": "Aguarde um minuto antes de pedir outro código.",
     "otp_too_many": "Demasiadas tentativas. Tente novamente mais tarde.",
     "otp_invalid": "Código inválido ou expirado.",
-    "not_found": "Não encontrado."
+    "not_found": "Não encontrado.",
+    "no_platform_consent": "O cliente não autorizou o acesso da plataforma.",
+    "reason_required": "Indique o motivo do acesso.",
+    "version_not_offered": "Esta versão já não está disponível.",
+    "template_empty": "O modelo precisa de pelo menos uma categoria.",
+    "template_item_needs_code_and_category": "Todos os itens precisam de um ID e de uma categoria.",
+    "published_version_immutable": "As versões publicadas não podem ser alteradas.",
+    "user_not_found": "Utilizador não encontrado.",
+    "cannot_change_own_role": "Não pode alterar a sua própria função.",
+    "cannot_change_own_status": "Não pode alterar o seu próprio estado.",
+    "invite_failed": "Não foi possível enviar o convite.",
+    "organization_name_required": "Indique o nome da organização."
   },
   "compliance": {
     "regular": "Regular",
@@ -326,7 +338,11 @@
       "document.download": "Documento descarregado",
       "otp.verified": "Código verificado",
       "report.generate": "Relatório gerado",
-      "audit.export": "Registos exportados"
+      "audit.export": "Registos exportados",
+      "template.upgrade": "Versão do modelo aplicada",
+      "operator.access_start": "Acesso de operador iniciado",
+      "operator.access_end": "Acesso de operador terminado",
+      "admin.company_created": "Empresa criada pela plataforma"
     },
     "table": {
       "null": "",
@@ -347,7 +363,18 @@
       "item_proposals": "Proposta",
       "reports": "Relatório",
       "audit_log": "Registos",
-      "otp_challenges": "Código de verificação"
+      "otp_challenges": "Código de verificação",
+      "email_templates": "Modelo de e-mail",
+      "reference_lists": "Lista de referência",
+      "template_versions": "Versão de modelo",
+      "checklist_templates": "Modelo de checklist",
+      "template_items": "Item de modelo",
+      "addons": "Extra de plano",
+      "plan_prices": "Preço de plano",
+      "vouchers": "Voucher",
+      "invoices": "Factura",
+      "ai_proposed_actions": "Acção proposta (IA)",
+      "document_shares": "Partilha de documento"
     }
   },
   "profile": {
@@ -406,7 +433,10 @@
       "templates": "Modelos de checklist",
       "plans": "Planos",
       "audit": "Registos",
-      "emails": "E-mails"
+      "emails": "E-mails",
+      "vouchers": "Vouchers",
+      "staff": "Equipa da plataforma",
+      "settings": "Definições"
     },
     "kpi": {
       "customers": "Clientes",
@@ -421,10 +451,20 @@
       "plan": "Plano",
       "branches": "Sucursais",
       "access": "Acesso",
-      "created": "Criada",
+      "created": "Empresa criada; convite enviado ao administrador.",
       "authorized": "Autorizado",
       "notAuthorized": "Não autorizado",
-      "consentNote": "Os operadores só abrem uma conta de cliente com consentimento registado; cada visita fica no registo da organização."
+      "consentNote": "Os operadores só abrem uma conta de cliente com consentimento registado; cada visita fica no registo da organização.",
+      "create": "Criar empresa",
+      "createHint": "O administrador recebe um e-mail para definir a palavra-passe. A conta começa em período de teste.",
+      "adminName": "Nome do administrador",
+      "adminEmail": "E-mail do administrador",
+      "assignPlan": "Atribuir plano",
+      "assignPlanTitle": "Atribuir plano a {{name}}",
+      "assignPlanHint": "Facturação manual: o período começa hoje.",
+      "enter": "Aceder",
+      "noConsent": "O cliente não autorizou o acesso.",
+      "reasonPrompt": "Motivo do acesso (fica registado no log do cliente):"
     },
     "emails": {
       "subtitle": "Fila de e-mails enviados pela plataforma (os códigos de verificação nunca são mostrados).",
@@ -437,6 +477,119 @@
         "pending": "Pendente",
         "sent": "Enviado",
         "failed": "Falhou"
+      }
+    },
+    "period": {
+      "monthly": "Mensal",
+      "quarterly": "Trimestral",
+      "semestral": "Semestral",
+      "annual": "Anual"
+    },
+    "tpl": {
+      "subtitle": "Modelos publicados pela LTS. Um modelo publicado por sector; versões anteriores ficam como histórico.",
+      "new": "Novo modelo",
+      "template": "Modelo",
+      "version": "Versão",
+      "orgsOnTemplate": "Organizações",
+      "allSectors": "Todos os sectores",
+      "entitySpecific": "Específico de entidade",
+      "draft": "Rascunho",
+      "published": "Publicada",
+      "status": {
+        "draft": "Rascunho",
+        "published": "Publicado",
+        "archived": "Arquivado"
+      },
+      "readOnlySnapshot": "Versão {{n}} — apenas leitura",
+      "editingDraft": "A editar o rascunho (versão {{n}})",
+      "newDraft": "Criar rascunho",
+      "publish": "Publicar versão",
+      "publishTitle": "Publicar a versão {{n}}?",
+      "publishBody": "Os clientes deste modelo verão um aviso para rever e aceitar a nova versão. Depois de publicada, a versão não pode ser alterada.",
+      "publishedToast": "Versão publicada.",
+      "category": "Categoria",
+      "applicability": "Aplicabilidade",
+      "history": "Histórico de versões",
+      "scope": {
+        "headquarters": "Sede",
+        "branch": "Sucursais"
+      },
+      "branchFallback": "Sem itens próprios para sucursais: as sucursais usam os itens da sede.",
+      "app": {
+        "yes": "Sempre",
+        "depends": "Depende"
+      }
+    },
+    "plans": {
+      "title": "Plano",
+      "subtitle": "Limites (vazio = ilimitado) e preços por período.",
+      "active": "Activo",
+      "description": "Descrição",
+      "max_users": "Utilizadores",
+      "max_branches": "Sucursais",
+      "max_documents": "Documentos",
+      "max_ocr": "Leituras OCR",
+      "max_ia": "Perguntas IA",
+      "trial_days": "Dias de teste",
+      "storageGb": "Armazenamento (GB)",
+      "extraUser": "Utilizador extra (MZN)",
+      "extraBranch": "Sucursal extra (MZN)",
+      "assistedIa": "Permite IA assistida",
+      "prices": "Preços",
+      "unlimited": "ilimitado",
+      "notOffered": "não disponível"
+    },
+    "vouchers": {
+      "subtitle": "Descontos aplicáveis no pagamento.",
+      "code": "Código",
+      "anyPlan": "Qualquer plano",
+      "type": "Tipo",
+      "value": "Desconto",
+      "maxUses": "Utilizações máx.",
+      "validUntil": "Válido até",
+      "uses": "Utilizações",
+      "inactive": "Inactivo",
+      "empty": "Sem vouchers."
+    },
+    "staff": {
+      "subtitle": "Contas com acesso ao back office.",
+      "operator": "Operador",
+      "grant": "Dar acesso",
+      "grantHint": "A pessoa precisa de ter uma conta. Operadores só entram em contas de clientes com consentimento.",
+      "suspend": "Suspender",
+      "reactivate": "Reactivar",
+      "revoke": "Retirar acesso"
+    },
+    "audit": {
+      "subtitle": "Registo de toda a plataforma."
+    },
+    "settings": {
+      "tabs": {
+        "general": "Geral",
+        "security": "Segurança",
+        "lists": "Listas",
+        "emails": "Modelos de e-mail"
+      },
+      "trial_days": "Dias de teste",
+      "grace_days": "Dias de tolerância após falha de pagamento",
+      "recycle_days": "Dias na reciclagem",
+      "max_file_size_bytes": "Tamanho máximo de ficheiro (bytes)",
+      "otp_unlock_minutes": "Minutos de desbloqueio por código",
+      "critical_repeat_days": "Repetir aviso crítico a cada (dias)",
+      "app_url": "Endereço da aplicação (ligações nos e-mails)",
+      "document_otp_default": "Exigir código para descarregar documentos (padrão para novas contas)",
+      "ai_enabled_global": "Assistente de IA disponível na plataforma",
+      "quota_warnings_enabled": "Enviar avisos de quota (80% / 95%)",
+      "fixedRules": "Fixos por regra: a validação final do OCR e o aviso de \"não constitui aconselhamento jurídico\" não podem ser desactivados.",
+      "list": "Lista",
+      "value": "Valor",
+      "placeholders": "Variáveis: organization, link, code, items, count, inviter, role (entre chavetas duplas)",
+      "lists": {
+        "entity_type": "Tipos de entidade",
+        "entity_subtype": "Subtipos de entidade",
+        "company_size": "Dimensão da empresa",
+        "province": "Províncias",
+        "sector": "Sectores"
       }
     }
   },
@@ -462,5 +615,27 @@
     "due": "Validade",
     "ready": "Relatório pronto (ligações válidas durante 10 minutos).",
     "preview": "Pré-visualizar"
+  },
+  "operator": {
+    "banner": "Acesso de operador da plataforma (motivo: {{reason}}). Todas as acções ficam registadas no log do cliente.",
+    "end": "Terminar acesso"
+  },
+  "version": {
+    "banner": "Está disponível a versão {{n}} de {{template}}.",
+    "review": "Rever versão",
+    "back": "← Voltar à ficha da entidade",
+    "title": "Versão {{n}} de {{template}}",
+    "subtitle": "A sua ficha usa a versão {{current}}. Reveja o que muda antes de decidir.",
+    "added": "Itens novos",
+    "removed": "Itens retirados do catálogo",
+    "changed": "Itens alterados",
+    "customerAdded": "Itens adicionados por si (mantidos)",
+    "keep": "Manter as minhas alterações",
+    "keepHint": "Adiciona apenas os itens novos; os nomes e opções que tem na ficha não mudam.",
+    "take": "Adoptar a nova versão",
+    "takeHint": "Actualiza nomes e opções do catálogo. Respostas, datas e documentos mantêm-se; itens retirados sem dados são removidos.",
+    "adminOnly": "Apenas um administrador pode aplicar a nova versão.",
+    "none": "Não há uma versão nova para rever.",
+    "applied": "Nova versão aplicada."
   }
 }

@@ -12,7 +12,8 @@ export interface AuditRow {
   table_name: string | null; record_title: string | null; changed_fields: string[] | null;
   old_data: Record<string, unknown> | null; new_data: Record<string, unknown> | null; ip: string | null;
 }
-const EVENTS = ['auth.login', 'auth.logout', 'insert', 'update', 'delete'];
+const EVENTS = ['auth.login', 'auth.logout', 'insert', 'update', 'delete', 'document.download', 'report.generate',
+  'audit.export', 'otp.verified', 'operator.access_start', 'operator.access_end', 'template.upgrade', 'admin.company_created'];
 const PAGE = 50;
 
 /** Filterable, keyset-paginated audit log with CSV export. */
@@ -69,7 +70,9 @@ const PAGE = 50;
   `,
 })
 export class AuditTable {
-  readonly orgId = input.required<string>();
+  /** Organization scope; omit together with platform=true for the platform-wide log. */
+  readonly orgId = input<string | null>(null);
+  readonly platform = input(false);
   private readonly sb = inject(Supabase);
   private readonly toast = inject(ToastService);
   private readonly t = inject(TranslocoService);
@@ -83,7 +86,7 @@ export class AuditTable {
   protected to = '';
 
   constructor() {
-    effect(() => { if (this.orgId()) void this.reload(); });
+    effect(() => { if (this.orgId() || this.platform()) void this.reload(); });
   }
 
   protected changes(r: AuditRow): { field: string; from: string; to: string }[] {
@@ -110,12 +113,15 @@ export class AuditTable {
   private async fetch(before: number | null, limit = PAGE): Promise<AuditRow[]> {
     this.loading.set(true);
     try {
-      const data = await this.sb.rpc<AuditRow[]>('audit_feed', {
-        org: this.orgId(), p_event: this.event || null, p_ip: this.ip.trim() || null,
+      const range = {
+        p_event: this.event || null,
         p_from: this.from ? new Date(this.from).toISOString() : null,
         p_to: this.to ? new Date(new Date(this.to).getTime() + 86400000).toISOString() : null,
         p_before: before, p_limit: limit,
-      });
+      };
+      const data = this.platform()
+        ? await this.sb.rpc<AuditRow[]>('audit_feed_platform', { p_org: this.orgId(), ...range })
+        : await this.sb.rpc<AuditRow[]>('audit_feed', { org: this.orgId(), p_ip: this.ip.trim() || null, ...range });
       if (limit === PAGE) {
         this.rows.update((l) => [...l, ...data]);
         this.hasMore.set(data.length === PAGE);

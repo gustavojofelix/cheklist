@@ -11,7 +11,7 @@ begin
   select n.nspname into s from pg_extension e join pg_namespace n on n.oid = e.extnamespace where e.extname = 'pgtap';
   perform set_config('search_path', 'public, extensions, ' || quote_ident(s), true);
 end $$;
-select plan(31);
+select plan(47);
 
 -- ---------------------------------------------------------------- fixtures
 create schema tests;
@@ -107,6 +107,40 @@ select ok((select count(*) from public.email_outbox where to_email = 'a@test.loc
 select tests.login('10000000-0000-4000-a000-00000000000c');
 select is((select count(*)::int from public.email_outbox where template = 'otp_code'), 0, 'staff never see one-time codes');
 select tests.login('10000000-0000-4000-a000-00000000000a');
+
+-- ------------------------------------------------------- iteration 5: templates, upgrades, operators
+select throws_ok($$ select public.template_draft((select id from public.checklist_templates where name = 'Obrigações Gerais')) $$,
+                 '42501', null, 'customers cannot edit templates');
+select tests.login('10000000-0000-4000-a000-00000000000c');
+select lives_ok($$ select set_config('test.draft', public.template_draft((select id from public.checklist_templates where name = 'Obrigações Gerais'))::text, false) $$,
+                'superadmin opens a draft version');
+select is((select count(*)::int from public.template_items where version_id = current_setting('test.draft')::uuid), 44,
+          'the draft copies every category and item');
+select lives_ok($$ insert into public.template_items (version_id, parent_id, catalog_code, catalog_group, title)
+                   select current_setting('test.draft')::uuid, id, 'LEG-13', 'Legal', 'Registo Comercial' from public.template_items
+                    where version_id = current_setting('test.draft')::uuid and is_category and catalog_group = 'Legal' $$,
+                'superadmin edits the draft');
+select lives_ok($$ select public.template_publish(current_setting('test.draft')::uuid) $$, 'superadmin publishes version 2');
+select throws_ok($$ update public.template_items set title = 'x' where version_id = current_setting('test.draft')::uuid $$,
+                 'P0001', 'published_version_immutable', 'published versions are immutable');
+select throws_ok($$ select public.operator_access_start((select org_a from tests.ids), 'support') $$,
+                 'P0001', 'no_platform_consent', 'operators cannot enter without consent');
+select tests.login('10000000-0000-4000-a000-00000000000a');
+select is((public.version_offer((select org_a from tests.ids))->>'version_number')::int, 2, 'the customer is offered version 2');
+select lives_ok($$ select public.apply_template_version((select org_a from tests.ids),
+                   (public.version_offer((select org_a from tests.ids))->>'version_id')::uuid, 'take') $$, 'the customer takes version 2');
+select ok(exists (select 1 from public.checklist_items where organization_id = (select org_a from tests.ids) and catalog_code = 'LEG-13'),
+          'the new catalogue item is added');
+select is((select answer from public.checklist_items where organization_id = (select org_a from tests.ids) and catalog_code = 'SOC-01'),
+          'ok', 'existing answers are kept');
+select lives_ok($$ select public.set_platform_access((select org_a from tests.ids), true) $$, 'the customer grants platform access');
+select tests.login('10000000-0000-4000-a000-00000000000c');
+select lives_ok($$ select public.operator_access_start((select org_a from tests.ids), 'support ticket 42') $$, 'operator enters with consent');
+select is((select count(*)::int from public.checklist_items where organization_id = (select org_a from tests.ids) and not is_category),
+          40, 'the operator can read the customer data during the session');
+select lives_ok($$ select public.operator_access_end() $$, 'operator leaves');
+select tests.login('10000000-0000-4000-a000-00000000000a');
+select throws_ok($$ select public.set_platform_role('b@test.local', 'superadmin') $$, '42501', null, 'customers cannot grant platform roles');
 
 -- ------------------------------------------------------- read-only mode
 select tests.logout();

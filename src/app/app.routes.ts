@@ -29,6 +29,7 @@ export const routes: Routes = [
       { path: 'dashboard', title: 'nav.dashboard', loadComponent: () => import('./features/dashboard/dashboard.page').then((m) => m.DashboardPage) },
       { path: 'company', title: 'nav.company', loadComponent: () => import('./features/company/company.page').then((m) => m.CompanyPage) },
       { path: 'entities', title: 'nav.entities', loadComponent: () => import('./features/entities/entities.page').then((m) => m.EntitiesPage) },
+      { path: 'entities/:id/version', title: 'nav.entities', loadComponent: () => import('./features/ficha/version-review.page').then((m) => m.VersionReviewPage) },
       { path: 'entities/:id/ficha', title: 'nav.entities', loadComponent: () => import('./features/ficha/ficha.page').then((m) => m.FichaPage) },
       { path: 'recycle-bin', title: 'nav.recycle', loadComponent: () => import('./features/recycle-bin/recycle-bin.page').then((m) => m.RecycleBinPage) },
       { path: 'audit', title: 'nav.audit', canActivate: [roleGuard('manager')], loadComponent: () => import('./features/audit/audit.page').then((m) => m.AuditPage) },

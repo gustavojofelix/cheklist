@@ -18,7 +18,8 @@
     "clearFilters": "Clear filters",
     "name": "Name",
     "status": "Status",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "open": "Open"
   },
   "nav": {
     "main": "Main navigation",
@@ -177,7 +178,18 @@
     "otp_too_soon": "Wait a minute before requesting another code.",
     "otp_too_many": "Too many attempts. Try again later.",
     "otp_invalid": "Invalid or expired code.",
-    "not_found": "Not found."
+    "not_found": "Not found.",
+    "no_platform_consent": "The customer has not authorized platform access.",
+    "reason_required": "Enter the reason for access.",
+    "version_not_offered": "This version is no longer offered.",
+    "template_empty": "The template needs at least one category.",
+    "template_item_needs_code_and_category": "Every item needs an ID and a category.",
+    "published_version_immutable": "Published versions cannot be changed.",
+    "user_not_found": "User not found.",
+    "cannot_change_own_role": "You cannot change your own role.",
+    "cannot_change_own_status": "You cannot change your own status.",
+    "invite_failed": "The invitation could not be sent.",
+    "organization_name_required": "Enter the organization name."
   },
   "compliance": {
     "regular": "Compliant",
@@ -326,7 +338,11 @@
       "document.download": "Document downloaded",
       "otp.verified": "Code verified",
       "report.generate": "Report generated",
-      "audit.export": "Logs exported"
+      "audit.export": "Logs exported",
+      "template.upgrade": "Template version applied",
+      "operator.access_start": "Operator access started",
+      "operator.access_end": "Operator access ended",
+      "admin.company_created": "Company created by the platform"
     },
     "table": {
       "null": "",
@@ -347,7 +363,18 @@
       "item_proposals": "Proposal",
       "reports": "Report",
       "audit_log": "Logs",
-      "otp_challenges": "Verification code"
+      "otp_challenges": "Verification code",
+      "email_templates": "Email template",
+      "reference_lists": "Reference list",
+      "template_versions": "Template version",
+      "checklist_templates": "Checklist template",
+      "template_items": "Template item",
+      "addons": "Plan add-on",
+      "plan_prices": "Plan price",
+      "vouchers": "Voucher",
+      "invoices": "Invoice",
+      "ai_proposed_actions": "Proposed action (AI)",
+      "document_shares": "Document share"
     }
   },
   "profile": {
@@ -406,7 +433,10 @@
       "templates": "Checklist templates",
       "plans": "Plans",
       "audit": "Logs",
-      "emails": "Emails"
+      "emails": "Emails",
+      "vouchers": "Vouchers",
+      "staff": "Platform staff",
+      "settings": "Settings"
     },
     "kpi": {
       "customers": "Customers",
@@ -421,10 +451,20 @@
       "plan": "Plan",
       "branches": "Branches",
       "access": "Access",
-      "created": "Created",
+      "created": "Company created; invitation sent to the administrator.",
       "authorized": "Authorized",
       "notAuthorized": "Not authorized",
-      "consentNote": "Operators open a customer account only with recorded consent; every visit is written to that organization's log."
+      "consentNote": "Operators open a customer account only with recorded consent; every visit is written to that organization's log.",
+      "create": "Create company",
+      "createHint": "The administrator receives an email to set a password. The account starts on trial.",
+      "adminName": "Administrator name",
+      "adminEmail": "Administrator email",
+      "assignPlan": "Assign plan",
+      "assignPlanTitle": "Assign a plan to {{name}}",
+      "assignPlanHint": "Manual billing: the period starts today.",
+      "enter": "Access",
+      "noConsent": "The customer has not authorized access.",
+      "reasonPrompt": "Reason for access (written to the customer log):"
     },
     "emails": {
       "subtitle": "Outgoing email queue (verification codes are never shown).",
@@ -437,6 +477,119 @@
         "pending": "Pending",
         "sent": "Sent",
         "failed": "Failed"
+      }
+    },
+    "period": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "semestral": "Semi-annual",
+      "annual": "Annual"
+    },
+    "tpl": {
+      "subtitle": "Templates published by LTS. One published template per sector; older versions stay as history.",
+      "new": "New template",
+      "template": "Template",
+      "version": "Version",
+      "orgsOnTemplate": "Organizations",
+      "allSectors": "All sectors",
+      "entitySpecific": "Entity-specific",
+      "draft": "Draft",
+      "published": "Published",
+      "status": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "readOnlySnapshot": "Version {{n}} — read only",
+      "editingDraft": "Editing the draft (version {{n}})",
+      "newDraft": "Create draft",
+      "publish": "Publish version",
+      "publishTitle": "Publish version {{n}}?",
+      "publishBody": "Customers on this template will see a notice to review and accept the new version. Once published, the version cannot change.",
+      "publishedToast": "Version published.",
+      "category": "Category",
+      "applicability": "Applicability",
+      "history": "Version history",
+      "scope": {
+        "headquarters": "Headquarters",
+        "branch": "Branches"
+      },
+      "branchFallback": "No branch-specific items: branches use the headquarters items.",
+      "app": {
+        "yes": "Always",
+        "depends": "Depends"
+      }
+    },
+    "plans": {
+      "title": "Plan",
+      "subtitle": "Limits (empty = unlimited) and prices per period.",
+      "active": "Active",
+      "description": "Description",
+      "max_users": "Users",
+      "max_branches": "Branches",
+      "max_documents": "Documents",
+      "max_ocr": "OCR readings",
+      "max_ia": "AI questions",
+      "trial_days": "Trial days",
+      "storageGb": "Storage (GB)",
+      "extraUser": "Extra user (MZN)",
+      "extraBranch": "Extra branch (MZN)",
+      "assistedIa": "Allows assisted AI",
+      "prices": "Prices",
+      "unlimited": "unlimited",
+      "notOffered": "not offered"
+    },
+    "vouchers": {
+      "subtitle": "Discounts applicable at checkout.",
+      "code": "Code",
+      "anyPlan": "Any plan",
+      "type": "Type",
+      "value": "Discount",
+      "maxUses": "Max uses",
+      "validUntil": "Valid until",
+      "uses": "Uses",
+      "inactive": "Inactive",
+      "empty": "No vouchers."
+    },
+    "staff": {
+      "subtitle": "Accounts with back-office access.",
+      "operator": "Operator",
+      "grant": "Grant access",
+      "grantHint": "The person must already have an account. Operators only enter customer accounts with consent.",
+      "suspend": "Suspend",
+      "reactivate": "Reactivate",
+      "revoke": "Revoke access"
+    },
+    "audit": {
+      "subtitle": "Log of the whole platform."
+    },
+    "settings": {
+      "tabs": {
+        "general": "General",
+        "security": "Security",
+        "lists": "Lists",
+        "emails": "Email templates"
+      },
+      "trial_days": "Trial days",
+      "grace_days": "Grace days after a failed payment",
+      "recycle_days": "Days in the recycle bin",
+      "max_file_size_bytes": "Maximum file size (bytes)",
+      "otp_unlock_minutes": "Unlock minutes per code",
+      "critical_repeat_days": "Repeat critical warning every (days)",
+      "app_url": "Application address (links in emails)",
+      "document_otp_default": "Require a code to download documents (default for new accounts)",
+      "ai_enabled_global": "AI assistant available on the platform",
+      "quota_warnings_enabled": "Send quota warnings (80% / 95%)",
+      "fixedRules": "Fixed by rule: final OCR validation and the \"not legal advice\" notice cannot be disabled.",
+      "list": "List",
+      "value": "Value",
+      "placeholders": "Variables: organization, link, code, items, count, inviter, role (in double braces)",
+      "lists": {
+        "entity_type": "Entity types",
+        "entity_subtype": "Entity subtypes",
+        "company_size": "Company sizes",
+        "province": "Provinces",
+        "sector": "Sectors"
       }
     }
   },
@@ -462,5 +615,27 @@
     "due": "Due",
     "ready": "Report ready (links valid for 10 minutes).",
     "preview": "Preview"
+  },
+  "operator": {
+    "banner": "Platform operator access (reason: {{reason}}). Every action is written to the customer log.",
+    "end": "End access"
+  },
+  "version": {
+    "banner": "Version {{n}} of {{template}} is available.",
+    "review": "Review version",
+    "back": "← Back to the entity file",
+    "title": "Version {{n}} of {{template}}",
+    "subtitle": "Your file uses version {{current}}. Review what changes before deciding.",
+    "added": "New items",
+    "removed": "Items removed from the catalogue",
+    "changed": "Changed items",
+    "customerAdded": "Items you added (kept)",
+    "keep": "Keep my changes",
+    "keepHint": "Only adds the new items; names and options in your file stay as they are.",
+    "take": "Take the new version",
+    "takeHint": "Updates catalogue names and options. Answers, dates and documents are kept; removed items without data are deleted.",
+    "adminOnly": "Only an administrator can apply the new version.",
+    "none": "There is no new version to review.",
+    "applied": "New version applied."
   }
 }

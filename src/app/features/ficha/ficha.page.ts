@@ -40,6 +40,12 @@ import { Category, FichaDocument, FichaItem } from './ficha.types';
       </div>
     </div>
 
+    @if (offer(); as o) {
+      <div class="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-800">
+        <span class="flex-1">{{ 'version.banner' | transloco: { n: o.version_number, template: o.template_name } }}</span>
+        <a class="btn-primary !py-1" [routerLink]="['/entities', id(), 'version']">{{ 'version.review' | transloco }}</a>
+      </div>
+    }
     <!-- filters -->
     <div class="card mb-4 flex flex-wrap items-center gap-2 p-3">
       <div class="relative min-w-56 flex-1">
@@ -191,6 +197,7 @@ export class FichaPage {
   protected readonly items = signal<FichaItem[]>([]);
   protected readonly docs = signal<FichaDocument[]>([]);
   protected readonly editMode = signal(false);
+  protected readonly offer = signal<{ version_number: number; template_name: string } | null>(null);
   protected readonly editingAnswer = signal<string | null>(null);
   protected readonly collapsed = signal(new Set<string>());
   protected search = '';
@@ -272,6 +279,8 @@ export class FichaPage {
       .map((d) => ({ ...d, item_ids: d.document_items.map((x) => x.checklist_item_id) })));
     this.loading.set(false);
     this.subscribe(orgId);
+    this.sb.rpc<{ version_number: number; template_name: string } | null>('version_offer', { org: orgId })
+      .then((o) => this.offer.set(o)).catch(() => this.offer.set(null));
   }
 
   /** Live sync: any change to this entity's items or documents (by anyone) refreshes the view. */

@@ -77,6 +77,25 @@
 - **Pending (needs you):** the cron secret and the Resend key, see [docs/runbooks/secrets.md](../runbooks/secrets.md). Until then reminders and e-mails queue up but are not delivered.
 - Not yet: XLSX export of the ficha, monthly digest, quota-warning e-mails (they arrive with billing in iteration 6).
 
+## Iteration 5 (back office): deployed to checklist-legal-dev
+- **Templates:**
+  - list of templates, each with its version and the number of organizations using it;
+  - draft editor for HQ and branch item sets: categories, codes, PT/EN titles, validity, attachment, applicability, ordering;
+  - publishing checks that the template has categories and that every item has a code;
+  - published versions are immutable snapshots, and the version history is listed.
+- **Customer version upgrade:**
+  - a banner in the entity checklist leads to a review page showing added, removed, changed and customer-added items;
+  - the admin then either **keeps their own changes** or **takes the new version**;
+  - answers, dates and documents are kept either way, and each upgrade is written to the audit log.
+- **Organizations:**
+  - create a company plus its administrator (`admin-create-company`; the admin receives Supabase's invitation e-mail);
+  - assign a plan with manual billing;
+  - **operator access** requires the customer's consent and a stated reason, starts a logged session, and shows a banner with "End access" inside the account.
+- **Plans** (limits and prices per period), **vouchers** (create, activate or deactivate), **platform staff** (grant or revoke operator/superadmin, suspend users), **settings** (general, security, reference lists, e-mail templates), and a **platform-wide audit log**.
+- Fix: the item guard now allows trusted server functions to relink items to a new template version.
+- pgTAP: 47/47 passing on the hosted project.
+- Not yet: e-mail OTP for back-office logins (the setting is hidden until it is enforced), MFA for staff, and voucher redemption at checkout (iteration 6).
+
 ### Next
 - Iteration 5: back office (templates and versioning, plans, vouchers, operator access, settings).
 - Iteration 6: billing (Stripe, SISLOG, manual invoices, lifecycle cron, Officegest).

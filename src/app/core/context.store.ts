@@ -10,13 +10,14 @@ export interface Profile {
 }
 export interface OrgSummary {
   id: string; name: string; parent_id: string | null; role: OrgRole; logo_path: string | null;
-  ai_enabled: boolean; access_mode: 'full' | 'read_only';
+  ai_enabled: boolean; access_mode: 'full' | 'read_only'; operator?: boolean;
 }
 export interface SubscriptionSummary {
   organization_id: string; status: string; plan: string; plan_slug: string;
   trial_ends_at: string | null; current_period_end: string;
 }
-interface Context { profile: Profile | null; organizations: OrgSummary[]; subscriptions: SubscriptionSummary[] }
+export interface OperatorSession { organization_id: string; started_at: string; reason: string }
+interface Context { profile: Profile | null; organizations: OrgSummary[]; subscriptions: SubscriptionSummary[]; operator_session: OperatorSession | null }
 
 const ACTIVE_KEY = 'cl.activeOrg';
 const RANK: Record<OrgRole, number> = { user: 1, manager: 2, admin: 3 };
@@ -31,6 +32,7 @@ export class ContextStore {
   readonly profile = signal<Profile | null>(null);
   readonly organizations = signal<OrgSummary[]>([]);
   readonly subscriptions = signal<SubscriptionSummary[]>([]);
+  readonly operatorSession = signal<OperatorSession | null>(null);
   private readonly activeId = signal<string | null>(readLocal(ACTIVE_KEY));
 
   /** Parent entities the user can reach (the "accounts"). */
@@ -88,6 +90,7 @@ export class ContextStore {
     this.profile.set(ctx.profile);
     this.organizations.set(ctx.organizations ?? []);
     this.subscriptions.set(ctx.subscriptions ?? []);
+    this.operatorSession.set(ctx.operator_session ?? null);
     this.loaded.set(true);
   }
 
@@ -95,6 +98,7 @@ export class ContextStore {
     this.profile.set(null);
     this.organizations.set([]);
     this.subscriptions.set([]);
+    this.operatorSession.set(null);
     this.loaded.set(false);
   }
 }

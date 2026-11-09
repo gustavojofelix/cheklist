@@ -4,6 +4,7 @@ import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthService } from '../core/auth.service';
 import { ContextStore } from '../core/context.store';
+import { Supabase } from '../core/supabase';
 import { Icon } from '../shared/ui/icon';
 import { LocaleSwitcher } from '../shared/ui/locale-switcher';
 
@@ -25,6 +26,9 @@ const ADMIN: NavItem[] = [
   { path: '/admin/organizations', icon: 'building', key: 'admin.nav.organizations' },
   { path: '/admin/templates', icon: 'layers', key: 'admin.nav.templates' },
   { path: '/admin/plans', icon: 'card', key: 'admin.nav.plans' },
+  { path: '/admin/vouchers', icon: 'report', key: 'admin.nav.vouchers' },
+  { path: '/admin/staff', icon: 'users', key: 'admin.nav.staff' },
+  { path: '/admin/settings', icon: 'settings', key: 'admin.nav.settings' },
   { path: '/admin/emails', icon: 'mail', key: 'admin.nav.emails' },
   { path: '/admin/audit', icon: 'shield', key: 'admin.nav.audit' },
 ];
@@ -112,6 +116,13 @@ const ADMIN: NavItem[] = [
           }
           <app-locale-switcher />
         </header>
+        @if (ctx.operatorSession(); as op) {
+          <div class="flex flex-wrap items-center gap-2 border-b border-violet-200 bg-violet-50 px-4 py-2 text-sm text-violet-900" role="status">
+            <app-icon name="shield" [size]="16" />
+            <span class="flex-1">{{ 'operator.banner' | transloco: { reason: op.reason } }}</span>
+            <button type="button" class="btn-secondary !py-1" (click)="endOperator()">{{ 'operator.end' | transloco }}</button>
+          </div>
+        }
         @if (!isAdmin && ctx.readOnly()) {
           <div class="border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-800">
             {{ 'billing.readOnlyBanner' | transloco }}
@@ -129,6 +140,7 @@ export class AppShell {
   protected readonly ctx = inject(ContextStore);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly sb = inject(Supabase);
   protected readonly isAdmin = !!inject(ActivatedRoute).snapshot.data['admin'];
   protected readonly navOpen = signal(false);
 
@@ -142,7 +154,14 @@ export class AppShell {
     void this.router.navigateByUrl('/dashboard');
   }
 
+  protected async endOperator(): Promise<void> {
+    await this.sb.rpc('operator_access_end');
+    await this.ctx.load();
+    await this.router.navigateByUrl('/admin/organizations');
+  }
+
   protected async logout(): Promise<void> {
+    if (this.ctx.operatorSession()) await this.sb.rpc('operator_access_end').catch(() => undefined);
     await this.auth.signOut();
     this.ctx.reset();
     await this.router.navigateByUrl('/login');
