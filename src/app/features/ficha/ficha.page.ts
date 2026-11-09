@@ -7,6 +7,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { firstValueFrom } from 'rxjs';
 import { ContextStore } from '../../core/context.store';
+import { DocumentsService } from '../../core/documents.service';
 import { errorKey } from '../../core/errors';
 import { ReferenceService } from '../../core/reference.service';
 import { Supabase } from '../../core/supabase';
@@ -179,6 +180,7 @@ export class FichaPage {
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
   private readonly dialog = inject(Dialog);
+  private readonly documents = inject(DocumentsService);
   private readonly t = inject(TranslocoService);
   private readonly lang = toSignal(this.t.langChanges$, { initialValue: this.t.getActiveLang() });
   private channel: RealtimeChannel | null = null;
@@ -349,8 +351,7 @@ export class FichaPage {
 
   protected async download(d: FichaDocument): Promise<void> {
     try {
-      const { url } = await this.sb.fn<{ url: string }>('document-download', { document_id: d.id });
-      window.open(url, '_blank', 'noopener');
+      await this.documents.download(d.id, this.id());
     } catch (e) {
       this.toast.error(errorKey(e));
     }

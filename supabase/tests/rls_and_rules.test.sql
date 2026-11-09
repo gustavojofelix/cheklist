@@ -11,7 +11,7 @@ begin
   select n.nspname into s from pg_extension e join pg_namespace n on n.oid = e.extnamespace where e.extname = 'pgtap';
   perform set_config('search_path', 'public, extensions, ' || quote_ident(s), true);
 end $$;
-select plan(24);
+select plan(31);
 
 -- ---------------------------------------------------------------- fixtures
 create schema tests;
@@ -86,6 +86,27 @@ select throws_ok($$ select public.create_organization('{"name":"Second entity"}'
                  'P0001', 'account_already_has_entity', 'one parent entity per account');
 select throws_ok($$ delete from public.memberships where user_id = '10000000-0000-4000-a000-00000000000a' $$,
                  'P0001', 'last_admin', 'cannot remove the last admin');
+
+-- ------------------------------------------------------- iteration 4: OTP, reminders, outbox
+select lives_ok($$ select public.otp_request((select org_a from tests.ids)) $$, 'download code can be requested');
+select throws_ok($$ select public.otp_request((select org_a from tests.ids)) $$, 'P0001', 'otp_too_soon', 'codes are rate limited');
+select is(public.otp_verify((select org_a from tests.ids), '000000x'), null::timestamptz, 'a wrong code does not unlock downloads');
+
+select tests.logout();
+select is((select count(*)::int from public.email_outbox where to_email = 'a@test.local' and template = 'otp_code'),
+          1, 'the code is queued for e-mail delivery');
+update public.checklist_items set due_date = private.today() + 30
+ where organization_id = (select org_a from tests.ids) and catalog_code = 'LIC-01';
+select private.enqueue_due_notifications();
+select private.enqueue_due_notifications();
+select is((select count(*)::int from public.notification_log l join public.checklist_items i on i.id = l.checklist_item_id
+            where i.organization_id = (select org_a from tests.ids) and i.catalog_code = 'LIC-01'),
+          1, 'a due reminder is logged once even if the job runs twice');
+select ok((select count(*) from public.email_outbox where to_email = 'a@test.local' and template = 'due_reminder') >= 1,
+          'the reminder e-mail goes to the organization admin');
+select tests.login('10000000-0000-4000-a000-00000000000c');
+select is((select count(*)::int from public.email_outbox where template = 'otp_code'), 0, 'staff never see one-time codes');
+select tests.login('10000000-0000-4000-a000-00000000000a');
 
 -- ------------------------------------------------------- read-only mode
 select tests.logout();

@@ -52,6 +52,10 @@ interface Invitation { id: string; email: string; role: OrgRole; created_at: str
             <label class="flex items-center gap-2 text-sm">
               <input type="checkbox" [formControl]="aiEnabled" /> {{ 'company.aiEnabled' | transloco }}
             </label>
+            <label class="flex items-start gap-2 text-sm">
+              <input type="checkbox" class="mt-0.5" [formControl]="docOtp" />
+              <span>{{ 'company.docOtp' | transloco }}<span class="block text-xs text-slate-500">{{ 'company.docOtpHint' | transloco }}</span></span>
+            </label>
           </fieldset>
           @if (canEdit()) {
             <div class="mt-6 flex justify-end"><button type="submit" class="btn-primary" [disabled]="busy()">{{ 'common.save' | transloco }}</button></div>
@@ -113,7 +117,12 @@ interface Invitation { id: string; email: string; role: OrgRole; created_at: str
                 <li class="flex flex-wrap items-center justify-between gap-2 py-2">
                   <span>{{ i.email }} · {{ 'roles.' + i.role | transloco }}
                     <span class="text-xs text-slate-400">· {{ 'company.members.expires' | transloco: { date: (i.expires_at | date: 'dd/MM/yyyy') } }}</span></span>
-                  @if (isAdmin()) { <button type="button" class="btn-ghost !py-1 text-red-600" (click)="revoke(i)">{{ 'company.members.revoke' | transloco }}</button> }
+                  @if (isAdmin()) {
+                    <span class="flex gap-1">
+                      <button type="button" class="btn-ghost !py-1" (click)="resend(i)">{{ 'company.members.resend' | transloco }}</button>
+                      <button type="button" class="btn-ghost !py-1 text-red-600" (click)="revoke(i)">{{ 'company.members.revoke' | transloco }}</button>
+                    </span>
+                  }
                 </li>
               }
             </ul>
@@ -194,6 +203,7 @@ export class CompanyPage {
 
   protected readonly form = orgForm(this.fb, true);
   protected readonly aiEnabled = this.fb.nonNullable.control(true);
+  protected readonly docOtp = this.fb.nonNullable.control(false);
   protected readonly notif = this.fb.nonNullable.group({
     attention_days: [90, [Validators.required, Validators.min(1), Validators.max(365)]],
     critical_days: [15, [Validators.required, Validators.min(0), Validators.max(365)]],
@@ -227,6 +237,7 @@ export class CompanyPage {
     if (o) {
       this.form.patchValue(o);
       this.aiEnabled.setValue(!!o['ai_enabled']);
+      this.docOtp.setValue(!!o['document_otp_required']);
       this.platformAccess.set(!!o['platform_access_authorized_at']);
       this.days.set((o['notification_days'] as number[]) ?? []);
       this.notif.patchValue({ ...o, notification_emails: ((o['notification_emails'] as string[]) ?? []).join(', ') });
@@ -242,7 +253,7 @@ export class CompanyPage {
       const v = this.form.getRawValue();
       const clean = Object.fromEntries(Object.entries(v).map(([k, val]) => [k, val === '' ? null : val]));
       const { error } = await this.sb.client.from('organizations')
-        .update({ ...clean, ai_enabled: this.aiEnabled.value }).eq('id', this.ctx.active()!.id);
+        .update({ ...clean, ai_enabled: this.aiEnabled.value, document_otp_required: this.docOtp.value }).eq('id', this.ctx.active()!.id);
       if (error) throw error;
       await this.ctx.load();
     });
@@ -280,7 +291,7 @@ export class CompanyPage {
   protected async invite(): Promise<void> {
     await this.run(async () => {
       const token = await this.sb.rpc<string>('invite_member', { org: this.ctx.active()!.id, p_email: this.inviteEmail, p_role: this.inviteRole });
-      // E-mail delivery is an Edge Function (iteration 4); the link is shown so the flow can be tested locally.
+      // The invitation is e-mailed; the link is also shown so it can be shared another way if needed.
       this.lastInviteLink.set(`${location.origin}/invite/${token}`);
       this.inviteEmail = '';
       await this.load(this.ctx.active()!.id);
@@ -303,6 +314,14 @@ export class CompanyPage {
       if (error) throw error;
       await this.load(this.ctx.active()!.id);
     });
+  }
+
+  protected async resend(i: Invitation): Promise<void> {
+    await this.run(async () => {
+      const token = await this.sb.rpc<string>('resend_invitation', { invitation: i.id });
+      this.lastInviteLink.set(`${location.origin}/invite/${token}`);
+      await this.load(this.ctx.active()!.id);
+    }, 'company.members.invited');
   }
 
   protected async revoke(i: Invitation): Promise<void> {

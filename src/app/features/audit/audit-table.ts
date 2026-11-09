@@ -143,6 +143,12 @@ export class AuditTable {
     const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
     const lines = all.map((r) => [r.occurred_at, r.actor_name, r.organization_name, this.t.translate('audit.event.' + r.event),
       r.table_name, r.record_title, (r.changed_fields ?? []).join(' '), r.ip].map(esc).join(','));
+    try {
+      await this.sb.rpc('log_audit_export', { org: this.orgId(), p_rows: all.length });   // no export without a log entry
+    } catch (e) {
+      this.toast.error(errorKey(e));
+      return;
+    }
     const blob = new Blob(['﻿' + [head.join(','), ...lines].join('\r\n')], { type: 'text/csv;charset=utf-8' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);

@@ -50,8 +50,34 @@
 | Audit CSV export via an Edge Function | Exported in the browser from the `audit_feed` RPC (same filters and permissions) | Simpler for now. Recording the export itself in the audit log moves to iteration 4 with the other Edge Functions. |
 | Invitation e-mail | The invite link is shown on screen | E-mail delivery (Resend/SMTP) arrives with the notification Edge Functions in iteration 4. |
 
+## Iteration 4 (e-mails, download codes, reports): deployed to checklist-legal-dev
+- **E-mail outbox** (`email_outbox`) with PT/EN templates (invitation, verification code, due reminder):
+  - every e-mail is queued first, then `send-emails` delivers it through Resend;
+  - queued e-mails retry up to 5 times and are never lost;
+  - one-time codes are hidden from staff and redacted after delivery.
+- **Invitations** are e-mailed; there is a resend option, which rotates the link.
+- **Download codes:** each organization can require an e-mailed 6-digit code to download documents.
+  - Codes are rate limited (1 per minute, 10 per hour) and allow 5 attempts.
+  - A correct code unlocks downloads for 30 minutes, and the unlock is written to the audit log.
+  - When a download needs a code, the app opens the code dialog automatically.
+- **Daily expiry reminders** (pg_cron, 07:00 Maputo):
+  - sent at each configured interval (90/60/30/15/1 days by default);
+  - a weekly repeat while an item is Crítico;
+  - one e-mail per recipient and entity listing all its items;
+  - each reminder is logged once, even if the job runs twice.
+  - Recipients are the notification e-mails, the admins (when "notify admin" is on) and the item's assignee.
+- **Reports:** choose the points, then the `report-generate` function produces PDF + Word.
+  - Data is read under the caller's permissions (RLS).
+  - Files are stored in the private `reports` bucket and served through 10-minute links.
+  - Each report is recorded and written to the audit log.
+- **Recycle-bin purge** (daily) removes expired documents and orphan uploads from storage.
+- **Audit CSV exports** are themselves audited (fail closed: no log entry, no export).
+- **Back office → E-mails:** the outgoing queue.
+- pgTAP: 31/31 passing on the hosted project.
+- **Pending (needs you):** the cron secret and the Resend key, see [docs/runbooks/secrets.md](../runbooks/secrets.md). Until then reminders and e-mails queue up but are not delivered.
+- Not yet: XLSX export of the ficha, monthly digest, quota-warning e-mails (they arrive with billing in iteration 6).
+
 ### Next
-- Iteration 4: notification cron and e-mails, invitation e-mails, OTP for downloads, PDF/DOCX reports, XLSX export.
 - Iteration 5: back office (templates and versioning, plans, vouchers, operator access, settings).
 - Iteration 6: billing (Stripe, SISLOG, manual invoices, lifecycle cron, Officegest).
 - Iteration 7: OCR and AI assistant (Claude).

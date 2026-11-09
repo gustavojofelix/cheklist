@@ -25,6 +25,7 @@ const ADMIN: NavItem[] = [
   { path: '/admin/organizations', icon: 'building', key: 'admin.nav.organizations' },
   { path: '/admin/templates', icon: 'layers', key: 'admin.nav.templates' },
   { path: '/admin/plans', icon: 'card', key: 'admin.nav.plans' },
+  { path: '/admin/emails', icon: 'mail', key: 'admin.nav.emails' },
   { path: '/admin/audit', icon: 'shield', key: 'admin.nav.audit' },
 ];
 
