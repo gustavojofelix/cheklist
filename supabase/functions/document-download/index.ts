@@ -3,10 +3,11 @@
 // 2. if the organization requires OTP, the caller must have a valid unlock;
 // 3. the download is written to the audit log;
 // 4. returns a 60-second signed URL.
-import { adminClient, clientIp, corsHeaders, fail, json, requireUser } from '../_shared/http.ts';
+import { adminClient, clientIp, corsHeaders, fail, json, requireUser, setOrigin } from '../_shared/http.ts';
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  setOrigin(req);
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders() });
   if (req.method !== 'POST') return fail('method_not_allowed', 405);
 
   const auth = await requireUser(req);
