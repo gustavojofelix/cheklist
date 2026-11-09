@@ -106,4 +106,15 @@ test('mobile: navigation drawer and checklist are usable @mobile', async ({ page
   await expect(page.getByRole('heading', { name: /Ficha da Entidade/ })).toBeVisible();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow, 'no horizontal page scroll').toBeLessThanOrEqual(1);
+
+  // items are cards on phones (the table is hidden) and can be edited in place
+  await expect(page.getByRole('table').first()).toBeHidden();
+  const card = page.getByRole('listitem').filter({ hasText: 'LEG-05' });
+  const value = `M ${Date.now()}`;
+  await card.getByRole('button').first().click();
+  await card.getByRole('textbox').fill(value);
+  await card.getByRole('textbox').press('Enter');
+  await expect(page.getByRole('listitem').filter({ hasText: 'LEG-05' })).toContainText(value);
+  await expect(page.getByRole('button', { name: 'Adicionar documento' })).toBeVisible();   // floating button
+  await expectAccessible(page, 'ficha (mobile)');
 });

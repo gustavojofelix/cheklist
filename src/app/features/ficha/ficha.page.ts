@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -24,7 +25,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
 @Component({
   selector: 'app-ficha',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, RouterLink, TranslocoPipe, Icon, ComplianceChip],
+  imports: [FormsModule, RouterLink, NgTemplateOutlet, TranslocoPipe, Icon, ComplianceChip],
   template: `
     <nav class="mb-2 text-sm text-slate-600"><a routerLink="/entities" class="hover:underline">{{ 'nav.entities' | transloco }}</a> / {{ orgName() }}</nav>
     <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
@@ -38,7 +39,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
             <app-icon [name]="editMode() ? 'check' : 'pencil'" [size]="16" /> {{ (editMode() ? 'ficha.done' : 'ficha.edit') | transloco }}</button>
         }
         @if (canWrite()) {
-          <button type="button" class="btn-primary" (click)="addDocument()"><app-icon name="plus" [size]="16" /> {{ 'ficha.addDocument' | transloco }}</button>
+          <button type="button" class="btn-primary max-md:!hidden" (click)="addDocument()"><app-icon name="plus" [size]="16" /> {{ 'ficha.addDocument' | transloco }}</button>
         }
       </div>
     </div>
@@ -73,11 +74,11 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
     }
     <!-- filters -->
     <div class="card mb-4 flex flex-wrap items-center gap-2 p-3">
-      <div class="relative min-w-56 flex-1">
+      <div class="relative min-w-0 grow basis-full sm:basis-56">
         <span class="pointer-events-none absolute top-2.5 left-2.5 text-slate-600"><app-icon name="search" [size]="16" /></span>
         <input class="input !pl-8" [(ngModel)]="search" [placeholder]="'ficha.search' | transloco" [attr.aria-label]="'ficha.search' | transloco" />
       </div>
-      <select class="input !w-40" [(ngModel)]="stateFilter" [attr.aria-label]="'ficha.state' | transloco">
+      <select class="input !w-auto flex-1 sm:!w-40 sm:flex-none" [(ngModel)]="stateFilter" [attr.aria-label]="'ficha.state' | transloco">
         <option value="">{{ 'ficha.allStates' | transloco }}</option>
         @for (s of ['regular', 'atencao', 'critico']; track s) { <option [value]="s">{{ 'compliance.' + s | transloco }}</option> }
       </select>
@@ -92,7 +93,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
 
     @for (cat of visible(); track cat.item.id; let ci = $index) {
       <section class="card mb-4 overflow-hidden">
-        <header class="flex cursor-pointer items-center gap-3 border-b border-slate-100 bg-slate-50/60 px-4 py-3" (click)="toggleCat(cat.item.id)">
+        <header class="flex cursor-pointer items-center gap-3 border-b border-sand-100 bg-sand-50 px-4 py-3" (click)="toggleCat(cat.item.id)">
           <span class="transition-transform" [class.-rotate-90]="collapsed().has(cat.item.id)"><app-icon name="chevron" [size]="16" /></span>
           <div class="min-w-0 flex-1">
             <h2 class="font-semibold text-slate-900">{{ ci + 1 }}. {{ tr(cat.item) }}</h2>
@@ -100,7 +101,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
           </div>
           <div class="hidden w-40 items-center gap-2 sm:flex">
             <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200">
-              <div class="h-full bg-emerald-500" [style.width.%]="progress(cat)"></div>
+              <div class="h-full bg-brand-500" [style.width.%]="progress(cat)"></div>
             </div>
             <span class="text-xs text-slate-600">{{ regularCount(cat) }}/{{ applicableCount(cat) }}</span>
           </div>
@@ -110,7 +111,8 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
           }
         </header>
         @if (!collapsed().has(cat.item.id)) {
-          <div class="overflow-x-auto">
+          <!-- desktop / tablet: table -->
+          <div class="hidden overflow-x-auto md:block">
             <table class="table-base">
               <thead><tr>
                 <th class="w-24">ID</th><th>{{ 'ficha.item' | transloco }}</th><th>{{ 'ficha.descriptive' | transloco }}</th>
@@ -120,67 +122,12 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
               </tr></thead>
               <tbody>
                 @for (it of cat.children; track it.id) {
-                  <tr [class.opacity-50]="!it.is_applicable">
+                  <tr [class.bg-sand-50]="!it.is_applicable">
                     <td class="font-mono text-xs text-brand-700">{{ it.catalog_code || '—' }}</td>
-                    <td>
-                      @if (editMode() && !it.template_item_id) {
-                        <input class="input !py-1" [ngModel]="it.title" (change)="patch(it, { title: $any($event.target).value })" [attr.aria-label]="'ficha.item' | transloco" />
-                      } @else {
-                        <span class="font-medium text-slate-800">{{ tr(it) }}</span>
-                      }
-                      @if (it.applicability === 'depends') {
-                        <label class="mt-1 flex items-center gap-1 text-xs text-slate-600">
-                          <input type="checkbox" [checked]="it.is_applicable" [disabled]="!canEditItem(it)" (change)="patch(it, { is_applicable: $any($event.target).checked })" />
-                          {{ 'ficha.applicable' | transloco }}
-                        </label>
-                      }
-                      @if (editMode()) {
-                        <div class="mt-1 flex gap-3 text-xs text-slate-600">
-                          <label class="flex items-center gap-1"><input type="checkbox" [checked]="it.has_validity" (change)="patch(it, { has_validity: $any($event.target).checked, due_date: $any($event.target).checked ? it.due_date : null })" /> {{ 'ficha.validity' | transloco }}</label>
-                          <label class="flex items-center gap-1"><input type="checkbox" [checked]="it.requires_attachment" (change)="patch(it, { requires_attachment: $any($event.target).checked })" /> {{ 'ficha.attachment' | transloco }}</label>
-                        </div>
-                      }
-                    </td>
-                    <td class="min-w-56">
-                      @if (it.bound_field) {
-                        <span class="text-slate-700">{{ answerDisplay(it) || '—' }}</span>
-                        <span class="block text-[11px] text-slate-600">{{ 'ficha.boundHint' | transloco }}</span>
-                      } @else if (editingAnswer() === it.id) {
-                        <textarea class="input !py-1" rows="2" [ngModel]="it.answer" #ans
-                                  (keydown.enter)="$event.preventDefault(); saveAnswer(it, ans.value)" (blur)="saveAnswer(it, ans.value)"
-                                  (keydown.escape)="editingAnswer.set(null)" [attr.aria-label]="'ficha.descriptive' | transloco"></textarea>
-                      } @else {
-                        <button type="button" class="w-full rounded px-1 py-0.5 text-left hover:bg-slate-100 disabled:hover:bg-transparent"
-                                [disabled]="!canEditItem(it)" (click)="editingAnswer.set(it.id)">
-                          {{ it.answer || '—' }}</button>
-                      }
-                    </td>
-                    <td>
-                      @if (it.has_validity) {
-                        <input type="date" class="input !py-1" [value]="it.due_date ?? ''" [disabled]="!canEditItem(it)"
-                               [class.!border-red-300]="it.is_overdue" (change)="patch(it, { due_date: $any($event.target).value || null })"
-                               [attr.aria-label]="'ficha.validity' | transloco" />
-                      } @else { <span class="text-slate-300">—</span> }
-                    </td>
-                    <td>
-                      @for (d of docsOf(it.id); track d.id) {
-                        <div class="flex items-center gap-1 text-xs">
-                          <button type="button" class="truncate text-left text-brand-700 hover:underline" (click)="download(d)" [title]="d.original_name">
-                            <app-icon name="file" [size]="12" /> {{ d.original_name }}</button>
-                          @if (canWrite() && readable(d)) {
-                            <button type="button" class="text-violet-500 hover:text-violet-700 disabled:opacity-40" [disabled]="reading() === d.id"
-                                    (click)="readDoc(d)" [title]="'ocr.read' | transloco" [attr.aria-label]="'ocr.read' | transloco"><app-icon name="sparkles" [size]="12" /></button>
-                          }
-                          @if (canWrite()) {
-                            <button type="button" class="text-slate-600 hover:text-red-600" (click)="deleteDoc(d)" [attr.aria-label]="'common.delete' | transloco">✕</button>
-                          }
-                        </div>
-                      }
-                      @if (it.requires_attachment && canWrite()) {
-                        <button type="button" class="btn-ghost !px-2 !py-0.5 text-xs" (click)="addDocument([it.id])">
-                          <app-icon name="paperclip" [size]="12" /> {{ 'ficha.attach' | transloco }}</button>
-                      }
-                    </td>
+                    <td><ng-container *ngTemplateOutlet="titleTpl; context: { $implicit: it }" /></td>
+                    <td class="min-w-56"><ng-container *ngTemplateOutlet="answerTpl; context: { $implicit: it }" /></td>
+                    <td><ng-container *ngTemplateOutlet="validityTpl; context: { $implicit: it }" /></td>
+                    <td><ng-container *ngTemplateOutlet="docsTpl; context: { $implicit: it }" /></td>
                     <td><app-compliance-chip [state]="it.compliance_state" /></td>
                     @if (editMode()) {
                       <td>@if (!it.template_item_id) {
@@ -194,6 +141,47 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
               </tbody>
             </table>
           </div>
+
+          <!-- phones: one card per item -->
+          <ul class="divide-y divide-sand-100 md:hidden" [attr.aria-label]="tr(cat.item)">
+            @for (it of cat.children; track it.id) {
+              <li class="border-l-4 px-4 py-4" [class.bg-sand-50]="!it.is_applicable"
+                  [class]="it.compliance_state === 'critico' ? 'border-ember-600' : it.compliance_state === 'atencao' ? 'border-sun-400' : 'border-transparent'">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <p class="font-mono text-xs text-brand-700">{{ it.catalog_code || '—' }}</p>
+                    <div class="mt-0.5"><ng-container *ngTemplateOutlet="titleTpl; context: { $implicit: it }" /></div>
+                  </div>
+                  <div class="flex shrink-0 items-center gap-1">
+                    <app-compliance-chip [state]="it.compliance_state" />
+                    @if (editMode() && !it.template_item_id) {
+                      <button type="button" class="btn-ghost !p-1.5 text-red-600" (click)="removeItem(it)" [attr.aria-label]="'common.remove' | transloco"><app-icon name="trash" [size]="16" /></button>
+                    }
+                  </div>
+                </div>
+                <dl class="mt-3 space-y-3 text-sm">
+                  <div>
+                    <dt class="text-[11px] font-semibold uppercase tracking-wider text-slate-600">{{ 'ficha.descriptive' | transloco }}</dt>
+                    <dd class="mt-0.5"><ng-container *ngTemplateOutlet="answerTpl; context: { $implicit: it }" /></dd>
+                  </div>
+                  @if (it.has_validity) {
+                    <div>
+                      <dt class="text-[11px] font-semibold uppercase tracking-wider text-slate-600">{{ 'ficha.validity' | transloco }}</dt>
+                      <dd class="mt-0.5"><ng-container *ngTemplateOutlet="validityTpl; context: { $implicit: it }" /></dd>
+                    </div>
+                  }
+                  @if (it.requires_attachment || docsOf(it.id).length) {
+                    <div>
+                      <dt class="text-[11px] font-semibold uppercase tracking-wider text-slate-600">{{ 'ficha.attachment' | transloco }}</dt>
+                      <dd class="mt-0.5"><ng-container *ngTemplateOutlet="docsTpl; context: { $implicit: it }" /></dd>
+                    </div>
+                  }
+                </dl>
+              </li>
+            } @empty {
+              <li class="px-4 py-4 text-center text-sm text-slate-600">{{ 'ficha.noItems' | transloco }}</li>
+            }
+          </ul>
           @if (editMode()) {
             <div class="border-t border-slate-100 p-3">
               <button type="button" class="btn-ghost text-sm" (click)="addItem(cat.item)"><app-icon name="plus" [size]="14" /> {{ 'ficha.addItem' | transloco }}</button>
@@ -202,8 +190,79 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
         }
       </section>
     }
+    <div class="h-16 md:hidden" aria-hidden="true"></div>
     @if (editMode()) {
       <button type="button" class="btn-secondary" (click)="addCategory()"><app-icon name="plus" [size]="16" /> {{ 'ficha.addCategory' | transloco }}</button>
+    }
+
+    <!-- ===== shared cell templates (table and cards) ===== -->
+    <ng-template #titleTpl let-it>
+      @if (editMode() && !it.template_item_id) {
+        <input class="input !py-1" [ngModel]="it.title" (change)="patch(it, { title: $any($event.target).value })" [attr.aria-label]="'ficha.item' | transloco" />
+      } @else {
+        <span class="font-medium text-slate-800">{{ tr(it) }}</span>
+      }
+      @if (it.applicability === 'depends') {
+        <label class="mt-1 flex items-center gap-1 text-xs text-slate-600">
+          <input type="checkbox" [checked]="it.is_applicable" [disabled]="!canEditItem(it)" (change)="patch(it, { is_applicable: $any($event.target).checked })" />
+          {{ 'ficha.applicable' | transloco }}
+        </label>
+      }
+      @if (editMode()) {
+        <div class="mt-1 flex gap-3 text-xs text-slate-600">
+          <label class="flex items-center gap-1"><input type="checkbox" [checked]="it.has_validity" (change)="patch(it, { has_validity: $any($event.target).checked, due_date: $any($event.target).checked ? it.due_date : null })" /> {{ 'ficha.validity' | transloco }}</label>
+          <label class="flex items-center gap-1"><input type="checkbox" [checked]="it.requires_attachment" (change)="patch(it, { requires_attachment: $any($event.target).checked })" /> {{ 'ficha.attachment' | transloco }}</label>
+        </div>
+      }
+    </ng-template>
+
+    <ng-template #answerTpl let-it>
+      @if (it.bound_field) {
+        <span class="text-slate-700">{{ answerDisplay(it) || '—' }}</span>
+        <span class="block text-[11px] text-slate-600">{{ 'ficha.boundHint' | transloco }}</span>
+      } @else if (editingAnswer() === it.id) {
+        <textarea class="input !py-1" rows="2" [ngModel]="it.answer" #ans
+                  (keydown.enter)="$event.preventDefault(); saveAnswer(it, ans.value)" (blur)="saveAnswer(it, ans.value)"
+                  (keydown.escape)="editingAnswer.set(null)" [attr.aria-label]="'ficha.descriptive' | transloco"></textarea>
+      } @else {
+        <button type="button" class="min-h-8 w-full rounded px-1 py-0.5 text-left hover:bg-sand-100 disabled:hover:bg-transparent"
+                [disabled]="!canEditItem(it)" (click)="editingAnswer.set(it.id)">
+          {{ it.answer || '—' }}</button>
+      }
+    </ng-template>
+
+    <ng-template #validityTpl let-it>
+      @if (it.has_validity) {
+        <input type="date" class="input !py-1" [value]="it.due_date ?? ''" [disabled]="!canEditItem(it)"
+               [class.!border-red-300]="it.is_overdue" (change)="patch(it, { due_date: $any($event.target).value || null })"
+               [attr.aria-label]="'ficha.validity' | transloco" />
+      } @else { <span class="text-slate-500">—</span> }
+    </ng-template>
+
+    <ng-template #docsTpl let-it>
+      @for (d of docsOf(it.id); track d.id) {
+        <div class="flex items-center gap-1 text-xs">
+          <button type="button" class="min-h-6 truncate text-left text-brand-700 hover:underline" (click)="download(d)" [title]="d.original_name">
+            <app-icon name="file" [size]="12" /> {{ d.original_name }}</button>
+          @if (canWrite() && readable(d)) {
+            <button type="button" class="grid size-6 place-items-center text-violet-600 hover:text-violet-800 disabled:opacity-40" [disabled]="reading() === d.id"
+                    (click)="readDoc(d)" [title]="'ocr.read' | transloco" [attr.aria-label]="'ocr.read' | transloco"><app-icon name="sparkles" [size]="14" /></button>
+          }
+          @if (canWrite()) {
+            <button type="button" class="grid size-6 place-items-center text-slate-600 hover:text-red-600" (click)="deleteDoc(d)" [attr.aria-label]="'common.delete' | transloco">✕</button>
+          }
+        </div>
+      }
+      @if (it.requires_attachment && canWrite()) {
+        <button type="button" class="btn-ghost !px-2 !py-1 text-xs" (click)="addDocument([it.id])">
+          <app-icon name="paperclip" [size]="12" /> {{ 'ficha.attach' | transloco }}</button>
+      }
+    </ng-template>
+
+    <!-- phones: add-document button always within reach -->
+    @if (canWrite()) {
+      <button type="button" class="fixed right-4 bottom-4 z-20 grid size-14 place-items-center rounded-full bg-brand-600 text-white shadow-lg ring-4 ring-sun-400/60 md:hidden"
+              (click)="addDocument()" [attr.aria-label]="'ficha.addDocument' | transloco"><app-icon name="plus" [size]="24" /></button>
     }
   `,
 })
