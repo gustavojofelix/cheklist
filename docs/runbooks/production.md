@@ -64,3 +64,8 @@ Configure `.github/workflows/backup.yml` for the **production** project (docs/ru
 - [ ] A test card payment with Stripe test keys activates the plan through the webhook.
 - [ ] `select jobname, active from cron.job;` shows 7 active jobs, and `email_outbox` drains.
 - [ ] `E2E_BASE_URL=https://<domain> npx playwright test` against a staging copy, **not** production. The tests create data.
+
+## Deployment log
+| Date | Project | What | Result |
+|---|---|---|---|
+| 2026-11-09 | `checklist-legal-prod` (`yqkawioecihkaticxolj`, eu-north-1) | migrations 0001–0019, reference data (`seed.sql` only), Auth config (site URL `https://checklist-legal.netlify.app`), 11 Edge Functions | pgTAP 67/67, advisors: accepted findings only, 0 users / 0 organizations, 7 cron jobs active |
