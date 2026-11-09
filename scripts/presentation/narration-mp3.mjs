@@ -5,10 +5,10 @@
 // joined frame by frame, with silent frames for the gaps.
 //   node scripts/presentation/narration-mp3.mjs      (after narration.mjs and record-video.mjs)
 import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { SCENES } from './scenes.mjs';
+import { SCENES, V } from './lib/variant.mjs';
 
-const NARR = 'docs/presentation/.narration';
-const OUT = 'docs/presentation/narracao';
+const NARR = V.narr;
+const OUT = `docs/presentation/${V.mp3}`;
 const OFFSET = Number(process.env.NARRATION_OFFSET ?? 0.25);   // same offset mux-video.mjs uses
 const FRAME_S = 576 / 24000;
 
@@ -47,7 +47,7 @@ timeline.forEach((s, n) => {
 });
 for (let i = 0; i < Math.round(2 / FRAME_S); i++) track.push(silent);   // 2 s of tail, like the video's outro
 
-writeFileSync(`${OUT}/Checklist-Legal-Narracao-ptBR.mp3`, Buffer.concat(track));
+writeFileSync(`${OUT}/${V.mp3Name}.mp3`, Buffer.concat(track));
 writeFileSync(`${OUT}/LEIA-ME.txt`, [
   'Narração do vídeo de apresentação do Checklist Legal (português do Brasil, voz Francisca).',
   'Checklist-Legal-Narracao-ptBR.mp3: faixa completa, sincronizada com o vídeo.',

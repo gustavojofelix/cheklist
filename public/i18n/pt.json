@@ -38,7 +38,8 @@
     "billing": "Subscrições",
     "templates": "Modelos de checklist",
     "plans": "Planos",
-    "adminAudit": "Registos da plataforma"
+    "adminAudit": "Registos da plataforma",
+    "legislation": "Legislação"
   },
   "auth": {
     "email": "Endereço de e-mail",
@@ -209,7 +210,8 @@
     "ai_error": "Ocorreu um erro na IA. Tente novamente.",
     "ocr_unsupported_type": "Só é possível ler PDF e imagens.",
     "question_required": "Escreva uma pergunta.",
-    "invalid_action": "Acção inválida."
+    "invalid_action": "Acção inválida.",
+    "alteration_before_original": "A alteração não pode ter data anterior ao original."
   },
   "compliance": {
     "regular": "Regular",
@@ -753,5 +755,109 @@
     "page": "pág.",
     "value": "Valor proposto",
     "accept": "Aceitar"
+  },
+  "gazette": {
+    "title": "Pacto social no Boletim da República",
+    "counts": "Original + {{n}} alteração(ões) ligadas",
+    "lastAlteration": "última alteração publicada em",
+    "empty": "Ainda não há publicações. Comece pela publicação original (constituição).",
+    "addOriginal": "Registar publicação original",
+    "addAlteration": "Registar alteração",
+    "originalHint": "A publicação da constituição da sociedade no Boletim da República. As alterações ficam ligadas a ela.",
+    "alterationHint": "A alteração fica ligada à publicação original e ordenada por data.",
+    "missingOriginal": "Há alterações sem a publicação original. Registe a constituição para completar a cadeia.",
+    "original": "Original",
+    "alterationN": "Alteração {{n}}",
+    "other": "Outra publicação",
+    "published": "Publicado em",
+    "amends": "altera {{code}}",
+    "noDocument": "Sem documento anexado",
+    "type": "Tipo de publicação",
+    "group": {
+      "original": "Publicação original",
+      "alteration": "Alterações"
+    },
+    "date": "Data de publicação",
+    "series": "Série e número do BR",
+    "seriesPlaceholder": "III Série, n.º 45",
+    "summary": "Resumo",
+    "summaryPlaceholder": "Ex.: aumento do capital social para 1 000 000,00 MZN",
+    "document": "Documento (opcional)",
+    "documentHint": "Escolha o PDF ou a imagem da publicação",
+    "beforeOriginal": "A alteração não pode ter data anterior à publicação original.",
+    "saving": "A guardar…",
+    "saved": "Publicação registada.",
+    "subtype": {
+      "constituicao_quotas": "Constituição — sociedade por quotas",
+      "constituicao_sa": "Constituição — sociedade anónima",
+      "constituicao_sucursal": "Constituição — sucursal",
+      "constituicao_associacao": "Constituição — associação",
+      "constituicao_consorcio": "Constituição — consórcio",
+      "alteracao_pacto": "Alteração do pacto social",
+      "alteracao_capital": "Alteração do capital social",
+      "alteracao_orgao": "Alteração dos órgãos sociais",
+      "alteracao_nome": "Alteração da firma",
+      "outros": "Outra publicação"
+    }
+  },
+  "legislation": {
+    "title": "Legislação",
+    "subtitle": "Cada diploma com o original, as alterações ligadas e a versão revista.",
+    "new": "Novo diploma",
+    "search": "Pesquisar por título, referência ou número…",
+    "empty": "Ainda não há diplomas na biblioteca.",
+    "of": "de",
+    "nAlterations": "{{n}} alteração(ões)",
+    "pairing": "Acasalamento de documentos",
+    "pairingLabel": "Original, alterações e versão revista",
+    "chain": "Cadeia do diploma",
+    "pairingHint": "As alterações ficam ligadas ao original e ordenadas pela data de publicação. A versão revista é o texto consolidado que delas resulta.",
+    "alterationN": "Alteração {{n}}",
+    "amends": "altera o {{diploma}}",
+    "noOriginal": "Falta o diploma original.",
+    "noRevised": "Ainda não há versão revista (texto consolidado).",
+    "notFound": "Diploma não encontrado.",
+    "open": "Abrir PDF",
+    "addDocument": "Adicionar documento",
+    "addDocumentHint": "O original, uma alteração ou a versão revista, com o respectivo ficheiro.",
+    "diplomaPlaceholder": "Decreto-Lei n.º 1/2013, de 4 de Julho",
+    "publicationPlaceholder": "Boletim da República, I Série, n.º 53",
+    "effectPlaceholder": "Ex.: revoga os artigos 147.º e 148.º",
+    "fileHint": "Escolha o PDF do diploma (até 50 MB)",
+    "saved": "Documento adicionado.",
+    "removeTitle": "Remover documento?",
+    "removeBody": "O documento {{name}} e o ficheiro serão removidos.",
+    "role": {
+      "original": "Original",
+      "alteracao": "Alteração",
+      "revisto": "Versão revista"
+    },
+    "field": {
+      "title": "Título",
+      "reference": "Referência",
+      "area": "Área",
+      "kind": "Tipo",
+      "number": "Número",
+      "date": "Data",
+      "role": "Papel do documento",
+      "diploma": "Diploma",
+      "publication": "Publicação",
+      "publishedOn": "Data de publicação",
+      "effect": "O que altera",
+      "file": "Ficheiro"
+    },
+    "kind": {
+      "codigo": "Código",
+      "lei": "Lei",
+      "decreto_lei": "Decreto-Lei",
+      "decreto": "Decreto",
+      "diploma_ministerial": "Diploma Ministerial",
+      "resolucao": "Resolução",
+      "regulamento": "Regulamento",
+      "outro": "Outro"
+    },
+    "removeAct": "Remover diploma",
+    "removeActTitle": "Remover diploma?",
+    "removeActBody": "O diploma {{name}}, os seus documentos e ficheiros serão removidos."
   }
 }

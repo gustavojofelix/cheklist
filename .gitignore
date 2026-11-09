@@ -65,3 +65,6 @@ docs/presentation/.video-tmp/
 docs/presentation/*.mp4
 docs/presentation/.narration/
 docs/presentation/narracao/
+docs/presentation/.narration-legislacao/
+docs/presentation/gazette-demo/
+docs/presentation/.video-tmp-legislacao/

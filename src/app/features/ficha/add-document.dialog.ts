@@ -1,16 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { DOCUMENT_TYPES, DocumentsService } from '../../core/documents.service';
 import { errorKey } from '../../core/errors';
-import { Supabase } from '../../core/supabase';
 import { Icon } from '../../shared/ui/icon';
 import { FichaItem } from './ficha.types';
 
 export interface AddDocumentData { orgId: string; items: FichaItem[]; preselect?: string[]; titleOf: (i: FichaItem) => string }
-
-const ACCEPT = ['application/pdf', 'image/png', 'image/jpeg',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-const MAX_BYTES = 20 * 1024 * 1024;
 
 /** Upload one file and relate it to one or more checklist items. */
 @Component({
@@ -61,8 +57,8 @@ const MAX_BYTES = 20 * 1024 * 1024;
 export class AddDocumentDialog {
   protected readonly data = inject<AddDocumentData>(DIALOG_DATA);
   protected readonly ref = inject<DialogRef<boolean>>(DialogRef);
-  private readonly sb = inject(Supabase);
-  protected readonly accept = ACCEPT.join(',');
+  private readonly documents = inject(DocumentsService);
+  protected readonly accept = DOCUMENT_TYPES.join(',');
   protected readonly file = signal<File | null>(null);
   protected readonly fileError = signal<string | null>(null);
   protected readonly error = signal<string | null>(null);
@@ -83,8 +79,8 @@ export class AddDocumentDialog {
     const f = files?.[0] ?? null;
     this.fileError.set(null);
     if (!f) return;
-    if (!ACCEPT.includes(f.type)) { this.fileError.set('ficha.badType'); return; }
-    if (f.size > MAX_BYTES) { this.fileError.set('errors.quota.file_size'); return; }
+    const bad = this.documents.check(f);
+    if (bad) { this.fileError.set(bad); return; }
     this.file.set(f);
   }
 
@@ -93,16 +89,8 @@ export class AddDocumentDialog {
     if (!f) return;
     this.busy.set(true);
     this.error.set(null);
-    const safeName = f.name.normalize('NFKD').replace(/[^\w.\-]+/g, '_').slice(-120);
-    const path = `${this.data.orgId}/${crypto.randomUUID()}/${safeName}`;
     try {
-      const sha = await sha256(f);
-      const up = await this.sb.client.storage.from('documents').upload(path, f, { contentType: f.type, upsert: false });
-      if (up.error) throw up.error;
-      await this.sb.rpc('register_document', {
-        org: this.data.orgId, p_path: path, p_name: f.name, p_mime: f.type, p_size: f.size, p_sha256: sha,
-        p_item_ids: [...this.selected()],
-      });
+      await this.documents.upload(this.data.orgId, f, [...this.selected()]);
       this.ref.close(true);
     } catch (e) {
       this.error.set(errorKey(e));
@@ -110,9 +98,4 @@ export class AddDocumentDialog {
       this.busy.set(false);
     }
   }
-}
-
-async function sha256(f: File): Promise<string> {
-  const buf = await crypto.subtle.digest('SHA-256', await f.arrayBuffer());
-  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }

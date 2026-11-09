@@ -15,7 +15,7 @@ export function errorKey(err: unknown): string {
     'cannot_change_own_role', 'cannot_change_own_status', 'user_exists', 'invite_failed', 'organization_name_required',
     'gateway_not_configured', 'gateway_error', 'invalid_voucher', 'nothing_to_cancel', 'nothing_to_buy', 'invalid_method',
     'ai_not_configured', 'ai_disabled', 'ai_read_only', 'ai_forbidden', 'ai_refused', 'ai_busy', 'ai_error',
-    'ocr_unsupported_type', 'question_required', 'invalid_action'];
+    'ocr_unsupported_type', 'question_required', 'invalid_action', 'alteration_before_original'];
   const hit = known.find((k) => msg.startsWith(k));
   if (hit) return 'errors.' + hit;
   if (e.code === '42501' || msg.includes('row-level security')) return 'errors.forbidden';

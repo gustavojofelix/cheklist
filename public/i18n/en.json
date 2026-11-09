@@ -38,7 +38,8 @@
     "billing": "Subscriptions",
     "templates": "Checklist templates",
     "plans": "Plans",
-    "adminAudit": "Platform logs"
+    "adminAudit": "Platform logs",
+    "legislation": "Legislation"
   },
   "auth": {
     "email": "Email address",
@@ -209,7 +210,8 @@
     "ai_error": "The AI failed. Please try again.",
     "ocr_unsupported_type": "Only PDFs and images can be read.",
     "question_required": "Type a question.",
-    "invalid_action": "Invalid action."
+    "invalid_action": "Invalid action.",
+    "alteration_before_original": "An amendment cannot be dated before the original."
   },
   "compliance": {
     "regular": "Compliant",
@@ -753,5 +755,109 @@
     "page": "p.",
     "value": "Proposed value",
     "accept": "Accept"
+  },
+  "gazette": {
+    "title": "Articles of association in the Official Gazette",
+    "counts": "Original + {{n}} linked alteration(s)",
+    "lastAlteration": "last alteration published on",
+    "empty": "No publications yet. Start with the original publication (incorporation).",
+    "addOriginal": "Register original publication",
+    "addAlteration": "Register alteration",
+    "originalHint": "The publication of the company's incorporation in the Boletim da República. Alterations are linked to it.",
+    "alterationHint": "The alteration is linked to the original publication and ordered by date.",
+    "missingOriginal": "There are alterations without the original publication. Register the incorporation to complete the chain.",
+    "original": "Original",
+    "alterationN": "Alteration {{n}}",
+    "other": "Other publication",
+    "published": "Published on",
+    "amends": "amends {{code}}",
+    "noDocument": "No document attached",
+    "type": "Publication type",
+    "group": {
+      "original": "Original publication",
+      "alteration": "Alterations"
+    },
+    "date": "Publication date",
+    "series": "Gazette series and number",
+    "seriesPlaceholder": "Series III, no. 45",
+    "summary": "Summary",
+    "summaryPlaceholder": "E.g. share capital increased to MZN 1,000,000.00",
+    "document": "Document (optional)",
+    "documentHint": "Choose the PDF or image of the publication",
+    "beforeOriginal": "An alteration cannot be dated before the original publication.",
+    "saving": "Saving…",
+    "saved": "Publication registered.",
+    "subtype": {
+      "constituicao_quotas": "Incorporation — private limited company",
+      "constituicao_sa": "Incorporation — public limited company",
+      "constituicao_sucursal": "Incorporation — branch",
+      "constituicao_associacao": "Incorporation — association",
+      "constituicao_consorcio": "Incorporation — consortium",
+      "alteracao_pacto": "Amendment to the articles",
+      "alteracao_capital": "Share capital change",
+      "alteracao_orgao": "Change of corporate bodies",
+      "alteracao_nome": "Change of company name",
+      "outros": "Other publication"
+    }
+  },
+  "legislation": {
+    "title": "Legislation",
+    "subtitle": "Each act with its original, linked amendments and revised version.",
+    "new": "New act",
+    "search": "Search by title, reference or number…",
+    "empty": "No acts in the library yet.",
+    "of": "of",
+    "nAlterations": "{{n}} amendment(s)",
+    "pairing": "Document pairing",
+    "pairingLabel": "Original, amendments and revised version",
+    "chain": "Act history",
+    "pairingHint": "Amendments are linked to the original and ordered by publication date. The revised version is the consolidated text that results from them.",
+    "alterationN": "Amendment {{n}}",
+    "amends": "amends {{diploma}}",
+    "noOriginal": "The original act is missing.",
+    "noRevised": "No revised (consolidated) version yet.",
+    "notFound": "Act not found.",
+    "open": "Open PDF",
+    "addDocument": "Add document",
+    "addDocumentHint": "The original, an amendment or the revised version, with its file.",
+    "diplomaPlaceholder": "Decree-Law no. 1/2013, of 4 July",
+    "publicationPlaceholder": "Boletim da República, Series I, no. 53",
+    "effectPlaceholder": "E.g. repeals articles 147 and 148",
+    "fileHint": "Choose the PDF of the act (up to 50 MB)",
+    "saved": "Document added.",
+    "removeTitle": "Remove document?",
+    "removeBody": "The document {{name}} and its file will be removed.",
+    "role": {
+      "original": "Original",
+      "alteracao": "Amendment",
+      "revisto": "Revised version"
+    },
+    "field": {
+      "title": "Title",
+      "reference": "Reference",
+      "area": "Area",
+      "kind": "Type",
+      "number": "Number",
+      "date": "Date",
+      "role": "Document role",
+      "diploma": "Act",
+      "publication": "Publication",
+      "publishedOn": "Publication date",
+      "effect": "What it changes",
+      "file": "File"
+    },
+    "kind": {
+      "codigo": "Code",
+      "lei": "Law",
+      "decreto_lei": "Decree-Law",
+      "decreto": "Decree",
+      "diploma_ministerial": "Ministerial Order",
+      "resolucao": "Resolution",
+      "regulamento": "Regulation",
+      "outro": "Other"
+    },
+    "removeAct": "Remove act",
+    "removeActTitle": "Remove act?",
+    "removeActBody": "The act {{name}} and all its documents and files will be removed."
   }
 }

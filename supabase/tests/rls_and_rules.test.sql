@@ -11,7 +11,7 @@ begin
   select n.nspname into s from pg_extension e join pg_namespace n on n.oid = e.extnamespace where e.extname = 'pgtap';
   perform set_config('search_path', 'public, extensions, ' || quote_ident(s), true);
 end $$;
-select plan(67);
+select plan(74);
 
 -- ---------------------------------------------------------------- fixtures
 create schema tests;
@@ -232,6 +232,34 @@ update public.subscriptions set current_period_end = now() - interval '1 minute'
 select private.subscription_lifecycle();
 select is((select status::text from public.subscriptions where organization_id = (select org_a from tests.ids)), 'expired',
           'a canceled subscription expires at the end of the period');
+
+-- ------------------------------------------------------- legislation library (document pairing)
+select tests.login('10000000-0000-4000-a000-00000000000a');
+select throws_ok($$ insert into public.legal_acts (title) values ('Customer act') $$, '42501', null, 'customers cannot add legislation');
+select tests.login('10000000-0000-4000-a000-00000000000c');
+select lives_ok($$ insert into public.legal_acts (id, reference, title, kind, number, act_date)
+                   values ('20000000-0000-4000-a000-000000000001', 'T-001', 'Código de teste', 'decreto', '1.000', '1950-12-12') $$,
+                'staff add a legal act');
+select lives_ok($$ insert into public.legal_act_documents (act_id, role, diploma, published_on, storage_path, original_name, mime_type, size_bytes)
+                   values ('20000000-0000-4000-a000-000000000001', 'original', 'Decreto n.º 1.000', '1950-12-12',
+                           '20000000-0000-4000-a000-000000000001/a/original.pdf', 'original.pdf', 'application/pdf', 10) $$,
+                'staff add the original');
+select throws_ok($$ insert into public.legal_act_documents (act_id, role, diploma, published_on, storage_path, original_name, mime_type, size_bytes)
+                    values ('20000000-0000-4000-a000-000000000001', 'original', 'Outro original', '1951-01-01',
+                            '20000000-0000-4000-a000-000000000001/b/x.pdf', 'x.pdf', 'application/pdf', 10) $$,
+                 '23505', null, 'an act has only one original');
+select throws_ok($$ insert into public.legal_act_documents (act_id, role, diploma, published_on, storage_path, original_name, mime_type, size_bytes)
+                    values ('20000000-0000-4000-a000-000000000001', 'alteracao', 'Decreto antigo', '1940-01-01',
+                            '20000000-0000-4000-a000-000000000001/c/x.pdf', 'x.pdf', 'application/pdf', 10) $$,
+                 'P0001', 'alteration_before_original', 'an alteration cannot predate the original');
+select lives_ok($$ insert into public.legal_act_documents (act_id, role, diploma, published_on, storage_path, original_name, mime_type, size_bytes)
+                   values ('20000000-0000-4000-a000-000000000001', 'alteracao', 'Decreto-Lei n.º 1/2013', '2013-07-04',
+                           '20000000-0000-4000-a000-000000000001/d/alt.pdf', 'alt.pdf', 'application/pdf', 10) $$,
+                'staff link an alteration to the original');
+select tests.login('10000000-0000-4000-a000-00000000000a');
+select is((select count(*)::int from public.legal_act_documents where act_id = '20000000-0000-4000-a000-000000000001'), 2,
+          'customers read the original and its alterations');
+select tests.logout();
 
 -- ------------------------------------------------------- platform staff
 select tests.login('10000000-0000-4000-a000-00000000000c');

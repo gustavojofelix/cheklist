@@ -37,6 +37,8 @@ export const routes: Routes = [
       { path: 'billing', title: 'nav.billing', canActivate: [roleGuard('admin')], loadComponent: () => import('./features/billing/billing.page').then((m) => m.BillingPage) },
       { path: 'reports', title: 'nav.reports', loadComponent: () => import('./features/reports/reports.page').then((m) => m.ReportsPage) },
       { path: 'reports/:checklistId', title: 'nav.reports', loadComponent: () => import('./features/reports/select-points.page').then((m) => m.SelectPointsPage) },
+      { path: 'legislation', title: 'nav.legislation', loadComponent: () => import('./features/legislation/legislation-list.page').then((m) => m.LegislationListPage) },
+      { path: 'legislation/:id', title: 'nav.legislation', loadComponent: () => import('./features/legislation/legislation-detail.page').then((m) => m.LegislationDetailPage) },
       { path: 'ai', title: 'nav.ai', loadComponent: () => import('./features/ai/ai.page').then((m) => m.AiPage) },
     ],
   },

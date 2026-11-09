@@ -17,7 +17,9 @@ import { ComplianceChip } from '../../shared/ui/compliance-chip';
 import { ConfirmService } from '../../shared/ui/confirm';
 import { Icon } from '../../shared/ui/icon';
 import { AddDocumentDialog, AddDocumentData } from './add-document.dialog';
-import { Category, FichaDocument, FichaItem } from './ficha.types';
+import { Category, FichaDocument, FichaItem, GAZETTE_HOST_CODE } from './ficha.types';
+import { GazetteChain } from './gazette-chain';
+import { GazetteDialog, GazetteDialogData } from './gazette.dialog';
 
 interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: string; source_quote: string | null; page: number | null;
   documents: { original_name: string } | null; checklist_items: { catalog_code: string | null; title: string } | null }
@@ -25,7 +27,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
 @Component({
   selector: 'app-ficha',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, RouterLink, NgTemplateOutlet, TranslocoPipe, Icon, ComplianceChip],
+  imports: [FormsModule, RouterLink, NgTemplateOutlet, TranslocoPipe, Icon, ComplianceChip, GazetteChain],
   template: `
     <nav class="mb-2 text-sm text-slate-600"><a routerLink="/entities" class="hover:underline">{{ 'nav.entities' | transloco }}</a> / {{ orgName() }}</nav>
     <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
@@ -135,6 +137,9 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
                       }</td>
                     }
                   </tr>
+                  @if (isGazetteHost(it)) {
+                    <tr><td colspan="7" class="!pt-0"><ng-container *ngTemplateOutlet="gazetteTpl; context: { $implicit: it }" /></td></tr>
+                  }
                 } @empty {
                   <tr><td colspan="7" class="py-4 text-center text-slate-600">{{ 'ficha.noItems' | transloco }}</td></tr>
                 }
@@ -177,6 +182,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
                     </div>
                   }
                 </dl>
+                @if (isGazetteHost(it)) { <div class="mt-3"><ng-container *ngTemplateOutlet="gazetteTpl; context: { $implicit: it }" /></div> }
               </li>
             } @empty {
               <li class="px-4 py-4 text-center text-sm text-slate-600">{{ 'ficha.noItems' | transloco }}</li>
@@ -259,6 +265,11 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
       }
     </ng-template>
 
+    <ng-template #gazetteTpl let-it>
+      <app-gazette-chain [entries]="gazetteOf(it.id)" [docs]="docs()" [canManage]="canManage()" [canWrite]="canWrite()" [editMode]="editMode()"
+                         (add)="addPublication(it)" (attach)="addDocument([$event.id])" (remove)="removeItem($event)" (download)="download($event)" />
+    </ng-template>
+
     <!-- phones: add-document button always within reach -->
     @if (canWrite()) {
       <button type="button" class="fixed right-4 bottom-4 z-20 grid size-14 place-items-center rounded-full bg-brand-600 text-white shadow-lg ring-4 ring-sun-400/60 md:hidden"
@@ -302,7 +313,7 @@ export class FichaPage {
     return all.filter((i) => i.is_category && !i.parent_id)
       .map((c) => ({ item: c, children: all.filter((i) => i.parent_id === c.id) }));
   });
-  protected readonly itemCount = computed(() => this.items().filter((i) => !i.is_category).length);
+  protected readonly itemCount = computed(() => this.items().filter((i) => !i.is_category && !i.is_official_gazette).length);
 
   constructor() {
     effect(() => { void this.load(this.id()); });
@@ -333,6 +344,13 @@ export class FichaPage {
   }
   protected docsOf(itemId: string): FichaDocument[] {
     return this.docs().filter((d) => d.item_ids.includes(itemId));
+  }
+  /** SOC-16 holds the Boletim da República publications (original articles and their alterations). */
+  protected isGazetteHost(i: FichaItem): boolean {
+    return i.catalog_code === GAZETTE_HOST_CODE || this.items().some((x) => x.parent_id === i.id && x.is_official_gazette);
+  }
+  protected gazetteOf(hostId: string): FichaItem[] {
+    return this.items().filter((i) => i.parent_id === hostId && i.is_official_gazette);
   }
   protected applicableCount(c: Category): number { return c.children.filter((i) => i.is_applicable).length; }
   protected regularCount(c: Category): number { return c.children.filter((i) => i.is_applicable && i.compliance_state === 'regular').length; }
@@ -446,6 +464,15 @@ export class FichaPage {
     const ref = this.dialog.open<boolean>(AddDocumentDialog, { data });
     if (await firstValueFrom(ref.closed)) {
       this.toast.success('ficha.uploaded');
+      await this.load(this.id());
+    }
+  }
+
+  protected async addPublication(host: FichaItem): Promise<void> {
+    const data: GazetteDialogData = { host, entries: this.gazetteOf(host.id) };
+    const ref = this.dialog.open<boolean>(GazetteDialog, { data, ariaLabelledBy: 'gz-title', ariaModal: true });
+    if (await firstValueFrom(ref.closed)) {
+      this.toast.success('gazette.saved');
       await this.load(this.id());
     }
   }

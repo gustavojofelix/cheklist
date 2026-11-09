@@ -9,9 +9,11 @@
 import { chromium } from '@playwright/test';
 import { createReadStream, createWriteStream, existsSync, readFileSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
+import { V } from './lib/variant.mjs';
 
 const DIR = 'docs/presentation';
-const SRC = `${DIR}/Checklist-Legal-Video.webm`;
+const SRC = `${DIR}/${V.video}.webm`;
+const NARR = V.narr;
 const PRESETS = {
   full: { suffix: '', width: 0, fps: 25, vbr: 4_000_000, abr: 128_000 },
   hd: { suffix: '-HD', width: 0, fps: 25, vbr: 1_000_000, abr: 96_000 },
@@ -19,8 +21,8 @@ const PRESETS = {
 };
 const P = PRESETS[process.env.MUX_PRESET ?? 'full'];
 if (!P) throw new Error(`unknown MUX_PRESET; use ${Object.keys(PRESETS).join(', ')}`);
-const OUT = `${DIR}/Checklist-Legal-Video-ptBR${P.suffix}.mp4`;
-const timeline = JSON.parse(readFileSync(`${DIR}/.narration/timeline.json`, 'utf8'));
+const OUT = `${DIR}/${V.video}-ptBR${P.suffix}.mp4`;
+const timeline = JSON.parse(readFileSync(`${NARR}/timeline.json`, 'utf8'));
 const OFFSET = Number(process.env.NARRATION_OFFSET ?? 0.25);   // the recording starts slightly before the scene clock
 
 const browser = await chromium.launch({ channel: 'msedge', args: ['--autoplay-policy=no-user-gesture-required'] });
@@ -29,7 +31,7 @@ const page = await browser.newPage();
 const server = createServer((req, res) => {
   const name = decodeURIComponent(new URL(req.url, 'http://x').pathname.slice(1));
   if (!name) { res.writeHead(200, { 'content-type': 'text/html' }); return res.end('<!doctype html><title>mux</title><video id="v" playsinline></video>'); }
-  const file = name === 'video.webm' ? SRC : `${DIR}/.narration/${name}`;
+  const file = name === 'video.webm' ? SRC : `${NARR}/${name}`;
   if (!/^[\w.-]+\.(webm|mp3)$/.test(name) || !existsSync(file)) { res.writeHead(404); return res.end(); }
   const size = statSync(file).size;
   const type = name.endsWith('.webm') ? 'video/webm' : 'audio/mpeg';
