@@ -43,7 +43,7 @@ interface Tpl {
           @for (t of rows(); track t.id) {
             <tr>
               <td class="font-medium">{{ t.name }} @if (t.organization_id) { <span class="chip bg-violet-100 text-violet-800">{{ 'admin.tpl.entitySpecific' | transloco }}</span> }</td>
-              <td class="text-slate-500">{{ t.sector ? refs.label('sector', t.sector) : ('admin.tpl.allSectors' | transloco) }}</td>
+              <td class="text-slate-600">{{ t.sector ? refs.label('sector', t.sector) : ('admin.tpl.allSectors' | transloco) }}</td>
               <td>v{{ published(t) ?? '—' }} @if (hasDraft(t)) { <span class="chip bg-amber-100 text-amber-800">{{ 'admin.tpl.draft' | transloco }}</span> }</td>
               <td>{{ t.orgs }}</td>
               <td><span class="chip bg-slate-100 text-slate-700">{{ 'admin.tpl.status.' + t.status | transloco }}</span></td>

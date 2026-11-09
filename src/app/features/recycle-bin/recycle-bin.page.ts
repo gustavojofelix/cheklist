@@ -23,7 +23,7 @@ interface Deleted { id: string; original_name: string; deleted_at: string; purge
           @for (d of docs(); track d.id) {
             <tr>
               <td class="font-medium"><app-icon name="file" [size]="14" /> {{ d.original_name }}</td>
-              <td class="text-slate-500">{{ d.deleted_at | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="text-slate-600">{{ d.deleted_at | date: 'dd/MM/yyyy HH:mm' }}</td>
               <td>{{ daysLeft(d) }}</td>
               <td class="text-right">
                 @if (ctx.canWrite('user')) {
@@ -32,12 +32,12 @@ interface Deleted { id: string; original_name: string; deleted_at: string; purge
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="4" class="py-10 text-center text-slate-500">{{ 'recycle.empty' | transloco }}</td></tr>
+            <tr><td colspan="4" class="py-10 text-center text-slate-600">{{ 'recycle.empty' | transloco }}</td></tr>
           }
         </tbody>
       </table>
     </div>
-    <p class="mt-3 text-xs text-slate-500">{{ 'recycle.note' | transloco }}</p>
+    <p class="mt-3 text-xs text-slate-600">{{ 'recycle.note' | transloco }}</p>
   `,
 })
 export class RecycleBinPage {

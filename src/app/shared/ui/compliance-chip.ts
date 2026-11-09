@@ -12,8 +12,8 @@ export type ComplianceState = 'regular' | 'atencao' | 'critico';
 export class ComplianceChip {
   readonly state = input.required<ComplianceState>();
   protected readonly cls = computed(() => ({
-    regular: 'bg-emerald-100 text-emerald-800',
-    atencao: 'bg-amber-100 text-amber-800',
+    regular: 'bg-brand-100 text-brand-800',
+    atencao: 'bg-sun-100 text-sun-700',
     critico: 'bg-red-100 text-red-800',
   })[this.state()]);
 }

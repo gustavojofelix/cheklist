@@ -20,14 +20,14 @@ import { errorOf, phone9, sameAs } from '../../shared/validators';
         <h2 class="font-semibold">{{ 'profile.info' | transloco }}</h2>
         <div><label class="label" for="p-name">{{ 'auth.fullName' | transloco }}</label><input id="p-name" class="input" formControlName="full_name" /></div>
         <div><label class="label" for="p-email">{{ 'auth.email' | transloco }}</label><input id="p-email" type="email" class="input" formControlName="email" />
-          <p class="mt-1 text-xs text-slate-500">{{ 'profile.emailHint' | transloco }}</p></div>
+          <p class="mt-1 text-xs text-slate-600">{{ 'profile.emailHint' | transloco }}</p></div>
         <div><label class="label" for="p-phone">{{ 'auth.phone' | transloco }}</label><input id="p-phone" class="input" formControlName="phone_number" maxlength="9" />
           @if (e(info, 'phone_number'); as k) { <p class="field-error">{{ k | transloco }}</p> }</div>
         <div class="flex justify-end"><button class="btn-primary" type="submit" [disabled]="busy() || info.invalid">{{ 'common.save' | transloco }}</button></div>
       </form>
       <form class="card space-y-4 p-5" [formGroup]="pw" (ngSubmit)="savePassword()" novalidate>
         <h2 class="font-semibold">{{ 'profile.password' | transloco }}</h2>
-        <p class="text-sm text-slate-500">{{ 'profile.passwordHint' | transloco }}</p>
+        <p class="text-sm text-slate-600">{{ 'profile.passwordHint' | transloco }}</p>
         <div><label class="label" for="p-pw">{{ 'auth.newPassword' | transloco }}</label><input id="p-pw" type="password" class="input" formControlName="password" autocomplete="new-password" />
           @if (e(pw, 'password'); as k) { <p class="field-error">{{ k | transloco: { min: 8 } }}</p> }</div>
         <div><label class="label" for="p-pw2">{{ 'auth.confirmPassword' | transloco }}</label><input id="p-pw2" type="password" class="input" formControlName="confirm" autocomplete="new-password" />

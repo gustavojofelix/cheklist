@@ -32,10 +32,10 @@ interface Purchase { price?: Price; plan?: Plan; addon?: 'storage_5gb' }
       <section class="card p-5">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p class="text-sm text-slate-500">{{ 'billing.currentPlan' | transloco }}</p>
+            <p class="text-sm text-slate-600">{{ 'billing.currentPlan' | transloco }}</p>
             <p class="text-xl font-semibold">{{ s.plan }} <span class="chip ml-2 bg-brand-100 text-brand-700">{{ 'billing.status.' + s.status | transloco }}</span></p>
           </div>
-          <div class="text-right text-sm text-slate-500">
+          <div class="text-right text-sm text-slate-600">
             {{ (s.status === 'trial' ? 'billing.trialEnds' : 'billing.periodEnds') | transloco }}
             <strong>{{ (s.trial_ends_at ?? s.current_period_end) | date: 'dd/MM/yyyy' }}</strong>
             @if (s.status === 'active' || s.status === 'past_due') {
@@ -47,14 +47,14 @@ interface Purchase { price?: Price; plan?: Plan; addon?: 'storage_5gb' }
           <div class="mt-5 grid gap-4 sm:grid-cols-3">
             @for (u of usageBars(p); track u.key) {
               <div>
-                <div class="flex justify-between text-sm"><span>{{ 'billing.usage.' + u.key | transloco }}</span><span class="text-slate-500">{{ u.label }}</span></div>
+                <div class="flex justify-between text-sm"><span>{{ 'billing.usage.' + u.key | transloco }}</span><span class="text-slate-600">{{ u.label }}</span></div>
                 <div class="mt-1 h-2 overflow-hidden rounded-full bg-slate-200">
                   <div class="h-full rounded-full" [class]="u.pct >= 95 ? 'bg-red-500' : u.pct >= 80 ? 'bg-amber-500' : 'bg-brand-500'" [style.width.%]="u.pct"></div>
                 </div>
               </div>
             }
           </div>
-          <p class="mt-3 text-xs text-slate-500">{{ 'billing.recycledNote' | transloco }}</p>
+          <p class="mt-3 text-xs text-slate-600">{{ 'billing.recycledNote' | transloco }}</p>
           @if (s.plan_slug !== 'trial') {
             <button type="button" class="btn-secondary mt-3 !py-1" (click)="buy({ addon: 'storage_5gb' })">{{ 'billing.addStorage' | transloco }}</button>
           }
@@ -76,7 +76,7 @@ interface Purchase { price?: Price; plan?: Plan; addon?: 'storage_5gb' }
             @if (quote()?.voucher_valid === false) { <p class="field-error">{{ 'billing.invalidVoucher' | transloco }}</p> }
             @if (quote(); as q) {
               <p class="mt-3 text-2xl font-semibold">{{ q.amount | number: '1.2-2' }} {{ q.currency }}
-                @if (q.discount > 0) { <span class="ml-2 text-sm font-normal text-slate-500 line-through">{{ q.original | number: '1.2-2' }}</span> }</p>
+                @if (q.discount > 0) { <span class="ml-2 text-sm font-normal text-slate-600 line-through">{{ q.original | number: '1.2-2' }}</span> }</p>
             }
           </div>
           <fieldset>
@@ -85,7 +85,7 @@ interface Purchase { price?: Price; plan?: Plan; addon?: 'storage_5gb' }
               <label class="mb-2 flex items-start gap-2 rounded-lg border p-3 text-sm" [class.opacity-50]="m === 'sislog'"
                      [class]="method() === m ? 'border-brand-500 bg-brand-50' : 'border-slate-200'">
                 <input type="radio" name="method" [value]="m" [checked]="method() === m" [disabled]="m === 'sislog'" (change)="method.set(m)" class="mt-0.5" />
-                <span><strong>{{ 'billing.methods.' + m | transloco }}</strong><span class="block text-xs text-slate-500">{{ 'billing.methods.' + m + 'Hint' | transloco }}</span></span>
+                <span><strong>{{ 'billing.methods.' + m | transloco }}</strong><span class="block text-xs text-slate-600">{{ 'billing.methods.' + m + 'Hint' | transloco }}</span></span>
               </label>
             }
           </fieldset>
@@ -118,10 +118,10 @@ interface Purchase { price?: Price; plan?: Plan; addon?: 'storage_5gb' }
         @let pr = priceFor(p);
         <article class="card flex flex-col p-5" [class.ring-2]="p.slug === ctx.subscription()?.plan_slug" [class.ring-brand-500]="p.slug === ctx.subscription()?.plan_slug">
           <h3 class="font-semibold">{{ planName(p) }}</h3>
-          <p class="mt-1 text-sm text-slate-500">{{ lang() === 'en' ? (p.translations.en?.description ?? p.description) : p.description }}</p>
+          <p class="mt-1 text-sm text-slate-600">{{ lang() === 'en' ? (p.translations.en?.description ?? p.description) : p.description }}</p>
           <p class="mt-4 text-2xl font-semibold">
-            @if (pr) { {{ pr.amount | number: '1.2-2' }} MZN<span class="text-sm font-normal text-slate-500"> / {{ 'admin.period.' + pr.period | transloco }}</span> }
-            @else { <span class="text-base font-normal text-slate-500">{{ 'billing.notInPeriod' | transloco }}</span> }
+            @if (pr) { {{ pr.amount | number: '1.2-2' }} MZN<span class="text-sm font-normal text-slate-600"> / {{ 'admin.period.' + pr.period | transloco }}</span> }
+            @else { <span class="text-base font-normal text-slate-600">{{ 'billing.notInPeriod' | transloco }}</span> }
           </p>
           <ul class="mt-4 space-y-1 text-sm text-slate-600">
             <li>{{ 'billing.upToUsers' | transloco: { n: p.max_users ?? '∞' } }}</li>
@@ -142,7 +142,7 @@ interface Purchase { price?: Price; plan?: Plan; addon?: 'storage_5gb' }
             @for (i of invoices(); track i.id) {
               <tr><td class="font-mono text-xs">{{ i.number }}</td><td>{{ i.amount | number: '1.2-2' }} {{ i.currency }}</td>
                 <td>{{ i.due_date | date: 'dd/MM/yyyy' }}</td><td><span class="chip bg-slate-100 text-slate-700">{{ 'billing.invoiceStatus.' + i.status | transloco }}</span></td></tr>
-            } @empty { <tr><td colspan="4" class="py-4 text-center text-slate-500">—</td></tr> }
+            } @empty { <tr><td colspan="4" class="py-4 text-center text-slate-600">—</td></tr> }
           </tbody>
         </table>
       </section>
@@ -152,9 +152,9 @@ interface Purchase { price?: Price; plan?: Plan; addon?: 'storage_5gb' }
           <thead><tr><th>{{ 'billing.date' | transloco }}</th><th>{{ 'billing.description' | transloco }}</th><th>{{ 'billing.amount' | transloco }}</th><th>{{ 'common.status' | transloco }}</th></tr></thead>
           <tbody>
             @for (p of payments(); track p.id) {
-              <tr><td class="text-slate-500">{{ p.created_at | date: 'dd/MM/yyyy' }}</td><td>{{ p.description }}<span class="block text-xs text-slate-500">{{ 'billing.methods.' + p.gateway | transloco }}</span></td>
+              <tr><td class="text-slate-600">{{ p.created_at | date: 'dd/MM/yyyy' }}</td><td>{{ p.description }}<span class="block text-xs text-slate-600">{{ 'billing.methods.' + p.gateway | transloco }}</span></td>
                 <td>{{ p.amount | number: '1.2-2' }} {{ p.currency }}</td><td><span class="chip bg-slate-100 text-slate-700">{{ 'billing.paymentStatus.' + p.status | transloco }}</span></td></tr>
-            } @empty { <tr><td colspan="4" class="py-4 text-center text-slate-500">—</td></tr> }
+            } @empty { <tr><td colspan="4" class="py-4 text-center text-slate-600">—</td></tr> }
           </tbody>
         </table>
       </section>

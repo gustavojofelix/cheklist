@@ -13,7 +13,7 @@ import { LocaleService } from '../../core/i18n';
   imports: [ReactiveFormsModule, RouterLink, TranslocoPipe],
   template: `
     <h1 class="text-2xl font-semibold text-slate-900">{{ 'auth.login.title' | transloco }}</h1>
-    <p class="mt-1 text-sm text-slate-500">{{ 'auth.login.subtitle' | transloco }}</p>
+    <p class="mt-1 text-sm text-slate-600">{{ 'auth.login.subtitle' | transloco }}</p>
 
     @if (suspended()) {
       <p class="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{{ 'auth.login.suspended' | transloco }}</p>
@@ -38,7 +38,7 @@ import { LocaleService } from '../../core/i18n';
         {{ (busy() ? 'common.wait' : 'auth.login.submit') | transloco }}
       </button>
     </form>
-    <p class="mt-6 text-center text-sm text-slate-500">
+    <p class="mt-6 text-center text-sm text-slate-600">
       {{ 'auth.login.noAccount' | transloco }}
       <a routerLink="/register" class="font-medium text-brand-600 hover:underline">{{ 'auth.login.createOne' | transloco }}</a>
     </p>

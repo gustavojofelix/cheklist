@@ -20,16 +20,16 @@ interface Voucher { id: string; code: string; name: string; discount_type: 'perc
   template: `
     <app-page-header [title]="'admin.nav.vouchers' | transloco" [subtitle]="'admin.vouchers.subtitle' | transloco" />
     <form class="card mb-4 grid gap-3 p-4 sm:grid-cols-4" [formGroup]="form" (ngSubmit)="create()">
-      <label class="text-xs text-slate-500">{{ 'admin.vouchers.code' | transloco }}<input class="input mt-1 font-mono uppercase" formControlName="code" placeholder="MOBILE2026" /></label>
-      <label class="text-xs text-slate-500 sm:col-span-2">{{ 'common.name' | transloco }}<input class="input mt-1" formControlName="name" /></label>
-      <label class="text-xs text-slate-500">{{ 'admin.plans.title' | transloco }}
+      <label class="text-xs text-slate-600">{{ 'admin.vouchers.code' | transloco }}<input class="input mt-1 font-mono uppercase" formControlName="code" placeholder="MOBILE2026" /></label>
+      <label class="text-xs text-slate-600 sm:col-span-2">{{ 'common.name' | transloco }}<input class="input mt-1" formControlName="name" /></label>
+      <label class="text-xs text-slate-600">{{ 'admin.plans.title' | transloco }}
         <select class="input mt-1" formControlName="plan_id"><option [ngValue]="null">{{ 'admin.vouchers.anyPlan' | transloco }}</option>
           @for (p of plans(); track p.id) { <option [ngValue]="p.id">{{ p.name }}</option> }</select></label>
-      <label class="text-xs text-slate-500">{{ 'admin.vouchers.type' | transloco }}
+      <label class="text-xs text-slate-600">{{ 'admin.vouchers.type' | transloco }}
         <select class="input mt-1" formControlName="discount_type"><option value="percentage">%</option><option value="fixed">MZN</option></select></label>
-      <label class="text-xs text-slate-500">{{ 'admin.vouchers.value' | transloco }}<input type="number" min="0.01" step="0.01" class="input mt-1" formControlName="discount_value" /></label>
-      <label class="text-xs text-slate-500">{{ 'admin.vouchers.maxUses' | transloco }}<input type="number" min="1" class="input mt-1" formControlName="max_uses" [placeholder]="'admin.plans.unlimited' | transloco" /></label>
-      <label class="text-xs text-slate-500">{{ 'admin.vouchers.validUntil' | transloco }}<input type="date" class="input mt-1" formControlName="valid_until" /></label>
+      <label class="text-xs text-slate-600">{{ 'admin.vouchers.value' | transloco }}<input type="number" min="0.01" step="0.01" class="input mt-1" formControlName="discount_value" /></label>
+      <label class="text-xs text-slate-600">{{ 'admin.vouchers.maxUses' | transloco }}<input type="number" min="1" class="input mt-1" formControlName="max_uses" [placeholder]="'admin.plans.unlimited' | transloco" /></label>
+      <label class="text-xs text-slate-600">{{ 'admin.vouchers.validUntil' | transloco }}<input type="date" class="input mt-1" formControlName="valid_until" /></label>
       <div class="sm:col-span-4 flex justify-end"><button class="btn-primary" type="submit" [disabled]="form.invalid"><app-icon name="plus" [size]="16" /> {{ 'common.create' | transloco }}</button></div>
     </form>
     <div class="card overflow-x-auto">
@@ -46,7 +46,7 @@ interface Voucher { id: string; code: string; name: string; discount_type: 'perc
               <td><label class="flex items-center gap-1.5 text-sm"><input type="checkbox" [checked]="v.is_active" (change)="toggle(v, $any($event.target).checked)" />
                 {{ (v.is_active ? 'admin.plans.active' : 'admin.vouchers.inactive') | transloco }}</label></td>
             </tr>
-          } @empty { <tr><td colspan="6" class="py-8 text-center text-slate-500">{{ 'admin.vouchers.empty' | transloco }}</td></tr> }
+          } @empty { <tr><td colspan="6" class="py-8 text-center text-slate-600">{{ 'admin.vouchers.empty' | transloco }}</td></tr> }
         </tbody>
       </table>
     </div>

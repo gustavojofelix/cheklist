@@ -18,14 +18,14 @@ interface Preview { organization: string; email: string; role: string; status: '
   imports: [ReactiveFormsModule, RouterLink, TranslocoPipe],
   template: `
     @if (loading()) {
-      <p class="text-sm text-slate-500">{{ 'common.loading' | transloco }}</p>
+      <p class="text-sm text-slate-600">{{ 'common.loading' | transloco }}</p>
     } @else if (!preview() || preview()!.status !== 'open') {
       <h1 class="text-xl font-semibold">{{ 'auth.invite.unavailable' | transloco }}</h1>
       <p class="mt-2 text-sm text-slate-600">{{ ('auth.invite.' + (preview()?.status ?? 'invalid')) | transloco }}</p>
       <a routerLink="/login" class="btn-secondary mt-6">{{ 'auth.login.submit' | transloco }}</a>
     } @else {
       <h1 class="text-2xl font-semibold text-slate-900">{{ 'auth.invite.title' | transloco: { org: preview()!.organization } }}</h1>
-      <p class="mt-1 text-sm text-slate-500">
+      <p class="mt-1 text-sm text-slate-600">
         {{ 'auth.invite.as' | transloco: { email: preview()!.email, role: ('roles.' + preview()!.role | transloco) } }}
       </p>
       @if (error()) { <p class="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{{ error()! | transloco }}</p> }
@@ -55,7 +55,7 @@ interface Preview { organization: string; email: string; role: string; status: '
               {{ 'common.and' | transloco }} <a routerLink="/privacy" class="text-brand-600 underline">{{ 'auth.privacy' | transloco }}</a></span>
           </label>
           <button type="submit" class="btn-primary w-full" [disabled]="busy() || form.invalid">{{ 'auth.invite.createAndAccept' | transloco }}</button>
-          <p class="text-center text-sm text-slate-500">{{ 'auth.invite.haveAccount' | transloco }}
+          <p class="text-center text-sm text-slate-600">{{ 'auth.invite.haveAccount' | transloco }}
             <a [routerLink]="['/login']" [queryParams]="{ returnUrl: '/invite/' + token() }" class="text-brand-600 hover:underline">{{ 'auth.login.submit' | transloco }}</a></p>
         </form>
       }

@@ -19,20 +19,20 @@ interface Result { pdf_url: string; docx_url: string; preview_url: string }
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TranslocoPipe, ComplianceChip, Icon],
   template: `
-    <nav class="mb-2 text-sm text-slate-500"><a routerLink="/reports" class="hover:underline">{{ 'nav.reports' | transloco }}</a> / {{ title() }}</nav>
+    <nav class="mb-2 text-sm text-slate-600"><a routerLink="/reports" class="hover:underline">{{ 'nav.reports' | transloco }}</a> / {{ title() }}</nav>
     <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
       <div>
         <h1 class="text-2xl font-semibold text-slate-900">{{ 'reports.selectTitle' | transloco }}</h1>
-        <p class="mt-1 text-sm text-slate-500">{{ orgName() }} · {{ title() }}</p>
+        <p class="mt-1 text-sm text-slate-600">{{ orgName() }} · {{ title() }}</p>
       </div>
       <button type="button" class="btn-primary" [disabled]="!selected().size || busy()" (click)="generate()">
         <app-icon name="report" [size]="16" /> {{ (busy() ? 'reports.generating' : 'reports.generate') | transloco }}</button>
     </div>
 
     <div class="mb-4 grid gap-4 sm:grid-cols-3">
-      <div class="card p-4"><p class="text-sm text-slate-500">{{ 'reports.selected' | transloco }}</p><p class="text-2xl font-semibold">{{ selected().size }}</p></div>
-      <div class="card p-4"><p class="text-sm text-slate-500">{{ 'reports.onTrack' | transloco }}</p><p class="text-2xl font-semibold text-emerald-700">{{ onTrack() }}</p></div>
-      <div class="card p-4"><p class="text-sm text-slate-500">{{ 'reports.overdueLabel' | transloco }}</p><p class="text-2xl font-semibold text-red-700">{{ overdue() }}</p></div>
+      <div class="card p-4"><p class="text-sm text-slate-600">{{ 'reports.selected' | transloco }}</p><p class="text-2xl font-semibold">{{ selected().size }}</p></div>
+      <div class="card p-4"><p class="text-sm text-slate-600">{{ 'reports.onTrack' | transloco }}</p><p class="text-2xl font-semibold text-emerald-700">{{ onTrack() }}</p></div>
+      <div class="card p-4"><p class="text-sm text-slate-600">{{ 'reports.overdueLabel' | transloco }}</p><p class="text-2xl font-semibold text-red-700">{{ overdue() }}</p></div>
     </div>
 
     @if (result(); as r) {
@@ -47,16 +47,16 @@ interface Result { pdf_url: string; docx_url: string; preview_url: string }
     <div class="card">
       <label class="flex items-center gap-3 border-b border-slate-100 p-3 text-sm font-medium">
         <input type="checkbox" [checked]="allSelected()" (change)="toggleAll($any($event.target).checked)" />
-        {{ 'reports.selectAll' | transloco }} <span class="ml-auto text-xs text-slate-500">{{ selected().size }}/{{ leaves().length }}</span>
+        {{ 'reports.selectAll' | transloco }} <span class="ml-auto text-xs text-slate-600">{{ selected().size }}/{{ leaves().length }}</span>
       </label>
       @for (g of groups(); track g.cat.id) {
-        <p class="bg-slate-50 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500">{{ tr(g.cat) }}</p>
+        <p class="bg-slate-50 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-600">{{ tr(g.cat) }}</p>
         @for (i of g.items; track i.id) {
           <label class="flex items-center gap-3 border-b border-slate-50 px-3 py-2 text-sm hover:bg-slate-50">
             <input type="checkbox" [checked]="selected().has(i.id)" (change)="toggle(i.id)" />
             <span class="w-16 font-mono text-xs text-brand-700">{{ i.catalog_code }}</span>
             <span class="flex-1">{{ tr(i) }}</span>
-            @if (i.due_date) { <span class="text-xs text-slate-500">{{ 'reports.due' | transloco }} {{ i.due_date.split('-').reverse().join('/') }}</span> }
+            @if (i.due_date) { <span class="text-xs text-slate-600">{{ 'reports.due' | transloco }} {{ i.due_date.split('-').reverse().join('/') }}</span> }
             <app-compliance-chip [state]="i.compliance_state" />
           </label>
         }

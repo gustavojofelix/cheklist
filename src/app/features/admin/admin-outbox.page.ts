@@ -21,7 +21,7 @@ interface Mail { id: string; to_email: string; template: string; subject: string
         <tbody>
           @for (m of mails(); track m.id) {
             <tr class="cursor-pointer hover:bg-slate-50" (click)="open.set(open() === m.id ? null : m.id)">
-              <td class="whitespace-nowrap text-slate-500">{{ m.created_at | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="whitespace-nowrap text-slate-600">{{ m.created_at | date: 'dd/MM/yyyy HH:mm' }}</td>
               <td>{{ m.to_email }}</td>
               <td>{{ m.subject }}</td>
               <td><span class="chip" [class]="m.status === 'sent' ? 'bg-emerald-100 text-emerald-800' : m.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'">
@@ -32,7 +32,7 @@ interface Mail { id: string; to_email: string; template: string; subject: string
               <tr><td colspan="5"><pre class="whitespace-pre-wrap rounded bg-slate-50 p-3 text-xs text-slate-700">{{ m.body_text }}</pre></td></tr>
             }
           } @empty {
-            <tr><td colspan="5" class="py-8 text-center text-slate-500">{{ 'admin.emails.empty' | transloco }}</td></tr>
+            <tr><td colspan="5" class="py-8 text-center text-slate-600">{{ 'admin.emails.empty' | transloco }}</td></tr>
           }
         </tbody>
       </table>

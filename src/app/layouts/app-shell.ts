@@ -7,6 +7,7 @@ import { ContextStore } from '../core/context.store';
 import { Supabase } from '../core/supabase';
 import { Icon } from '../shared/ui/icon';
 import { LocaleSwitcher } from '../shared/ui/locale-switcher';
+import { Logo } from '../shared/ui/logo';
 
 interface NavItem { path: string; icon: string; key: string; min?: 'manager' | 'admin' }
 
@@ -37,34 +38,35 @@ const ADMIN: NavItem[] = [
 @Component({
   selector: 'app-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslocoPipe, Icon, LocaleSwitcher, CdkMenuTrigger, CdkMenu, CdkMenuItem],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslocoPipe, Icon, LocaleSwitcher, Logo, CdkMenuTrigger, CdkMenu, CdkMenuItem],
   template: `
-    <div class="flex min-h-screen">
+    <div class="mz-stripe fixed inset-x-0 top-0 z-50 h-1" aria-hidden="true"></div>
+    <div class="flex min-h-screen pt-1">
       <!-- sidebar -->
       @if (navOpen()) {
-        <div class="fixed inset-0 z-30 bg-slate-900/40 lg:hidden" (click)="navOpen.set(false)"></div>
+        <div class="fixed inset-0 z-30 bg-ink/40 lg:hidden" (click)="navOpen.set(false)"></div>
       }
-      <aside class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform lg:static lg:translate-x-0"
+      <aside class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-sand-200 bg-white transition-transform lg:static lg:translate-x-0"
              [class.-translate-x-full]="!navOpen()">
-        <div class="flex h-14 items-center gap-2 border-b border-slate-100 px-4 font-semibold text-slate-900">
-          <span class="grid size-7 place-items-center rounded-lg bg-brand-600 text-white"><app-icon name="check" [size]="16" /></span>
-          Checklist Legal
+        <div class="flex h-16 items-center px-4">
+          <app-logo [size]="34" />
         </div>
+        <div class="capulana-band" aria-hidden="true"></div>
         <nav class="flex-1 overflow-y-auto p-3" [attr.aria-label]="'nav.main' | transloco">
-          <p class="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+          <p class="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-600">
             {{ (isAdmin ? 'nav.backOffice' : 'nav.frontOffice') | transloco }}
           </p>
           @for (item of nav(); track item.path) {
-            <a [routerLink]="item.path" routerLinkActive="!bg-brand-50 !text-brand-700"
+            <a [routerLink]="item.path" routerLinkActive="!bg-brand-50 !text-brand-800 !border-sun-400 font-medium"
                [routerLinkActiveOptions]="{ exact: item.path === '/admin' }" (click)="navOpen.set(false)"
-               class="mb-0.5 flex items-center gap-3 rounded-md px-2.5 py-2 text-sm text-slate-600 hover:bg-slate-100">
+               class="mb-0.5 flex items-center gap-3 rounded-r-md border-l-4 border-transparent px-2.5 py-2 text-sm text-slate-700 hover:bg-sand-100">
               <app-icon [name]="item.icon" /> {{ item.key | transloco }}
             </a>
           }
           @if (ctx.isPlatform()) {
-            <div class="mt-4 border-t border-slate-100 pt-3">
+            <div class="mt-4 border-t border-sand-200 pt-3">
               <a [routerLink]="isAdmin ? '/dashboard' : '/admin'"
-                 class="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm text-slate-600 hover:bg-slate-100">
+                 class="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm text-slate-600 hover:bg-sand-100">
                 <app-icon name="shield" /> {{ (isAdmin ? 'nav.frontOffice' : 'nav.backOffice') | transloco }}
               </a>
             </div>
@@ -72,8 +74,8 @@ const ADMIN: NavItem[] = [
         </nav>
         <!-- account switcher -->
         @if (!isAdmin && ctx.accounts().length) {
-          <div class="border-t border-slate-100 p-3">
-            <p class="px-1 text-[11px] uppercase tracking-wider text-slate-500">{{ 'nav.activeOrg' | transloco }}</p>
+          <div class="border-t border-sand-200 p-3">
+            <p class="px-1 text-[11px] uppercase tracking-wider text-slate-600">{{ 'nav.activeOrg' | transloco }}</p>
             @if (ctx.accounts().length > 1) {
               <select class="input mt-1 !py-1.5" [value]="ctx.active()?.id" (change)="switchOrg($any($event.target).value)"
                       [attr.aria-label]="'nav.activeOrg' | transloco">
@@ -84,21 +86,21 @@ const ADMIN: NavItem[] = [
             }
           </div>
         }
-        <div class="border-t border-slate-100 p-3">
+        <div class="border-t border-sand-200 p-3">
           <button type="button" [cdkMenuTriggerFor]="userMenu"
-                  class="flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left hover:bg-slate-100">
-            <span class="grid size-8 place-items-center rounded-full bg-slate-200 text-xs font-semibold text-slate-700">{{ initials() }}</span>
+                  class="flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left hover:bg-sand-100">
+            <span class="grid size-8 place-items-center rounded-full bg-sun-400 text-xs font-semibold text-ink">{{ initials() }}</span>
             <span class="min-w-0 flex-1">
               <span class="block truncate text-sm font-medium">{{ ctx.profile()?.full_name }}</span>
-              <span class="block truncate text-xs text-slate-500">{{ ctx.profile()?.email }}</span>
+              <span class="block truncate text-xs text-slate-600">{{ ctx.profile()?.email }}</span>
             </span>
           </button>
           <ng-template #userMenu>
             <div cdkMenu class="min-w-48 rounded-lg border border-slate-200 bg-white p-1 text-sm shadow-lg">
-              <a cdkMenuItem routerLink="/profile" class="flex items-center gap-2 rounded px-3 py-1.5 hover:bg-slate-100">
+              <a cdkMenuItem routerLink="/profile" class="flex items-center gap-2 rounded px-3 py-1.5 hover:bg-sand-100">
                 <app-icon name="user" [size]="16" /> {{ 'nav.profile' | transloco }}</a>
               <button cdkMenuItem type="button" (cdkMenuItemTriggered)="logout()"
-                      class="flex w-full items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-slate-100">
+                      class="flex w-full items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-sand-100">
                 <app-icon name="logout" [size]="16" /> {{ 'auth.logout' | transloco }}</button>
             </div>
           </ng-template>
@@ -107,11 +109,11 @@ const ADMIN: NavItem[] = [
 
       <!-- main -->
       <div class="flex min-w-0 flex-1 flex-col">
-        <header class="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-slate-200 bg-white/90 px-4 backdrop-blur">
+        <header class="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-sand-200 bg-sand-50/90 px-4 backdrop-blur">
           <button type="button" class="btn-ghost !p-1.5 lg:hidden" (click)="navOpen.set(true)" [attr.aria-label]="'nav.open' | transloco">
             <app-icon name="menu" />
           </button>
-          <div class="flex-1 truncate text-sm text-slate-500">{{ ctx.active()?.name }}</div>
+          <div class="flex-1 truncate text-sm text-slate-600">{{ ctx.active()?.name }}</div>
           @if (!isAdmin && ctx.readOnly()) {
             <span class="chip bg-amber-100 text-amber-800">{{ 'billing.readOnlyBadge' | transloco }}</span>
           }

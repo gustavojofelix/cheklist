@@ -28,7 +28,7 @@ interface Hook { id: string; provider: string; event_type: string | null; signat
             <tr><td class="font-mono text-xs">{{ i.number }}</td><td>{{ i.organizations.name }}</td><td>{{ i.amount | number: '1.2-2' }} {{ i.currency }}</td>
               <td>{{ i.due_date | date: 'dd/MM/yyyy' }}</td>
               <td class="text-right"><button type="button" class="btn-primary !py-1" (click)="markPaid(i)">{{ 'admin.payments.markPaid' | transloco }}</button></td></tr>
-          } @empty { <tr><td colspan="5" class="py-4 text-center text-slate-500">{{ 'admin.payments.noPending' | transloco }}</td></tr> }
+          } @empty { <tr><td colspan="5" class="py-4 text-center text-slate-600">{{ 'admin.payments.noPending' | transloco }}</td></tr> }
         </tbody>
       </table>
     </section>
@@ -39,12 +39,12 @@ interface Hook { id: string; provider: string; event_type: string | null; signat
           <th>{{ 'billing.amount' | transloco }}</th><th>{{ 'common.status' | transloco }}</th><th>Officegest</th></tr></thead>
         <tbody>
           @for (p of payments(); track p.id) {
-            <tr><td class="text-slate-500">{{ p.created_at | date: 'dd/MM/yyyy HH:mm' }}</td><td>{{ p.organizations.name }}</td>
-              <td>{{ p.description }}<span class="block text-xs text-slate-500">{{ 'billing.methods.' + p.gateway | transloco }}</span></td>
+            <tr><td class="text-slate-600">{{ p.created_at | date: 'dd/MM/yyyy HH:mm' }}</td><td>{{ p.organizations.name }}</td>
+              <td>{{ p.description }}<span class="block text-xs text-slate-600">{{ 'billing.methods.' + p.gateway | transloco }}</span></td>
               <td>{{ p.amount | number: '1.2-2' }} {{ p.currency }}</td>
               <td><span class="chip bg-slate-100 text-slate-700">{{ 'billing.paymentStatus.' + p.status | transloco }}</span></td>
               <td class="text-xs">{{ p.officegest_sync?.status ?? '—' }} @if (p.officegest_sync?.last_error; as e) { <span class="block text-red-600">{{ e }}</span> }</td></tr>
-          } @empty { <tr><td colspan="6" class="py-4 text-center text-slate-500">—</td></tr> }
+          } @empty { <tr><td colspan="6" class="py-4 text-center text-slate-600">—</td></tr> }
         </tbody>
       </table>
     </section>
@@ -55,9 +55,9 @@ interface Hook { id: string; provider: string; event_type: string | null; signat
           <th>{{ 'admin.payments.signature' | transloco }}</th><th>{{ 'admin.payments.handled' | transloco }}</th></tr></thead>
         <tbody>
           @for (h of hooks(); track h.id) {
-            <tr><td class="text-slate-500">{{ h.received_at | date: 'dd/MM/yyyy HH:mm:ss' }}</td><td>{{ h.provider }}</td><td class="font-mono text-xs">{{ h.event_type }}</td>
+            <tr><td class="text-slate-600">{{ h.received_at | date: 'dd/MM/yyyy HH:mm:ss' }}</td><td>{{ h.provider }}</td><td class="font-mono text-xs">{{ h.event_type }}</td>
               <td>{{ h.signature_valid ? '✓' : '✗' }}</td><td>{{ h.handled ? '✓' : (h.error ?? '—') }}</td></tr>
-          } @empty { <tr><td colspan="5" class="py-4 text-center text-slate-500">—</td></tr> }
+          } @empty { <tr><td colspan="5" class="py-4 text-center text-slate-600">—</td></tr> }
         </tbody>
       </table>
     </section>

@@ -26,11 +26,11 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, RouterLink, TranslocoPipe, Icon, ComplianceChip],
   template: `
-    <nav class="mb-2 text-sm text-slate-500"><a routerLink="/entities" class="hover:underline">{{ 'nav.entities' | transloco }}</a> / {{ orgName() }}</nav>
+    <nav class="mb-2 text-sm text-slate-600"><a routerLink="/entities" class="hover:underline">{{ 'nav.entities' | transloco }}</a> / {{ orgName() }}</nav>
     <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
       <div>
         <h1 class="text-2xl font-semibold text-slate-900">{{ 'ficha.title' | transloco: { name: orgName() } }}</h1>
-        <p class="mt-1 text-sm text-slate-500">{{ 'ficha.summary' | transloco: { items: itemCount(), categories: categories().length } }}</p>
+        <p class="mt-1 text-sm text-slate-600">{{ 'ficha.summary' | transloco: { items: itemCount(), categories: categories().length } }}</p>
       </div>
       <div class="flex flex-wrap gap-2">
         @if (canManage()) {
@@ -52,14 +52,14 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
     @if (proposals().length) {
       <section class="card mb-4 border-violet-200 p-4">
         <h2 class="flex items-center gap-2 font-semibold text-violet-900"><app-icon name="sparkles" [size]="16" /> {{ 'ocr.reviewTitle' | transloco: { n: proposals().length } }}</h2>
-        <p class="text-xs text-slate-500">{{ 'ocr.reviewHint' | transloco }}</p>
+        <p class="text-xs text-slate-600">{{ 'ocr.reviewHint' | transloco }}</p>
         <ul class="mt-3 divide-y divide-slate-100">
           @for (pr of proposals(); track pr.id) {
             <li class="grid gap-2 py-3 text-sm md:grid-cols-[1fr_16rem_auto] md:items-center">
               <div>
                 <p><span class="font-mono text-xs text-brand-700">{{ pr.checklist_items?.catalog_code }}</span> {{ pr.checklist_items?.title }}
-                  · <span class="text-slate-500">{{ ('ai.field.' + pr.field) | transloco }}</span></p>
-                <p class="mt-1 text-xs text-slate-500">“{{ pr.source_quote }}” — {{ pr.documents?.original_name }}, {{ 'ocr.page' | transloco }} {{ pr.page }}</p>
+                  · <span class="text-slate-600">{{ ('ai.field.' + pr.field) | transloco }}</span></p>
+                <p class="mt-1 text-xs text-slate-600">“{{ pr.source_quote }}” — {{ pr.documents?.original_name }}, {{ 'ocr.page' | transloco }} {{ pr.page }}</p>
               </div>
               <input class="input !py-1" [type]="pr.field === 'due_date' ? 'date' : 'text'" [value]="pr.proposed_value" #val [attr.aria-label]="'ocr.value' | transloco" />
               <div class="flex gap-2">
@@ -74,7 +74,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
     <!-- filters -->
     <div class="card mb-4 flex flex-wrap items-center gap-2 p-3">
       <div class="relative min-w-56 flex-1">
-        <span class="pointer-events-none absolute top-2.5 left-2.5 text-slate-500"><app-icon name="search" [size]="16" /></span>
+        <span class="pointer-events-none absolute top-2.5 left-2.5 text-slate-600"><app-icon name="search" [size]="16" /></span>
         <input class="input !pl-8" [(ngModel)]="search" [placeholder]="'ficha.search' | transloco" [attr.aria-label]="'ficha.search' | transloco" />
       </div>
       <select class="input !w-40" [(ngModel)]="stateFilter" [attr.aria-label]="'ficha.state' | transloco">
@@ -87,7 +87,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
     </div>
 
     @if (loading()) {
-      <p class="py-12 text-center text-slate-500">{{ 'common.loading' | transloco }}</p>
+      <p class="py-12 text-center text-slate-600">{{ 'common.loading' | transloco }}</p>
     }
 
     @for (cat of visible(); track cat.item.id; let ci = $index) {
@@ -96,13 +96,13 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
           <span class="transition-transform" [class.-rotate-90]="collapsed().has(cat.item.id)"><app-icon name="chevron" [size]="16" /></span>
           <div class="min-w-0 flex-1">
             <h2 class="font-semibold text-slate-900">{{ ci + 1 }}. {{ tr(cat.item) }}</h2>
-            <p class="text-xs text-slate-500">{{ 'ficha.itemsCount' | transloco: { n: cat.children.length } }} · {{ trDesc(cat.item) }}</p>
+            <p class="text-xs text-slate-600">{{ 'ficha.itemsCount' | transloco: { n: cat.children.length } }} · {{ trDesc(cat.item) }}</p>
           </div>
           <div class="hidden w-40 items-center gap-2 sm:flex">
             <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200">
               <div class="h-full bg-emerald-500" [style.width.%]="progress(cat)"></div>
             </div>
-            <span class="text-xs text-slate-500">{{ regularCount(cat) }}/{{ applicableCount(cat) }}</span>
+            <span class="text-xs text-slate-600">{{ regularCount(cat) }}/{{ applicableCount(cat) }}</span>
           </div>
           @if (editMode() && !cat.item.template_item_id) {
             <button type="button" class="btn-ghost !p-1.5 text-red-600" (click)="$event.stopPropagation(); removeItem(cat.item)"
@@ -129,13 +129,13 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
                         <span class="font-medium text-slate-800">{{ tr(it) }}</span>
                       }
                       @if (it.applicability === 'depends') {
-                        <label class="mt-1 flex items-center gap-1 text-xs text-slate-500">
+                        <label class="mt-1 flex items-center gap-1 text-xs text-slate-600">
                           <input type="checkbox" [checked]="it.is_applicable" [disabled]="!canEditItem(it)" (change)="patch(it, { is_applicable: $any($event.target).checked })" />
                           {{ 'ficha.applicable' | transloco }}
                         </label>
                       }
                       @if (editMode()) {
-                        <div class="mt-1 flex gap-3 text-xs text-slate-500">
+                        <div class="mt-1 flex gap-3 text-xs text-slate-600">
                           <label class="flex items-center gap-1"><input type="checkbox" [checked]="it.has_validity" (change)="patch(it, { has_validity: $any($event.target).checked, due_date: $any($event.target).checked ? it.due_date : null })" /> {{ 'ficha.validity' | transloco }}</label>
                           <label class="flex items-center gap-1"><input type="checkbox" [checked]="it.requires_attachment" (change)="patch(it, { requires_attachment: $any($event.target).checked })" /> {{ 'ficha.attachment' | transloco }}</label>
                         </div>
@@ -144,7 +144,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
                     <td class="min-w-56">
                       @if (it.bound_field) {
                         <span class="text-slate-700">{{ answerDisplay(it) || '—' }}</span>
-                        <span class="block text-[11px] text-slate-500">{{ 'ficha.boundHint' | transloco }}</span>
+                        <span class="block text-[11px] text-slate-600">{{ 'ficha.boundHint' | transloco }}</span>
                       } @else if (editingAnswer() === it.id) {
                         <textarea class="input !py-1" rows="2" [ngModel]="it.answer" #ans
                                   (keydown.enter)="$event.preventDefault(); saveAnswer(it, ans.value)" (blur)="saveAnswer(it, ans.value)"
@@ -172,7 +172,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
                                     (click)="readDoc(d)" [title]="'ocr.read' | transloco" [attr.aria-label]="'ocr.read' | transloco"><app-icon name="sparkles" [size]="12" /></button>
                           }
                           @if (canWrite()) {
-                            <button type="button" class="text-slate-500 hover:text-red-600" (click)="deleteDoc(d)" [attr.aria-label]="'common.delete' | transloco">✕</button>
+                            <button type="button" class="text-slate-600 hover:text-red-600" (click)="deleteDoc(d)" [attr.aria-label]="'common.delete' | transloco">✕</button>
                           }
                         </div>
                       }
@@ -189,7 +189,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
                     }
                   </tr>
                 } @empty {
-                  <tr><td colspan="7" class="py-4 text-center text-slate-500">{{ 'ficha.noItems' | transloco }}</td></tr>
+                  <tr><td colspan="7" class="py-4 text-center text-slate-600">{{ 'ficha.noItems' | transloco }}</td></tr>
                 }
               </tbody>
             </table>

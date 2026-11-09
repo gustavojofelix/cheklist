@@ -32,7 +32,7 @@ interface Price { id: string; period: string; amount: number; currency: string; 
     </app-page-header>
     <div class="mb-4 grid gap-4 sm:grid-cols-4">
       @for (k of kpis(); track k.key) {
-        <div class="card p-4"><p class="text-sm text-slate-500">{{ 'admin.kpi.' + k.key | transloco }}</p><p class="mt-1 text-2xl font-semibold">{{ k.value }}</p></div>
+        <div class="card p-4"><p class="text-sm text-slate-600">{{ 'admin.kpi.' + k.key | transloco }}</p><p class="mt-1 text-2xl font-semibold">{{ k.value }}</p></div>
       }
     </div>
     <div class="card p-4">
@@ -44,14 +44,14 @@ interface Price { id: string; period: string; amount: number; currency: string; 
           <tbody>
             @for (o of filtered(); track o.id) {
               <tr>
-                <td class="font-medium">{{ o.name }}<span class="block text-xs font-normal text-slate-500">{{ refs.label('sector', o.sector) }}</span></td>
+                <td class="font-medium">{{ o.name }}<span class="block text-xs font-normal text-slate-600">{{ refs.label('sector', o.sector) }}</span></td>
                 <td class="font-mono text-xs">{{ o.tax_id || '—' }}</td>
                 <td>{{ o.subscriptions?.plans?.name ?? '—' }}</td>
                 <td>@if (o.subscriptions; as s) { <span class="chip bg-slate-100 text-slate-700">{{ 'billing.status.' + s.status | transloco }}</span> }</td>
                 <td>{{ o.branches[0]?.count ?? 0 }}</td>
                 <td>@if (o.platform_access_authorized_at) { <span class="chip bg-emerald-100 text-emerald-800">{{ 'admin.orgs.authorized' | transloco }}</span> }
                     @else { <span class="chip bg-slate-100 text-slate-600">{{ 'admin.orgs.notAuthorized' | transloco }}</span> }</td>
-                <td class="text-slate-500">{{ o.created_at | date: 'dd/MM/yyyy' }}</td>
+                <td class="text-slate-600">{{ o.created_at | date: 'dd/MM/yyyy' }}</td>
                 <td class="whitespace-nowrap text-right">
                   @if (isSuper()) { <button type="button" class="btn-ghost !py-1" (click)="openPlan(o)">{{ 'admin.orgs.assignPlan' | transloco }}</button> }
                   <button type="button" class="btn-secondary !py-1" [disabled]="!o.platform_access_authorized_at" (click)="enter(o)"
@@ -59,18 +59,18 @@ interface Price { id: string; period: string; amount: number; currency: string; 
                 </td>
               </tr>
             } @empty {
-              <tr><td colspan="8" class="py-8 text-center text-slate-500">{{ 'common.loading' | transloco }}</td></tr>
+              <tr><td colspan="8" class="py-8 text-center text-slate-600">{{ 'common.loading' | transloco }}</td></tr>
             }
           </tbody>
         </table>
       </div>
-      <p class="mt-3 text-xs text-slate-500">{{ 'admin.orgs.consentNote' | transloco }}</p>
+      <p class="mt-3 text-xs text-slate-600">{{ 'admin.orgs.consentNote' | transloco }}</p>
     </div>
 
     <ng-template #planDialog>
       <div class="w-[min(28rem,calc(100vw-2rem))] rounded-xl bg-white p-6 shadow-xl">
         <h2 class="text-lg font-semibold">{{ 'admin.orgs.assignPlanTitle' | transloco: { name: target()?.name } }}</h2>
-        <p class="mt-1 text-sm text-slate-500">{{ 'admin.orgs.assignPlanHint' | transloco }}</p>
+        <p class="mt-1 text-sm text-slate-600">{{ 'admin.orgs.assignPlanHint' | transloco }}</p>
         <select class="input mt-4" [(ngModel)]="priceId" [attr.aria-label]="'admin.orgs.plan' | transloco">
           @for (p of prices(); track p.id) { <option [value]="p.id">{{ p.plans.name }} — {{ 'admin.period.' + p.period | transloco }} — {{ p.amount }} {{ p.currency }}</option> }
         </select>
@@ -84,7 +84,7 @@ interface Price { id: string; period: string; amount: number; currency: string; 
     <ng-template #createDialog>
       <form class="max-h-[90vh] w-[min(40rem,calc(100vw-2rem))] overflow-y-auto rounded-xl bg-white p-6 shadow-xl" [formGroup]="create" (ngSubmit)="submitCreate()">
         <h2 class="text-lg font-semibold">{{ 'admin.orgs.create' | transloco }}</h2>
-        <p class="mt-1 mb-4 text-sm text-slate-500">{{ 'admin.orgs.createHint' | transloco }}</p>
+        <p class="mt-1 mb-4 text-sm text-slate-600">{{ 'admin.orgs.createHint' | transloco }}</p>
         <app-org-fields [form]="create" />
         <div class="mt-4 grid gap-4 sm:grid-cols-2">
           <label class="text-sm">{{ 'admin.orgs.adminName' | transloco }}<input class="input mt-1" [formControl]="adminName" /></label>

@@ -21,10 +21,10 @@ import { errorOf, phone9, sameAs } from '../../shared/validators';
       </div>
     } @else {
       <h1 class="text-2xl font-semibold text-slate-900">{{ 'auth.register.title' | transloco }}</h1>
-      <p class="mt-1 text-sm text-slate-500">{{ 'auth.register.subtitle' | transloco }}</p>
+      <p class="mt-1 text-sm text-slate-600">{{ 'auth.register.subtitle' | transloco }}</p>
       <ol class="mt-6 flex gap-2 text-xs font-medium">
         @for (s of [1, 2]; track s) {
-          <li class="flex-1 rounded-full py-1 text-center" [class]="step() >= s ? 'bg-brand-600 text-white' : 'bg-slate-200 text-slate-500'">
+          <li class="flex-1 rounded-full py-1 text-center" [class]="step() >= s ? 'bg-brand-600 text-white' : 'bg-slate-200 text-slate-600'">
             {{ 'auth.register.step' + s | transloco }}
           </li>
         }
@@ -46,7 +46,7 @@ import { errorOf, phone9, sameAs } from '../../shared/validators';
           <div>
             <label class="label" for="r-phone">{{ 'auth.phone' | transloco }}</label>
             <div class="flex gap-2">
-              <span class="input !w-20 text-center text-slate-500">+258</span>
+              <span class="input !w-20 text-center text-slate-600">+258</span>
               <input id="r-phone" class="input" formControlName="phone_number" inputmode="tel" maxlength="9" placeholder="84xxxxxxx" [class.invalid]="err(person, 'phone_number')" />
             </div>
             @if (err(person, 'phone_number'); as e) { <p class="field-error">{{ e | transloco }}</p> }
@@ -83,7 +83,7 @@ import { errorOf, phone9, sameAs } from '../../shared/validators';
           </div>
         </form>
       }
-      <p class="mt-6 text-center text-sm text-slate-500">
+      <p class="mt-6 text-center text-sm text-slate-600">
         {{ 'auth.register.already' | transloco }} <a routerLink="/login" class="font-medium text-brand-600 hover:underline">{{ 'auth.login.submit' | transloco }}</a>
       </p>
     }

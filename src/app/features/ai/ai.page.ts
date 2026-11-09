@@ -23,12 +23,12 @@ interface Msg { id?: string; role: 'user' | 'assistant'; content: string; source
     <div class="grid h-[calc(100vh-8rem)] gap-4 lg:grid-cols-[18rem_1fr]">
       <aside class="card flex min-h-0 flex-col p-3">
         <button type="button" class="btn-primary mb-3" (click)="newConversation()"><app-icon name="plus" [size]="16" /> {{ 'ai.new' | transloco }}</button>
-        <p class="px-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500">{{ 'ai.history' | transloco }}</p>
+        <p class="px-1 text-[11px] font-semibold uppercase tracking-wider text-slate-600">{{ 'ai.history' | transloco }}</p>
         <ul class="mt-2 flex-1 space-y-1 overflow-y-auto text-sm">
           @for (c of conversations(); track c.id) {
             <li><button type="button" class="w-full truncate rounded px-2 py-1.5 text-left hover:bg-slate-100" [class.bg-brand-50]="c.id === active()"
                         (click)="open(c.id)">{{ c.title || ('ai.untitled' | transloco) }}</button></li>
-          } @empty { <li class="px-2 py-4 text-center text-slate-500">{{ 'ai.noConversations' | transloco }}</li> }
+          } @empty { <li class="px-2 py-4 text-center text-slate-600">{{ 'ai.noConversations' | transloco }}</li> }
         </ul>
       </aside>
 
@@ -39,7 +39,7 @@ interface Msg { id?: string; role: 'user' | 'assistant'; content: string; source
             <div class="mx-auto max-w-lg py-10 text-center">
               <span class="mx-auto grid size-12 place-items-center rounded-full bg-brand-50 text-brand-600"><app-icon name="sparkles" [size]="22" /></span>
               <h1 class="mt-3 text-lg font-semibold">{{ 'nav.ai' | transloco }}</h1>
-              <p class="mt-1 text-sm text-slate-500">{{ welcome() || ('ai.welcome' | transloco) }}</p>
+              <p class="mt-1 text-sm text-slate-600">{{ welcome() || ('ai.welcome' | transloco) }}</p>
               <div class="mt-4 flex flex-wrap justify-center gap-2">
                 @for (s of suggestions(); track s) {
                   <button type="button" class="rounded-full border border-slate-200 px-3 py-1 text-sm hover:bg-slate-50" (click)="question = s; ask()">{{ s }}</button>
@@ -63,7 +63,7 @@ interface Msg { id?: string; role: 'user' | 'assistant'; content: string; source
                     <p class="text-xs font-semibold uppercase text-violet-700">{{ 'ai.proposal' | transloco }}</p>
                     <p><span class="font-mono text-xs">{{ a.action.code }}</span> {{ a.action.title }} — {{ ('ai.field.' + a.action.field) | transloco }}:
                       <strong>{{ a.action.value }}</strong></p>
-                    <p class="text-xs text-slate-500">{{ a.action.reason }}</p>
+                    <p class="text-xs text-slate-600">{{ a.action.reason }}</p>
                     @if (a.status === 'pending') {
                       <div class="mt-2 flex gap-2">
                         <button type="button" class="btn-primary !py-1" (click)="decide(m, a, true)">{{ 'common.confirm' | transloco }}</button>
@@ -77,7 +77,7 @@ interface Msg { id?: string; role: 'user' | 'assistant'; content: string; source
               </div>
             </div>
           }
-          @if (busy()) { <p class="text-sm text-slate-500">{{ 'ai.thinking' | transloco }}</p> }
+          @if (busy()) { <p class="text-sm text-slate-600">{{ 'ai.thinking' | transloco }}</p> }
         </div>
         <form class="flex gap-2 border-t border-slate-100 p-3" (ngSubmit)="ask()">
           <textarea class="input flex-1 resize-none" rows="2" name="q" [(ngModel)]="question" (keydown.enter)="$event.preventDefault(); ask()"

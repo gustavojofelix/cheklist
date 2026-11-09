@@ -28,7 +28,7 @@ interface Invitation { id: string; email: string; role: OrgRole; created_at: str
       @for (t of tabs(); track t) {
         <button type="button" role="tab" [attr.aria-selected]="tab() === t" (click)="go(t)"
                 class="-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium"
-                [class]="tab() === t ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                [class]="tab() === t ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-600 hover:text-slate-700'">
           {{ 'company.tabs.' + t | transloco }}
         </button>
       }
@@ -42,7 +42,7 @@ interface Invitation { id: string; email: string; role: OrgRole; created_at: str
             <label class="mt-3 flex items-start gap-2 text-sm">
               <input type="checkbox" class="mt-0.5" [checked]="platformAccess()" (change)="togglePlatformAccess($any($event.target).checked)" [disabled]="readOnly()" />
               <span>{{ 'company.platformAccess.label' | transloco }}
-                <span class="block text-xs text-slate-500">{{ 'company.platformAccess.hint' | transloco }}</span></span>
+                <span class="block text-xs text-slate-600">{{ 'company.platformAccess.hint' | transloco }}</span></span>
             </label>
           </section>
         }
@@ -54,7 +54,7 @@ interface Invitation { id: string; email: string; role: OrgRole; created_at: str
             </label>
             <label class="flex items-start gap-2 text-sm">
               <input type="checkbox" class="mt-0.5" [formControl]="docOtp" />
-              <span>{{ 'company.docOtp' | transloco }}<span class="block text-xs text-slate-500">{{ 'company.docOtpHint' | transloco }}</span></span>
+              <span>{{ 'company.docOtp' | transloco }}<span class="block text-xs text-slate-600">{{ 'company.docOtpHint' | transloco }}</span></span>
             </label>
           </fieldset>
           @if (canEdit()) {
@@ -65,7 +65,7 @@ interface Invitation { id: string; email: string; role: OrgRole; created_at: str
 
       @case ('utilizadores') {
         <section class="card p-5">
-          <h2 class="font-semibold text-slate-900">{{ 'company.members.title' | transloco }} <span class="text-slate-500">({{ members().length }})</span></h2>
+          <h2 class="font-semibold text-slate-900">{{ 'company.members.title' | transloco }} <span class="text-slate-600">({{ members().length }})</span></h2>
           @if (isAdmin() && !readOnly()) {
             <form class="mt-4 flex flex-wrap gap-2" (ngSubmit)="invite()">
               <input type="email" class="input max-w-xs" name="email" [(ngModel)]="inviteEmail" placeholder="email@empresa.co.mz" required
@@ -90,7 +90,7 @@ interface Invitation { id: string; email: string; role: OrgRole; created_at: str
                 @for (m of members(); track m.user_id) {
                   <tr>
                     <td class="font-medium">{{ m.profiles.full_name }}</td>
-                    <td class="text-slate-500">{{ m.profiles.email }}</td>
+                    <td class="text-slate-600">{{ m.profiles.email }}</td>
                     <td>
                       @if (isAdmin() && !readOnly()) {
                         <select class="input !w-36 !py-1" [ngModel]="m.role" (ngModelChange)="changeRole(m, $event)" [attr.aria-label]="'company.members.role' | transloco">
@@ -99,7 +99,7 @@ interface Invitation { id: string; email: string; role: OrgRole; created_at: str
                       } @else { {{ 'roles.' + m.role | transloco }} }
                     </td>
                     <td><span class="chip" [class]="m.profiles.status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'">{{ 'status.' + m.profiles.status | transloco }}</span></td>
-                    <td class="text-slate-500">{{ m.profiles.last_access_at ? (m.profiles.last_access_at | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
+                    <td class="text-slate-600">{{ m.profiles.last_access_at ? (m.profiles.last_access_at | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
                     <td class="text-right">
                       @if (isAdmin() && !readOnly() && m.user_id !== ctx.profile()?.id) {
                         <button type="button" class="btn-ghost !px-2 !py-1 text-red-600" (click)="removeMember(m)">{{ 'common.remove' | transloco }}</button>
@@ -116,7 +116,7 @@ interface Invitation { id: string; email: string; role: OrgRole; created_at: str
               @for (i of invitations(); track i.id) {
                 <li class="flex flex-wrap items-center justify-between gap-2 py-2">
                   <span>{{ i.email }} · {{ 'roles.' + i.role | transloco }}
-                    <span class="text-xs text-slate-500">· {{ 'company.members.expires' | transloco: { date: (i.expires_at | date: 'dd/MM/yyyy') } }}</span></span>
+                    <span class="text-xs text-slate-600">· {{ 'company.members.expires' | transloco: { date: (i.expires_at | date: 'dd/MM/yyyy') } }}</span></span>
                   @if (isAdmin()) {
                     <span class="flex gap-1">
                       <button type="button" class="btn-ghost !py-1" (click)="resend(i)">{{ 'company.members.resend' | transloco }}</button>

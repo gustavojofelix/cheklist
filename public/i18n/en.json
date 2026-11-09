@@ -51,13 +51,15 @@
     "privacy": "Privacy Policy",
     "logout": "Log out",
     "hero": {
-      "kicker": "Built for legal teams",
+      "kicker": "Corporate compliance in Mozambique",
       "title": "Checklists with full traceability.",
       "body": "Organization-scoped checklists, templates, attached documents and a complete audit log for every action.",
       "versions": "Templates with version history",
       "documents": "Documents linked to checklist items",
       "roles": "Role-based permissions across organizations",
-      "footer": "Multi-tenant platform for compliant legal operations."
+      "footer": "Mobilelegis · Maputo",
+      "madeIn": "Made in Mozambique",
+      "quote": "Licences, minutes, Boletim da República, NUIT and certificates — all in one place, with warnings before they expire."
     },
     "login": {
       "title": "Welcome back",
@@ -232,7 +234,11 @@
       "expiringHint": "30 to 90 day window",
       "expired": "Expired",
       "expiredHint": "immediate action"
-    }
+    },
+    "morning": "Good morning, {{name}}",
+    "afternoon": "Good afternoon, {{name}}",
+    "evening": "Good evening, {{name}}",
+    "situation": "Compliance status of {{org}}"
   },
   "company": {
     "subtitle": "Company details, users, logs and notifications.",

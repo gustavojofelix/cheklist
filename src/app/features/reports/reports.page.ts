@@ -20,13 +20,13 @@ interface Row { id: string; title: string; organization_id: string; org_name: st
           <span class="grid size-9 place-items-center rounded-lg bg-brand-50 text-brand-600"><app-icon name="report" /></span>
           <div class="min-w-0 flex-1">
             <p class="font-medium">{{ r.title }}</p>
-            <p class="text-sm text-slate-500">{{ r.org_name }} · {{ 'ficha.itemsCount' | transloco: { n: r.items } }}
+            <p class="text-sm text-slate-600">{{ r.org_name }} · {{ 'ficha.itemsCount' | transloco: { n: r.items } }}
               @if (r.overdue) { · <span class="text-red-600">{{ 'reports.overdue' | transloco: { n: r.overdue } }}</span> }</p>
           </div>
           <a class="btn-primary" [routerLink]="['/reports', r.id]"><app-icon name="report" [size]="16" /> {{ 'reports.generate' | transloco }}</a>
         </div>
       } @empty {
-        <p class="p-8 text-center text-slate-500">{{ 'common.loading' | transloco }}</p>
+        <p class="p-8 text-center text-slate-600">{{ 'common.loading' | transloco }}</p>
       }
     </div>
   `,

@@ -22,11 +22,11 @@ interface TItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, RouterLink, TranslocoPipe, DatePipe, Icon],
   template: `
-    <nav class="mb-2 text-sm text-slate-500"><a routerLink="/admin/templates" class="hover:underline">{{ 'admin.nav.templates' | transloco }}</a> / {{ name() }}</nav>
+    <nav class="mb-2 text-sm text-slate-600"><a routerLink="/admin/templates" class="hover:underline">{{ 'admin.nav.templates' | transloco }}</a> / {{ name() }}</nav>
     <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
       <div>
         <h1 class="text-2xl font-semibold">{{ name() }}</h1>
-        <p class="text-sm text-slate-500">{{ (viewing()?.is_published ? 'admin.tpl.readOnlySnapshot' : 'admin.tpl.editingDraft') | transloco: { n: viewing()?.version_number } }}</p>
+        <p class="text-sm text-slate-600">{{ (viewing()?.is_published ? 'admin.tpl.readOnlySnapshot' : 'admin.tpl.editingDraft') | transloco: { n: viewing()?.version_number } }}</p>
       </div>
       <div class="flex flex-wrap gap-2">
         <select class="input !w-48" [ngModel]="viewing()?.id" (ngModelChange)="view($event)" [attr.aria-label]="'admin.tpl.version' | transloco">
@@ -42,11 +42,11 @@ interface TItem {
     <div class="mb-4 flex gap-1 border-b border-slate-200" role="tablist">
       @for (s of scopes; track s) {
         <button type="button" role="tab" (click)="scope.set(s)" [attr.aria-selected]="scope() === s"
-                class="-mb-px border-b-2 px-3 py-2 text-sm font-medium" [class]="scope() === s ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-500'">
+                class="-mb-px border-b-2 px-3 py-2 text-sm font-medium" [class]="scope() === s ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-600'">
           {{ 'admin.tpl.scope.' + s | transloco }}</button>
       }
     </div>
-    @if (scope() === 'branch' && !tree().length) { <p class="mb-4 text-sm text-slate-500">{{ 'admin.tpl.branchFallback' | transloco }}</p> }
+    @if (scope() === 'branch' && !tree().length) { <p class="mb-4 text-sm text-slate-600">{{ 'admin.tpl.branchFallback' | transloco }}</p> }
 
     @for (c of tree(); track c.cat.id; let ci = $index) {
       <section class="card mb-4 overflow-hidden">
@@ -82,7 +82,7 @@ interface TItem {
                       <button type="button" class="btn-ghost !p-1 text-red-600" (click)="remove(it)" [attr.aria-label]="'common.remove' | transloco"><app-icon name="trash" [size]="14" /></button>
                     </td>
                   } @else {
-                    <td class="font-mono text-xs text-brand-700">{{ it.catalog_code }}</td><td>{{ it.title }}</td><td class="text-slate-500">{{ it.translations.en?.title }}</td>
+                    <td class="font-mono text-xs text-brand-700">{{ it.catalog_code }}</td><td>{{ it.title }}</td><td class="text-slate-600">{{ it.translations.en?.title }}</td>
                     <td>{{ it.has_validity ? '✓' : '' }}</td><td>{{ it.requires_attachment ? '✓' : '' }}</td><td>{{ 'admin.tpl.app.' + it.applicability | transloco }}</td>
                   }
                 </tr>

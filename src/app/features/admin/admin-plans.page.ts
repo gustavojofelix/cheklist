@@ -28,20 +28,20 @@ const LIMITS = ['max_users', 'max_branches', 'max_documents', 'max_ocr', 'max_ia
         <form class="card space-y-3 p-5" (ngSubmit)="save(p)">
           <div class="flex items-center gap-2">
             <input class="input !w-48 font-semibold" [name]="'name' + p.id" [(ngModel)]="p.name" [attr.aria-label]="'common.name' | transloco" />
-            <span class="font-mono text-xs text-slate-500">{{ p.slug }}</span>
+            <span class="font-mono text-xs text-slate-600">{{ p.slug }}</span>
             <label class="ml-auto flex items-center gap-1.5 text-sm"><input type="checkbox" [name]="'act' + p.id" [(ngModel)]="p.is_active" /> {{ 'admin.plans.active' | transloco }}</label>
           </div>
           <textarea class="input" rows="2" [name]="'desc' + p.id" [(ngModel)]="p.description" [attr.aria-label]="'admin.plans.description' | transloco"></textarea>
           <div class="grid grid-cols-3 gap-3">
             @for (k of limits; track k) {
-              <label class="text-xs text-slate-500">{{ 'admin.plans.' + k | transloco }}
+              <label class="text-xs text-slate-600">{{ 'admin.plans.' + k | transloco }}
                 <input type="number" min="0" class="input mt-1" [name]="k + p.id" [(ngModel)]="$any(p)[k]" [placeholder]="'admin.plans.unlimited' | transloco" /></label>
             }
-            <label class="text-xs text-slate-500">{{ 'admin.plans.storageGb' | transloco }}
+            <label class="text-xs text-slate-600">{{ 'admin.plans.storageGb' | transloco }}
               <input type="number" min="0" step="0.1" class="input mt-1" [name]="'st' + p.id" [ngModel]="gb(p.max_storage_bytes)" (ngModelChange)="p.max_storage_bytes = bytes($event)" [placeholder]="'admin.plans.unlimited' | transloco" /></label>
-            <label class="text-xs text-slate-500">{{ 'admin.plans.extraUser' | transloco }}
+            <label class="text-xs text-slate-600">{{ 'admin.plans.extraUser' | transloco }}
               <input type="number" min="0" class="input mt-1" [name]="'eu' + p.id" [(ngModel)]="p.extra_user_price" /></label>
-            <label class="text-xs text-slate-500">{{ 'admin.plans.extraBranch' | transloco }}
+            <label class="text-xs text-slate-600">{{ 'admin.plans.extraBranch' | transloco }}
               <input type="number" min="0" class="input mt-1" [name]="'eb' + p.id" [(ngModel)]="p.extra_branch_price" /></label>
           </div>
           <label class="flex items-center gap-1.5 text-sm"><input type="checkbox" [name]="'ia' + p.id" [(ngModel)]="p.allows_assisted_ia" /> {{ 'admin.plans.assistedIa' | transloco }}</label>
@@ -49,7 +49,7 @@ const LIMITS = ['max_users', 'max_branches', 'max_documents', 'max_ocr', 'max_ia
             <p class="label">{{ 'admin.plans.prices' | transloco }}</p>
             <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
               @for (per of periods; track per) {
-                <label class="text-xs text-slate-500">{{ 'admin.period.' + per | transloco }} (MZN)
+                <label class="text-xs text-slate-600">{{ 'admin.period.' + per | transloco }} (MZN)
                   <input type="number" min="0" step="0.01" class="input mt-1" [name]="per + p.id" [ngModel]="price(p, per)" (ngModelChange)="setPrice(p, per, $event)" [placeholder]="'admin.plans.notOffered' | transloco" /></label>
               }
             </div>

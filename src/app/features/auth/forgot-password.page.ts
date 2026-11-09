@@ -10,7 +10,7 @@ import { AuthService } from '../../core/auth.service';
   imports: [ReactiveFormsModule, RouterLink, TranslocoPipe],
   template: `
     <h1 class="text-2xl font-semibold text-slate-900">{{ 'auth.forgot.title' | transloco }}</h1>
-    <p class="mt-1 text-sm text-slate-500">{{ 'auth.forgot.subtitle' | transloco }}</p>
+    <p class="mt-1 text-sm text-slate-600">{{ 'auth.forgot.subtitle' | transloco }}</p>
     @if (sent()) {
       <p class="mt-6 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{{ 'auth.forgot.sent' | transloco }}</p>
     } @else {

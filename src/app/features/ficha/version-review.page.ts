@@ -19,17 +19,17 @@ export interface VersionOffer {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TranslocoPipe],
   template: `
-    <nav class="mb-2 text-sm text-slate-500"><a [routerLink]="['/entities', id(), 'ficha']" class="hover:underline">{{ 'version.back' | transloco }}</a></nav>
+    <nav class="mb-2 text-sm text-slate-600"><a [routerLink]="['/entities', id(), 'ficha']" class="hover:underline">{{ 'version.back' | transloco }}</a></nav>
     @if (offer(); as o) {
       <h1 class="text-2xl font-semibold">{{ 'version.title' | transloco: { n: o.version_number, template: o.template_name } }}</h1>
-      <p class="mt-1 text-sm text-slate-500">{{ 'version.subtitle' | transloco: { current: o.current_version } }}</p>
+      <p class="mt-1 text-sm text-slate-600">{{ 'version.subtitle' | transloco: { current: o.current_version } }}</p>
       <div class="mt-6 grid gap-4 lg:grid-cols-2">
         @for (sec of sections(o); track sec.key) {
           <section class="card p-4">
-            <h2 class="font-semibold">{{ 'version.' + sec.key | transloco }} <span class="text-slate-500">({{ sec.rows.length }})</span></h2>
+            <h2 class="font-semibold">{{ 'version.' + sec.key | transloco }} <span class="text-slate-600">({{ sec.rows.length }})</span></h2>
             <ul class="mt-2 space-y-1 text-sm">
               @for (r of sec.rows; track $index) { <li><span class="font-mono text-xs text-brand-700">{{ r.code }}</span> {{ r.text }}</li> }
-              @empty { <li class="text-slate-500">—</li> }
+              @empty { <li class="text-slate-600">—</li> }
             </ul>
           </section>
         }
@@ -47,7 +47,7 @@ export interface VersionOffer {
         }
       </div>
     } @else if (loaded()) {
-      <p class="card p-8 text-center text-slate-500">{{ 'version.none' | transloco }}</p>
+      <p class="card p-8 text-center text-slate-600">{{ 'version.none' | transloco }}</p>
     }
   `,
 })

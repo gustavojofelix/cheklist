@@ -25,7 +25,7 @@ const LISTS = ['entity_type', 'entity_subtype', 'company_size', 'province', 'sec
     <div class="mb-6 flex gap-1 overflow-x-auto border-b border-slate-200" role="tablist">
       @for (t of tabs; track t) {
         <button type="button" role="tab" (click)="tab.set(t)" [attr.aria-selected]="tab() === t"
-                class="-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium" [class]="tab() === t ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-500'">
+                class="-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium" [class]="tab() === t ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-600'">
           {{ 'admin.settings.tabs.' + t | transloco }}</button>
       }
     </div>
@@ -46,7 +46,7 @@ const LISTS = ['entity_type', 'entity_subtype', 'company_size', 'province', 'sec
           @for (k of booleans; track k) {
             <label class="flex items-center gap-2 text-sm"><input type="checkbox" [ngModel]="settings()[k]" (ngModelChange)="saveSetting(k, $event)" /> {{ 'admin.settings.' + k | transloco }}</label>
           }
-          <p class="text-xs text-slate-500">{{ 'admin.settings.fixedRules' | transloco }}</p>
+          <p class="text-xs text-slate-600">{{ 'admin.settings.fixedRules' | transloco }}</p>
         </div>
       }
       @case ('lists') {
@@ -62,7 +62,7 @@ const LISTS = ['entity_type', 'entity_subtype', 'company_size', 'province', 'sec
                   <td class="font-mono text-xs">{{ r.value }}</td>
                   <td><input class="input !py-1" [ngModel]="r.label.pt" (change)="saveRef(r, { label: { ...r.label, pt: $any($event.target).value } })" aria-label="PT" /></td>
                   <td><input class="input !py-1" [ngModel]="r.label.en" (change)="saveRef(r, { label: { ...r.label, en: $any($event.target).value } })" aria-label="EN" /></td>
-                  @if (listKey() === 'entity_subtype') { <td class="text-slate-500">{{ r.parent_value }}</td> }
+                  @if (listKey() === 'entity_subtype') { <td class="text-slate-600">{{ r.parent_value }}</td> }
                   <td><input type="checkbox" [checked]="r.is_active" (change)="saveRef(r, { is_active: $any($event.target).checked })" [attr.aria-label]="'admin.plans.active' | transloco" /></td>
                 </tr>
               }
@@ -84,10 +84,10 @@ const LISTS = ['entity_type', 'entity_subtype', 'company_size', 'province', 'sec
         <div class="space-y-4">
           @for (t of templates(); track t.key + t.locale) {
             <div class="card space-y-2 p-4">
-              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ t.key }} · {{ t.locale }}</p>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-600">{{ t.key }} · {{ t.locale }}</p>
               <input class="input" [(ngModel)]="t.subject" [attr.aria-label]="'admin.emails.subject' | transloco" />
               <textarea class="input font-mono text-xs" rows="7" [(ngModel)]="t.body_md" aria-label="Body"></textarea>
-              <div class="flex items-center justify-between"><span class="text-xs text-slate-500">{{ 'admin.settings.placeholders' | transloco }}</span>
+              <div class="flex items-center justify-between"><span class="text-xs text-slate-600">{{ 'admin.settings.placeholders' | transloco }}</span>
                 <button type="button" class="btn-primary !py-1" (click)="saveTemplate(t)">{{ 'common.save' | transloco }}</button></div>
             </div>
           }

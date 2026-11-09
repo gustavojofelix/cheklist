@@ -36,13 +36,13 @@ interface EntityCard {
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       @for (e of cards(); track e.id) {
         <article class="card flex flex-col p-5">
-          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-600">
             {{ (e.parent_id ? 'entities.branch' : 'entities.parent') | transloco }} · {{ refs.label('entity_subtype', e.entity_subtype) }}
           </p>
           <h2 class="mt-1 text-lg font-semibold text-slate-900">{{ e.name }}</h2>
-          <p class="text-sm text-slate-500">NUIT {{ e.tax_id || '—' }} · {{ e.province || '—' }}</p>
+          <p class="text-sm text-slate-600">NUIT {{ e.tax_id || '—' }} · {{ e.province || '—' }}</p>
           <div class="mt-4 grid grid-cols-4 gap-2 text-center">
-            <div class="rounded-lg bg-slate-50 p-2"><p class="text-lg font-semibold">{{ e.stats.total }}</p><p class="text-[11px] text-slate-500">{{ 'entities.items' | transloco }}</p></div>
+            <div class="rounded-lg bg-slate-50 p-2"><p class="text-lg font-semibold">{{ e.stats.total }}</p><p class="text-[11px] text-slate-600">{{ 'entities.items' | transloco }}</p></div>
             <div class="rounded-lg bg-emerald-50 p-2"><p class="text-lg font-semibold text-emerald-700">{{ e.stats.regular }}</p><p class="text-[11px] text-emerald-700">{{ 'compliance.regular' | transloco }}</p></div>
             <div class="rounded-lg bg-amber-50 p-2"><p class="text-lg font-semibold text-amber-700">{{ e.stats.atencao }}</p><p class="text-[11px] text-amber-700">{{ 'compliance.atencao' | transloco }}</p></div>
             <div class="rounded-lg bg-red-50 p-2"><p class="text-lg font-semibold text-red-700">{{ e.stats.critico }}</p><p class="text-[11px] text-red-700">{{ 'compliance.critico' | transloco }}</p></div>

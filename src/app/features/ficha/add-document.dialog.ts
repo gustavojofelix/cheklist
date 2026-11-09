@@ -21,10 +21,10 @@ const MAX_BYTES = 20 * 1024 * 1024;
     <div class="flex max-h-[90vh] w-[min(40rem,calc(100vw-2rem))] flex-col rounded-xl bg-white shadow-xl" role="dialog" aria-modal="true">
       <div class="border-b border-slate-100 p-5">
         <h2 class="text-lg font-semibold">{{ 'ficha.addDocument' | transloco }}</h2>
-        <p class="mt-1 text-sm text-slate-500">{{ 'ficha.addDocumentHint' | transloco }}</p>
+        <p class="mt-1 text-sm text-slate-600">{{ 'ficha.addDocumentHint' | transloco }}</p>
       </div>
       <div class="flex-1 overflow-y-auto p-5">
-        <label class="flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 hover:border-brand-500"
+        <label class="flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-slate-300 p-6 text-center text-sm text-slate-600 hover:border-brand-500"
                (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
           <app-icon name="upload" [size]="24" />
           @if (file(); as f) {

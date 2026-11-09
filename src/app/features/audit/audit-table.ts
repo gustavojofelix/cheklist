@@ -29,9 +29,9 @@ const PAGE = 50;
           @for (e of events; track e) { <option [value]="e">{{ 'audit.event.' + e | transloco }}</option> }
         </select>
         <input class="input !w-40" [(ngModel)]="ip" (change)="reload()" [placeholder]="'audit.ip' | transloco" [attr.aria-label]="'audit.ip' | transloco" />
-        <label class="text-xs text-slate-500">{{ 'audit.from' | transloco }}
+        <label class="text-xs text-slate-600">{{ 'audit.from' | transloco }}
           <input type="date" class="input !w-40" [(ngModel)]="from" (change)="reload()" /></label>
-        <label class="text-xs text-slate-500">{{ 'audit.to' | transloco }}
+        <label class="text-xs text-slate-600">{{ 'audit.to' | transloco }}
           <input type="date" class="input !w-40" [(ngModel)]="to" (change)="reload()" /></label>
         <button type="button" class="btn-ghost" (click)="clear()">{{ 'common.clearFilters' | transloco }}</button>
         <span class="flex-1"></span>
@@ -45,20 +45,20 @@ const PAGE = 50;
           <tbody>
             @for (r of rows(); track r.id) {
               <tr>
-                <td class="whitespace-nowrap text-slate-500">{{ r.occurred_at | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+                <td class="whitespace-nowrap text-slate-600">{{ r.occurred_at | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
                 <td class="font-medium">{{ r.actor_name || ('audit.system' | transloco) }}</td>
-                <td class="text-slate-500">{{ r.organization_name }}</td>
+                <td class="text-slate-600">{{ r.organization_name }}</td>
                 <td><span class="chip bg-slate-100 text-slate-700">{{ 'audit.event.' + r.event | transloco }}</span></td>
                 <td class="max-w-md">
                   <p>{{ ('audit.table.' + r.table_name) | transloco }} {{ r.record_title ? '«' + r.record_title + '»' : '' }}</p>
                   @for (c of changes(r); track c.field) {
-                    <p class="text-xs text-slate-500"><span class="font-mono">{{ c.field }}</span>: {{ c.from }} → {{ c.to }}</p>
+                    <p class="text-xs text-slate-600"><span class="font-mono">{{ c.field }}</span>: {{ c.from }} → {{ c.to }}</p>
                   }
                 </td>
-                <td class="font-mono text-xs text-slate-500">{{ r.ip }}</td>
+                <td class="font-mono text-xs text-slate-600">{{ r.ip }}</td>
               </tr>
             } @empty {
-              <tr><td colspan="6" class="py-8 text-center text-slate-500">{{ (loading() ? 'common.loading' : 'audit.empty') | transloco }}</td></tr>
+              <tr><td colspan="6" class="py-8 text-center text-slate-600">{{ (loading() ? 'common.loading' : 'audit.empty') | transloco }}</td></tr>
             }
           </tbody>
         </table>

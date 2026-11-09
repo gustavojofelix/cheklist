@@ -6,7 +6,6 @@ import { ContextStore } from '../../core/context.store';
 import { LocaleService } from '../../core/i18n';
 import { Supabase } from '../../core/supabase';
 import { ComplianceChip, ComplianceState } from '../../shared/ui/compliance-chip';
-import { PageHeader } from '../../shared/ui/page-header';
 
 interface Summary { entity_count: number; total: number; regular: number; atencao: number; critico: number;
                     expiring_window: number; expired: number; documents: number }
@@ -18,18 +17,28 @@ interface FeedRow { id: number; occurred_at: string; actor_name: string | null; 
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, TranslocoPipe, DatePipe, PageHeader, ComplianceChip],
+  imports: [RouterLink, TranslocoPipe, DatePipe, ComplianceChip],
   template: `
-    <app-page-header [title]="'nav.dashboard' | transloco"
-                     [subtitle]="'dashboard.greeting' | transloco: { name: firstName(), org: ctx.active()?.name }" />
+    <h1 class="sr-only">{{ 'nav.dashboard' | transloco }}</h1>
+    <section class="capulana relative mb-6 overflow-hidden rounded-2xl text-white shadow-sm">
+      <div class="absolute inset-0 bg-gradient-to-r from-brand-900/95 via-brand-800/90 to-brand-800/85 sm:to-brand-800/40"></div>
+      <div class="relative flex flex-wrap items-end justify-between gap-4 px-6 py-6 sm:px-8">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-sun-300">{{ today() }}</p>
+          <p class="mt-1 text-2xl font-semibold sm:text-3xl">{{ ('dashboard.' + partOfDay()) | transloco: { name: firstName() } }}</p>
+          <p class="mt-1 text-sm text-brand-100">{{ 'dashboard.situation' | transloco: { org: ctx.active()?.name } }}</p>
+        </div>
+        <span class="rounded-full bg-sun-400 px-3 py-1 text-sm font-semibold text-ink">{{ compliantPct() }}% {{ 'dashboard.compliant' | transloco }}</span>
+      </div>
+    </section>
 
     <!-- KPI tiles -->
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
       @for (k of kpis(); track k.key) {
         <div class="card p-4">
-          <p class="flex items-center gap-2 text-sm text-slate-500"><span class="size-2 rounded-full" [class]="k.dot"></span>{{ 'dashboard.kpi.' + k.key | transloco }}</p>
+          <p class="flex items-center gap-2 text-sm text-slate-600"><span class="size-2 rounded-full" [class]="k.dot"></span>{{ 'dashboard.kpi.' + k.key | transloco }}</p>
           <p class="mt-2 text-3xl font-semibold text-slate-900">{{ k.value }}</p>
-          <p class="mt-1 text-xs text-slate-500">{{ 'dashboard.kpi.' + k.key + 'Hint' | transloco: k.params }}</p>
+          <p class="mt-1 text-xs text-slate-600">{{ 'dashboard.kpi.' + k.key + 'Hint' | transloco: k.params }}</p>
         </div>
       }
     </div>
@@ -39,11 +48,11 @@ interface FeedRow { id: number; occurred_at: string; actor_name: string | null; 
       <section class="card p-5 lg:col-span-2">
         <div class="flex items-center justify-between">
           <h2 class="font-semibold text-slate-900">{{ 'dashboard.status' | transloco }}</h2>
-          <span class="text-xs text-slate-500">{{ 'dashboard.live' | transloco }}</span>
+          <span class="text-xs text-slate-600">{{ 'dashboard.live' | transloco }}</span>
         </div>
         <div class="mt-4 flex flex-col items-center gap-8 sm:flex-row">
           <svg viewBox="0 0 42 42" class="size-44 -rotate-90" role="img" [attr.aria-label]="'dashboard.status' | transloco">
-            <circle cx="21" cy="21" r="15.915" fill="none" stroke="#e2e8f0" stroke-width="5" />
+            <circle cx="21" cy="21" r="15.915" fill="none" stroke="#f4eee2" stroke-width="5" />
             @for (seg of segments(); track seg.key) {
               <circle cx="21" cy="21" r="15.915" fill="none" [attr.stroke]="seg.color" stroke-width="5"
                       [attr.stroke-dasharray]="seg.pct + ' ' + (100 - seg.pct)" [attr.stroke-dashoffset]="-seg.offset" />
@@ -51,7 +60,7 @@ interface FeedRow { id: number; occurred_at: string; actor_name: string | null; 
           </svg>
           <div class="text-center sm:text-left">
             <p class="text-4xl font-semibold text-slate-900">{{ compliantPct() }}%</p>
-            <p class="text-sm text-slate-500">{{ 'dashboard.compliant' | transloco }}</p>
+            <p class="text-sm text-slate-600">{{ 'dashboard.compliant' | transloco }}</p>
             <ul class="mt-4 space-y-1.5 text-sm">
               @for (seg of segments(); track seg.key) {
                 <li class="flex items-center gap-2"><span class="size-2.5 rounded-full" [style.background]="seg.color"></span>
@@ -71,11 +80,11 @@ interface FeedRow { id: number; occurred_at: string; actor_name: string | null; 
         <ul class="mt-3 divide-y divide-slate-100 text-sm">
           @for (r of feed(); track r.id) {
             <li class="py-2">
-              <p class="font-medium text-slate-700">{{ 'audit.event.' + r.event | transloco }} — {{ r.record_title || ('audit.table.' + r.table_name | transloco) }}</p>
-              <p class="text-xs text-slate-500">{{ r.actor_name || ('audit.system' | transloco) }} · {{ r.occurred_at | date: 'short' : undefined : dateLocale() }}</p>
+              <p class="font-medium text-slate-700">{{ 'audit.event.' + r.event | transloco }}@if (r.record_title || !r.event.startsWith('auth.')) { — {{ r.record_title || ('audit.table.' + r.table_name | transloco) }} }</p>
+              <p class="text-xs text-slate-600">{{ r.actor_name || ('audit.system' | transloco) }} · {{ r.occurred_at | date: 'short' : undefined : dateLocale() }}</p>
             </li>
           } @empty {
-            <li class="py-6 text-center text-slate-500">{{ 'dashboard.noActivity' | transloco }}</li>
+            <li class="py-6 text-center text-slate-600">{{ 'dashboard.noActivity' | transloco }}</li>
           }
         </ul>
       </section>
@@ -91,12 +100,12 @@ interface FeedRow { id: number; occurred_at: string; actor_name: string | null; 
             <tr>
               <td class="font-mono text-xs text-brand-700">{{ i.catalog_code }}</td>
               <td><a class="hover:underline" [routerLink]="['/entities', i.organization_id, 'ficha']">{{ i.title }}</a></td>
-              <td class="text-slate-500">{{ i.org_name }}</td>
+              <td class="text-slate-600">{{ i.org_name }}</td>
               <td>{{ i.due_date | date: 'dd/MM/yyyy' }}</td>
               <td><app-compliance-chip [state]="i.compliance_state" /></td>
             </tr>
           } @empty {
-            <tr><td colspan="5" class="py-6 text-center text-slate-500">{{ 'dashboard.noCritical' | transloco }}</td></tr>
+            <tr><td colspan="5" class="py-6 text-center text-slate-600">{{ 'dashboard.noCritical' | transloco }}</td></tr>
           }
         </tbody>
       </table>
@@ -113,13 +122,16 @@ export class DashboardPage {
   protected readonly dateLocale = () => this.locale.dateLocale();
 
   protected readonly firstName = computed(() => (this.ctx.profile()?.full_name ?? '').split(' ')[0]);
+  protected readonly partOfDay = () => { const h = new Date().getHours(); return h < 12 ? 'morning' : h < 18 ? 'afternoon' : 'evening'; };
+  protected readonly today = () => new Date().toLocaleDateString(this.locale.current() === 'pt' ? 'pt-MZ' : 'en-GB',
+    { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Africa/Maputo' });
   protected readonly kpis = computed(() => {
     const s = this.summary();
     return [
-      { key: 'total', value: s?.total ?? '–', dot: 'bg-brand-500', params: { n: s?.entity_count ?? 0 } },
-      { key: 'compliant', value: s?.regular ?? '–', dot: 'bg-emerald-500', params: { pct: this.compliantPct() } },
-      { key: 'expiring', value: s?.expiring_window ?? '–', dot: 'bg-amber-500', params: {} },
-      { key: 'expired', value: s?.expired ?? '–', dot: 'bg-red-500', params: {} },
+      { key: 'total', value: s?.total ?? '–', dot: 'bg-ink', params: { n: s?.entity_count ?? 0 } },
+      { key: 'compliant', value: s?.regular ?? '–', dot: 'bg-brand-500', params: { pct: this.compliantPct() } },
+      { key: 'expiring', value: s?.expiring_window ?? '–', dot: 'bg-sun-400', params: {} },
+      { key: 'expired', value: s?.expired ?? '–', dot: 'bg-ember-600', params: {} },
     ];
   });
   protected readonly compliantPct = computed(() => {
@@ -133,7 +145,7 @@ export class DashboardPage {
     return (['regular', 'atencao', 'critico'] as const).map((key) => {
       const count = s[key];
       const pct = (count / s.total) * 100;
-      const seg = { key, count, pct, offset, color: { regular: '#10b981', atencao: '#f59e0b', critico: '#ef4444' }[key] };
+      const seg = { key, count, pct, offset, color: { regular: '#16955a', atencao: '#e0a800', critico: '#c0102b' }[key] };
       offset += pct;
       return seg;
     });

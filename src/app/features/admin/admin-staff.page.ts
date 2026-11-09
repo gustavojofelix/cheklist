@@ -24,7 +24,7 @@ interface Person { id: string; full_name: string; email: string; platform_role: 
         <option value="operator">{{ 'admin.staff.operator' | transloco }}</option><option value="superadmin">Superadmin</option></select>
       <button class="btn-primary" type="submit" [disabled]="!email.trim()">{{ 'admin.staff.grant' | transloco }}</button>
     </form>
-    <p class="mb-2 text-xs text-slate-500">{{ 'admin.staff.grantHint' | transloco }}</p>
+    <p class="mb-2 text-xs text-slate-600">{{ 'admin.staff.grantHint' | transloco }}</p>
     <div class="card overflow-x-auto">
       <table class="table-base">
         <thead><tr><th>{{ 'common.name' | transloco }}</th><th>{{ 'auth.email' | transloco }}</th><th>{{ 'company.members.role' | transloco }}</th>
@@ -32,10 +32,10 @@ interface Person { id: string; full_name: string; email: string; platform_role: 
         <tbody>
           @for (p of people(); track p.id) {
             <tr>
-              <td class="font-medium">{{ p.full_name }}</td><td class="text-slate-500">{{ p.email }}</td>
+              <td class="font-medium">{{ p.full_name }}</td><td class="text-slate-600">{{ p.email }}</td>
               <td>{{ p.platform_role === 'superadmin' ? 'Superadmin' : ('admin.staff.operator' | transloco) }}</td>
               <td><span class="chip" [class]="p.status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'">{{ 'status.' + p.status | transloco }}</span></td>
-              <td class="text-slate-500">{{ p.last_access_at ? (p.last_access_at | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
+              <td class="text-slate-600">{{ p.last_access_at ? (p.last_access_at | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
               <td class="whitespace-nowrap text-right">
                 @if (p.id !== me()) {
                   <button type="button" class="btn-ghost !py-1" (click)="setStatus(p, p.status === 'active' ? 'suspended' : 'active')">

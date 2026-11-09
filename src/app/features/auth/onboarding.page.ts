@@ -15,7 +15,7 @@ import { OrgFields, orgForm } from '../../shared/ui/org-fields';
   imports: [ReactiveFormsModule, TranslocoPipe, OrgFields],
   template: `
     <h1 class="text-2xl font-semibold text-slate-900">{{ 'auth.onboarding.title' | transloco }}</h1>
-    <p class="mt-1 text-sm text-slate-500">{{ 'auth.onboarding.subtitle' | transloco }}</p>
+    <p class="mt-1 text-sm text-slate-600">{{ 'auth.onboarding.subtitle' | transloco }}</p>
     @if (error()) { <p class="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{{ error()! | transloco }}</p> }
     <form class="mt-6 space-y-4" [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <app-org-fields [form]="form" />

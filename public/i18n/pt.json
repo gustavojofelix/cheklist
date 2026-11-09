@@ -51,13 +51,15 @@
     "privacy": "Política de Privacidade",
     "logout": "Terminar sessão",
     "hero": {
-      "kicker": "Feito para equipas jurídicas",
+      "kicker": "Conformidade empresarial em Moçambique",
       "title": "Checklists com rastreabilidade completa.",
       "body": "Checklists com âmbito por organização, modelos, documentos anexos e registo de auditoria completo para cada acção.",
       "versions": "Modelos com histórico de versões",
       "documents": "Documentos associados a itens de checklist",
       "roles": "Permissões baseadas em funções entre organizações",
-      "footer": "Plataforma multi-tenant para operações jurídicas em conformidade."
+      "footer": "Mobilelegis · Maputo",
+      "madeIn": "Feito em Moçambique",
+      "quote": "Alvarás, actas, Boletim da República, NUIT e certidões — tudo no mesmo lugar, com avisos antes de expirar."
     },
     "login": {
       "title": "Bem-vindo de volta",
@@ -232,7 +234,11 @@
       "expiringHint": "janela de 30 a 90 dias",
       "expired": "Expirado",
       "expiredHint": "acção imediata"
-    }
+    },
+    "morning": "Bom dia, {{name}}",
+    "afternoon": "Boa tarde, {{name}}",
+    "evening": "Boa noite, {{name}}",
+    "situation": "Situação de conformidade de {{org}}"
   },
   "company": {
     "subtitle": "Dados da empresa, utilizadores, registos e notificações.",
