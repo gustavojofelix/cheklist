@@ -3,7 +3,8 @@
 | File | What it is |
 |---|---|
 | `Checklist-Legal-Apresentacao.pptx` | 32-slide deck in Portuguese, with speaker notes on every slide: overview, front office, phone, back office, technology and security, plans and next steps. |
-| `Checklist-Legal-Video.webm` | 3.5-minute silent walkthrough with on-screen captions (1600×900, VP9). It covers the desktop front office, the phone (the app inside a phone frame) and the back office. Not committed, because of its size (about 60 MB). |
+| `Checklist-Legal-Video-ptBR.mp4` | 5:23 walkthrough with a Brazilian Portuguese voice-over (Microsoft Francisca neural voice) and on-screen captions, 1600×900, H.264 + AAC. It covers the desktop front office, the phone (the app inside a phone frame) and the back office. Not committed, because of its size (about 115 MB). |
+| `Checklist-Legal-Video.webm` | The same walkthrough without audio, an intermediate file. Not committed. |
 | `screens/desktop`, `screens/mobile` | Raw screen captures (29 desktop, 11 phone). |
 | `assets/` | Logo, capulana backgrounds and framed screens used by the deck. |
 
@@ -25,13 +26,17 @@ Everything is regenerated from the DEV seed data, with the dev server running on
    ```bash
    PPTXGENJS=<…>/node_modules/pptxgenjs APPLY_THEME=<…>/apply_theme.js node scripts/presentation/build-deck.cjs
    ```
-5. Record the video:
+5. Generate the narration. The text is in `scripts/presentation/scenes.mjs`, and this step needs the `msedge-tts` package, passed in by path. Add `--force` to regenerate clips that already exist:
+   ```bash
+   MSEDGE_TTS=<…>/node_modules/msedge-tts node scripts/presentation/narration.mjs
+   ```
+6. Record the video. Each scene lasts as long as its narration:
    ```bash
    node scripts/presentation/record-video.mjs
    ```
+7. Add the voice-over and write the MP4. This runs in real time (about 5 minutes) and needs no ffmpeg:
+   ```bash
+   node scripts/presentation/mux-video.mjs
+   ```
 
-To get an MP4, for example for WhatsApp or to embed in PowerPoint, convert the WebM with any full ffmpeg build. Clipchamp, which ships with Windows 11, also works:
-
-```bash
-ffmpeg -i Checklist-Legal-Video.webm -c:v libx264 -crf 20 -pix_fmt yuv420p Checklist-Legal-Video.mp4
-```
+To make the MP4 smaller, lower `videoBitsPerSecond` in `mux-video.mjs`. It is set to 4 Mbit/s.

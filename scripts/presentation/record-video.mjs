@@ -1,8 +1,10 @@
-// Records the full walkthrough video of Checklist Legal (desktop front office, phone, back office).
+// Records the full walkthrough video of Checklist Legal (desktop front office, phone, back office),
+// timed to the pt-BR narration made by narration.mjs. mux-video.mjs then adds the voice-over.
 // Read-only: it opens screens and dialogs, types without sending, and closes every dialog with Escape.
 //   node scripts/presentation/record-video.mjs   (dev server on http://localhost:4200, DEV seed users)
 import { chromium } from '@playwright/test';
-import { mkdirSync, readFileSync, renameSync, rmSync } from 'node:fs';
+import { existsSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { SCENES } from './scenes.mjs';
 
 const BASE = process.env.BASE_URL ?? 'http://localhost:4200';
 const OUT = 'docs/presentation';
@@ -68,6 +70,29 @@ const OVERLAY = `(() => {
   if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
 })();`;
 
+// ----------------------------------------------------------- narration timing
+// Each scene lasts at least as long as its narration clip (docs/presentation/.narration/<id>.mp3,
+// made by narration.mjs). The start time of every scene is written to timeline.json for mux-video.mjs.
+const BY_ID = Object.fromEntries(SCENES.map((s) => [s.id, s]));
+const NARR = `${OUT}/.narration`;
+const DUR = {};
+{
+  const b = await chromium.launch({ channel: 'msedge' });
+  const p = await b.newPage();
+  await p.route('http://narration.local/**', (r) => r.fulfill({ contentType: 'audio/mpeg', body: readFileSync(`${NARR}/${r.request().url().split('/').pop()}`) }));
+  await p.route('http://narration.local/', (r) => r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>n</title>' }));
+  await p.goto('http://narration.local/');
+  for (const s of SCENES) {
+    if (!existsSync(`${NARR}/${s.id}.mp3`)) throw new Error(`missing narration ${s.id}: run narration.mjs`);
+    DUR[s.id] = await p.evaluate(async (u) => {
+      const buf = await (await fetch(u)).arrayBuffer();
+      return (await new OfflineAudioContext(1, 1, 24000).decodeAudioData(buf)).duration;
+    }, `http://narration.local/${s.id}.mp3`);
+  }
+  await b.close();
+  console.log('narration total', Object.values(DUR).reduce((a, b) => a + b, 0).toFixed(1), 's');
+}
+
 // ----------------------------------------------------------- helpers
 const browser = await chromium.launch({ channel: 'msedge' });
 const ctx = await browser.newContext({
@@ -76,15 +101,13 @@ const ctx = await browser.newContext({
 });
 await ctx.addInitScript(OVERLAY);
 const page = await ctx.newPage();
+const T0 = Date.now();                                   // the recording starts with the page
+const now = () => (Date.now() - T0) / 1000;
+const timeline = [];
 const wait = (ms) => page.waitForTimeout(ms);
-let mx = W / 2, my = H / 2;
 
-async function cap(html, ms = 0) { await page.evaluate((h) => window.__cap?.(h), html); if (ms) await wait(ms); }
-async function card(html, ms) { await page.evaluate((h) => window.__card?.(h), html); await wait(ms); await page.evaluate(() => window.__card?.(null)); await wait(700); }
-async function moveTo(x, y, steps = 25) {
-  await page.mouse.move(x, y, { steps });
-  mx = x; my = y;
-}
+async function cap(html) { await page.evaluate((h) => window.__cap?.(h), html ?? null); }
+async function moveTo(x, y, steps = 25) { await page.mouse.move(x, y, { steps }); }
 /** Glide the cursor to an element, then click it (works inside the phone iframe too). */
 async function click(locator, { pause = 350, scroll = true } = {}) {
   if (scroll) await locator.scrollIntoViewIfNeeded();
@@ -107,16 +130,23 @@ async function typeSlow(locator, text) { await click(locator); await locator.pre
 async function settle(ms = 800) { await page.waitForLoadState('networkidle').catch(() => {}); await wait(ms); }
 const nav = (name) => page.getByRole('navigation').getByRole('link', { name, exact: true }).first();
 
-async function login(who) {
-  await page.goto(`${BASE}/login`);
-  await page.evaluate(() => localStorage.setItem('cl.lang', 'pt'));
-  await page.goto(`${BASE}/login`);
-  await settle(400);
-  await typeSlow(page.getByLabel('Endereço de e-mail'), USERS[who][0]);
-  await typeSlow(page.getByLabel('Palavra-passe'), USERS[who][1]);
-  await click(page.getByRole('button', { name: 'Iniciar sessão' }));
-  await page.waitForURL(/dashboard|admin/);
-  await settle();
+/** Runs a scene: shows its caption, plays its actions, and holds until its narration has finished. */
+async function scene(id, actions) {
+  const s = BY_ID[id];
+  const t = now();
+  timeline.push({ id, t });
+  if (s.cap) await cap(s.cap);
+  if (actions) await actions();
+  const left = DUR[id] + 0.5 - (now() - t);
+  if (left > 0) await wait(left * 1000);
+}
+async function cardScene(id, html) {
+  await cap(null);
+  await page.evaluate((h) => window.__card(h), html);
+  await wait(600);
+  await scene(id);
+  await page.evaluate(() => window.__card(null));
+  await wait(800);
 }
 
 // =========================================================== 0. intro
@@ -125,99 +155,92 @@ await page.evaluate(() => localStorage.setItem('cl.lang', 'pt'));
 await page.goto(`${BASE}/login`);
 await settle(300);
 await page.evaluate(() => window.__card('<h1>Conformidade legal das empresas, num só lugar</h1><p>Apresentação completa da plataforma: front office, telemóvel e back office.</p>'));
-await wait(5200);
-await page.evaluate(() => window.__card(null)); await wait(700);
+await wait(1200);
+await scene('intro');
+await wait(600);
+await page.evaluate(() => window.__card(null)); await wait(800);
 
 // =========================================================== 1. front office (desktop)
-await card('<div class="num">01</div><h1>Front office</h1><p>O dia-a-dia das empresas e dos consultores.</p>', 3200);
+await cardScene('ch1', '<div class="num">01</div><h1>Front office</h1><p>O dia-a-dia das empresas e dos consultores.</p>');
 
-await cap('<b>Entrada</b> · acesso seguro com e-mail e palavra-passe');
-await wait(1600);
-await typeSlow(page.getByLabel('Endereço de e-mail'), USERS.admin[0]);
-await typeSlow(page.getByLabel('Palavra-passe'), USERS.admin[1]);
-await click(page.getByRole('button', { name: 'Iniciar sessão' }));
-await page.waitForURL(/dashboard/);
-await settle();
-
-await cap('<b>Painel</b> · percentagem de conformidade e indicadores em tempo real');
-await hover(page.getByText('Total de itens').first(), 1300);
-await hover(page.getByText('Prestes a expirar').first(), 1300);
-await hover(page.getByText('Expirado').first(), 1300);
-await cap('<b>Painel</b> · estado por cores da bandeira, próximos prazos e actividade recente');
-await moveTo(700, 600); await wait(1200);
-await scroll(500); await wait(1800); await scroll(-500); await wait(600);
-
-await cap('<b>Empresa</b> · dados oficiais que preenchem a ficha automaticamente');
-await click(nav('Empresa')); await settle(1800);
-await scroll(400); await wait(1200); await scroll(-400);
-await cap('<b>Empresa · Utilizadores</b> · convites e papéis: administrador, gestor, leitor');
-await click(page.getByRole('tab', { name: /Utilizadores/ }).or(page.getByRole('link', { name: /Utilizadores/ })).first()); await settle(2200);
-await cap('<b>Empresa · Notificações</b> · quem recebe os alertas de validade por e-mail');
-await click(page.getByRole('tab', { name: /Notificações/ }).or(page.getByRole('link', { name: /Notificações/ })).first()); await settle(2200);
-
-await cap('<b>Entidades</b> · a sede e cada sucursal têm a sua própria ficha');
-await click(nav('Entidades')); await settle(2200);
-await cap('<b>Ficha da entidade</b> · todas as obrigações legais, organizadas por categoria');
-await click(page.getByRole('link', { name: 'Abrir ficha da entidade' }).first());
-await page.waitForURL(/ficha/); await settle(2200);
-await hover(page.getByRole('row').filter({ hasText: 'LEG-04' }).first(), 1200);
-await cap('<b>Ficha</b> · descritivo, validade, anexos e estado — Regular, Atenção ou Crítico');
-await scroll(1300, 100, 80); await wait(1500);
-await scroll(1300, 100, 80); await wait(1500);
-await scroll(-2600, 200, 40); await wait(600);
-
-await cap('<b>Filtros</b> · encontrar num instante o que está em risco');
-await click(page.getByRole('combobox').first());
-await page.keyboard.press('Escape'); await wait(400);
-await typeSlow(page.getByPlaceholder(/Pesquisar/), 'licença'); await wait(1800);
-await page.getByPlaceholder(/Pesquisar/).fill(''); await wait(800);
-
-await cap('<b>Editar checklist</b> · acrescentar obrigações próprias e definir validade e anexo');
-await click(page.getByRole('button', { name: 'Editar checklist' })); await wait(2600);
-const done = page.getByRole('button', { name: 'Concluído' });
-if (await done.count()) await click(done);
-await wait(500);
-
-await cap('<b>Documentos</b> · um documento pode comprovar várias obrigações; a IA lê o ficheiro (OCR)');
-await click(page.getByRole('button', { name: 'Adicionar documento' }).first()); await wait(3200);
-await page.keyboard.press('Escape'); await wait(600);
-
-await cap('<b>Relatórios</b> · relatórios em PDF e Word para a administração e auditores');
-await click(nav('Relatórios')); await settle(1800);
-await click(page.getByRole('link', { name: /Gerar relatório/ }).first());
-await page.waitForURL(/reports\//); await settle(1200);
-await cap('<b>Relatórios</b> · escolher os pontos a incluir, com comentário escrito pela IA');
-await click(page.locator('label', { hasText: 'Seleccionar todos os itens' }).locator('input')); await wait(1800);
-await scroll(500); await wait(1500); await scroll(-500);
-
-await cap('<b>Registos</b> · histórico inalterável de quem fez o quê, exportável em CSV');
-await click(nav('Registos')); await settle(2600);
-await cap('<b>Documentos apagados</b> · recuperar o que foi eliminado por engano');
-await click(nav('Documentos Apagados')); await settle(2400);
-
-await cap('<b>Assistente de IA</b> · perguntas em linguagem natural sobre a conformidade da empresa');
-await click(nav('Assistente de IA')); await settle(1200);
-const ask = page.getByRole('textbox').last();
-await typeSlow(ask, 'Que documentos expiram nos próximos 90 dias?'); await wait(2000);
-await ask.fill(''); await wait(400);
-
-await cap('<b>Subscrições</b> · plano, limites usados e facturas');
-await click(nav('Subscrições')); await settle(2200);
-await scroll(400); await wait(1200);
-await cap('<b>Pagamento</b> · cartão (Stripe), SISLOG ou transferência bancária, com vouchers');
-await click(page.getByRole('button', { name: 'Escolher plano' }).nth(1)); await wait(3200);
-await page.keyboard.press('Escape'); await wait(500);
-await scroll(-400);
-
-await cap('<b>Bilingue</b> · português e inglês, trocados em tempo real');
-await click(page.getByRole('button', { name: /Idioma/ }));
-await click(page.getByRole('menuitem', { name: 'English' })); await wait(2200);
-await click(page.getByRole('button', { name: /Language/ }));
-await click(page.getByRole('menuitem', { name: 'Português' })); await wait(1200);
-await cap(null);
+await scene('login', async () => {
+  await wait(800);
+  await typeSlow(page.getByLabel('Endereço de e-mail'), USERS.admin[0]);
+  await typeSlow(page.getByLabel('Palavra-passe'), USERS.admin[1]);
+  await click(page.getByRole('button', { name: 'Iniciar sessão' }));
+  await page.waitForURL(/dashboard/);
+  await settle(600);
+});
+await scene('dash', async () => {
+  await hover(page.getByText('Total de itens').first(), 1800);
+  await hover(page.getByText('Em conformidade').first(), 1800);
+  await hover(page.getByText('Prestes a expirar').first(), 1800);
+  await hover(page.getByText('Expirado').first(), 1500);
+});
+await scene('dash2', async () => {
+  await moveTo(700, 600); await wait(1500);
+  await scroll(500); await wait(3500); await scroll(-500);
+});
+await scene('company', async () => {
+  await click(nav('Empresa')); await settle(1500);
+  await scroll(400); await wait(1500); await scroll(-400);
+});
+await scene('users', async () => { await click(page.getByRole('tab', { name: /Utilizadores/ }).first()); await settle(1500); });
+await scene('notif', async () => { await click(page.getByRole('tab', { name: /Notificações/ }).first()); await settle(1500); });
+await scene('entities', async () => { await click(nav('Entidades')); await settle(1500); });
+await scene('ficha', async () => {
+  await click(page.getByRole('link', { name: 'Abrir ficha da entidade' }).first());
+  await page.waitForURL(/ficha/); await settle(1500);
+  await hover(page.getByRole('row').filter({ hasText: 'LEG-04' }).first(), 1500);
+});
+await scene('ficha2', async () => {
+  await scroll(1300, 100, 90); await wait(1800);
+  await scroll(1300, 100, 90); await wait(1800);
+  await scroll(-2600, 200, 40);
+});
+await scene('filters', async () => {
+  await typeSlow(page.getByPlaceholder(/Pesquisar/), 'licença'); await wait(1600);
+  await page.getByPlaceholder(/Pesquisar/).fill('');
+});
+await scene('edit', async () => {
+  await click(page.getByRole('button', { name: 'Editar checklist' })); await wait(4500);
+  const done = page.getByRole('button', { name: 'Concluído' });
+  if (await done.count()) await click(done);
+});
+await scene('doc', async () => {
+  await click(page.getByRole('button', { name: 'Adicionar documento' }).first()); await wait(6500);
+  await page.keyboard.press('Escape');
+});
+await scene('reports', async () => { await click(nav('Relatórios')); await settle(1200); });
+await scene('reports2', async () => {
+  await click(page.getByRole('link', { name: /Gerar relatório/ }).first());
+  await page.waitForURL(/reports\//); await settle(900);
+  await click(page.locator('label', { hasText: 'Seleccionar todos os itens' }).locator('input')); await wait(1500);
+  await scroll(500); await wait(1200); await scroll(-500);
+});
+await scene('audit', async () => { await click(nav('Registos')); await settle(1500); await scroll(400); await wait(1500); await scroll(-400); });
+await scene('recycle', async () => { await click(nav('Documentos Apagados')); await settle(1000); });
+await scene('ai', async () => {
+  await click(nav('Assistente de IA')); await settle(800);
+  const ask = page.getByRole('textbox').last();
+  await typeSlow(ask, 'Que documentos expiram nos próximos 90 dias?'); await wait(2500);
+  await ask.fill('');
+});
+await scene('billing', async () => { await click(nav('Subscrições')); await settle(1200); await scroll(400); await wait(1200); });
+await scene('checkout', async () => {
+  await click(page.getByRole('button', { name: 'Escolher plano' }).nth(1)); await wait(5500);
+  await page.keyboard.press('Escape'); await wait(300);
+  await scroll(-400);
+});
+await scene('lang', async () => {
+  await click(page.getByRole('button', { name: /Idioma/ }));
+  await click(page.getByRole('menuitem', { name: 'English' })); await wait(2000);
+  await click(page.getByRole('button', { name: /Language/ }));
+  await click(page.getByRole('menuitem', { name: 'Português' }));
+});
 
 // =========================================================== 2. phone (same app inside a phone frame)
-await card('<div class="num">02</div><h1>No telemóvel</h1><p>A mesma plataforma, desenhada para o ecrã pequeno.</p>', 3200);
+await cardScene('ch2', '<div class="num">02</div><h1>No telemóvel</h1><p>A mesma plataforma, desenhada para o ecrã pequeno.</p>');
 const PHONE = `<!doctype html><html><head><meta charset="utf-8"><title>Checklist Legal</title><style>
   html,body{margin:0;height:100%;overflow:hidden;font-family:'Segoe UI',Arial,sans-serif}
   body{background:linear-gradient(90deg,#052f1c 0%,#052f1cf0 45%,#07472acc 100%),url(data:image/png;base64,${TILE}) 0 0/96px 96px #07472a;display:flex;align-items:center;gap:90px;padding-left:170px}
@@ -231,7 +254,7 @@ await page.route(`${BASE}/__phone`, (r) => r.fulfill({ contentType: 'text/html; 
 await page.goto(`${BASE}/__phone`);
 const app = page.frameLocator('#app');
 await app.getByText('Total de itens').first().waitFor();
-await wait(2000);
+await wait(1500);
 const side = async (h, p) => { await page.evaluate(([a, b]) => { document.getElementById('h').textContent = a; document.getElementById('p').textContent = b; }, [h, p]); };
 // phone taps: no scrolling by the recorder, and undo any sideways scroll the drawer animation may cause
 const appFrame = () => page.frames().find((f) => f !== page.mainFrame());
@@ -240,61 +263,62 @@ const tap = async (locator, ms) => { await click(locator, { scroll: false }); aw
 const menuTo = async (name, ms) => { await tap(app.getByRole('button', { name: 'Abrir menu' }), 900); await tap(app.getByRole('link', { name }), ms); };
 const swipe = async (n, dy, ms = 110) => { await page.mouse.move(375, 520); for (let i = 0; i < n; i++) { await page.mouse.wheel(0, dy); await wait(ms); } };
 
-await side('Painel', 'Os indicadores em grelha e o estado de conformidade, à medida do polegar.'); await wait(1800);
-await swipe(6, 120, 90); await wait(1200); await swipe(6, -120, 40);
-await side('Menu', 'Toda a navegação numa gaveta lateral.');
-await tap(app.getByRole('button', { name: 'Abrir menu' }), 1900);
-await side('Entidades', 'A sede e as sucursais, cada uma com a sua ficha.');
-await tap(app.getByRole('link', { name: 'Entidades' }), 1900);
-await tap(app.getByRole('link', { name: 'Abrir ficha da entidade' }).first(), 2000);
-await side('Ficha em cartões', 'Cada obrigação é um cartão com a borda na cor do estado. Toque no descritivo para editar.');
-await swipe(26, 110); await wait(1500);
-await side('Anexar documento', 'O botão verde está sempre à mão: fotografe a certidão e ligue-a às obrigações.');
-await tap(app.getByRole('button', { name: 'Adicionar documento' }).last(), 2800);
-await app.locator('body').press('Escape'); await wait(600);
-await side('Assistente de IA', 'Perguntas sobre a conformidade, também no telemóvel.');
-await menuTo('Assistente de IA', 2200);
-await side('Subscrição', 'Plano, limites e pagamento.');
-await menuTo('Subscrições', 2200);
-await side('Registos', 'O histórico completo em qualquer lugar.');
-await menuTo('Registos', 2600);
+await scene('m-dash', async () => {
+  await side('Painel', 'Os indicadores em grelha e o estado de conformidade, à medida do polegar.'); await wait(1500);
+  await swipe(6, 120, 90); await wait(1500); await swipe(6, -120, 40);
+});
+await scene('m-menu', async () => { await side('Menu', 'Toda a navegação numa gaveta lateral.'); await tap(app.getByRole('button', { name: 'Abrir menu' }), 1200); });
+await scene('m-entities', async () => {
+  await side('Entidades', 'A sede e as sucursais, cada uma com a sua ficha.');
+  await tap(app.getByRole('link', { name: 'Entidades' }), 1600);
+  await tap(app.getByRole('link', { name: 'Abrir ficha da entidade' }).first(), 1600);
+});
+await scene('m-cards', async () => {
+  await side('Ficha em cartões', 'Cada obrigação é um cartão com a borda na cor do estado. Toque no descritivo para editar.');
+  await swipe(26, 110);
+});
+await scene('m-doc', async () => {
+  await side('Anexar documento', 'O botão verde está sempre à mão: fotografe a certidão e ligue-a às obrigações.');
+  await tap(app.getByRole('button', { name: 'Adicionar documento' }).last(), 4200);
+  await app.locator('body').press('Escape'); await wait(300);
+});
+await scene('m-ai', async () => { await side('Assistente de IA', 'Perguntas sobre a conformidade, também no telemóvel.'); await menuTo('Assistente de IA', 1400); });
+await scene('m-billing', async () => { await side('Subscrição', 'Plano, limites e pagamento.'); await menuTo('Subscrições', 1400); });
+await scene('m-audit', async () => { await side('Registos', 'O histórico completo em qualquer lugar.'); await menuTo('Registos', 1800); });
 await page.unroute(`${BASE}/__phone`);
 
 // =========================================================== 3. back office
 await page.goto(`${BASE}/dashboard`); await settle(400);
-await card('<div class="num">03</div><h1>Back office</h1><p>A consola da equipa da plataforma.</p>', 3200);
-await page.getByRole('button', { name: /Ana Demo/ }).click();
-await page.getByRole('menuitem', { name: 'Terminar sessão' }).click();
-await page.waitForURL(/login/);
-await cap('<b>Back office</b> · acesso reservado à equipa da plataforma');
-await login('super');
-
-await cap('<b>Organizações</b> · todas as empresas clientes, estado e plano');
-await click(nav('Organizações')); await settle(2600);
-await cap('<b>Modelos de checklist</b> · o modelo “Obrigações Gerais” e outros por sector');
-await click(nav('Modelos de checklist')); await settle(2000);
-await cap('<b>Versões</b> · editar um rascunho e publicar: as fichas dos clientes recebem os novos itens');
-await click(page.getByRole('link', { name: 'Abrir' }).first()); await page.waitForURL(/templates\//); await settle(2400);
-await hover(page.getByRole('button', { name: /Publicar versão/ }), 1200);
-await cap('<b>Planos</b> · limites e preços configuráveis, sem programação');
-await click(nav('Planos')); await settle(1600); await scroll(500); await wait(1400); await scroll(-500);
-await cap('<b>Vouchers</b> · descontos com validade e limite de utilização');
-await click(nav('Vouchers')); await settle(2200);
-await cap('<b>Pagamentos</b> · confirmação de transferências e histórico de pagamentos');
-await click(nav('Pagamentos')); await settle(2400);
-await cap('<b>Equipa da plataforma</b> · papéis internos e acesso com consentimento do cliente');
-await click(nav('Equipa da plataforma')); await settle(2200);
-await cap('<b>Definições</b> · parâmetros da plataforma e dados bancários');
-await click(nav('Definições')); await settle(2200);
-await cap('<b>E-mails</b> · mensagens enviadas e estado de entrega');
-await click(nav('E-mails')); await settle(2200);
-await cap('<b>Registos da plataforma</b> · auditoria de todas as organizações, encadeada e inalterável');
-await click(nav('Registos')); await settle(2800);
+await cardScene('ch3', '<div class="num">03</div><h1>Back office</h1><p>A consola da equipa da plataforma.</p>');
+await scene('bo-login', async () => {
+  await page.getByRole('button', { name: /Ana Demo/ }).click();
+  await page.getByRole('menuitem', { name: 'Terminar sessão' }).click();
+  await page.waitForURL(/login/); await settle(300);
+  await typeSlow(page.getByLabel('Endereço de e-mail'), USERS.super[0]);
+  await typeSlow(page.getByLabel('Palavra-passe'), USERS.super[1]);
+  await click(page.getByRole('button', { name: 'Iniciar sessão' }));
+  await page.waitForURL(/dashboard|admin/); await settle(400);
+});
+await scene('orgs', async () => { await click(nav('Organizações')); await settle(1500); });
+await scene('templates', async () => { await click(nav('Modelos de checklist')); await settle(1200); });
+await scene('versions', async () => {
+  await click(page.getByRole('link', { name: 'Abrir' }).first()); await page.waitForURL(/templates\//); await settle(1500);
+  await hover(page.getByRole('button', { name: /Publicar versão/ }), 1500);
+});
+await scene('plans', async () => { await click(nav('Planos')); await settle(1200); await scroll(500); await wait(1200); await scroll(-500); });
+await scene('vouchers', async () => { await click(nav('Vouchers')); await settle(1000); });
+await scene('payments', async () => { await click(nav('Pagamentos')); await settle(1000); });
+await scene('staff', async () => { await click(nav('Equipa da plataforma')); await settle(1000); });
+await scene('settings', async () => { await click(nav('Definições')); await settle(1000); });
+await scene('emails', async () => { await click(nav('E-mails')); await settle(800); });
+await scene('bo-audit', async () => { await click(nav('Registos')); await settle(1000); });
 await cap(null);
 
 // =========================================================== outro
 await page.evaluate(() => window.__card('<h1>Checklist Legal</h1><p>Conformidade legal feita em Moçambique, para empresas moçambicanas.<br><br>Segura · Bilingue · No computador e no telemóvel</p>'));
-await wait(5000);
+await wait(800);
+await scene('outro');
+await wait(1500);
 
 const video = page.video();
 await ctx.close();
@@ -303,4 +327,5 @@ const out = `${OUT}/Checklist-Legal-Video.webm`;
 rmSync(out, { force: true });
 renameSync(await video.path(), out);
 rmSync(TMP, { recursive: true, force: true });
-console.log('video:', out);
+writeFileSync(`${OUT}/.narration/timeline.json`, JSON.stringify(timeline, null, 1));
+console.log('video:', out, 'length ~', now().toFixed(1), 's');
