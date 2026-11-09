@@ -28,7 +28,7 @@ const LIMITS = ['max_users', 'max_branches', 'max_documents', 'max_ocr', 'max_ia
         <form class="card space-y-3 p-5" (ngSubmit)="save(p)">
           <div class="flex items-center gap-2">
             <input class="input !w-48 font-semibold" [name]="'name' + p.id" [(ngModel)]="p.name" [attr.aria-label]="'common.name' | transloco" />
-            <span class="font-mono text-xs text-slate-400">{{ p.slug }}</span>
+            <span class="font-mono text-xs text-slate-500">{{ p.slug }}</span>
             <label class="ml-auto flex items-center gap-1.5 text-sm"><input type="checkbox" [name]="'act' + p.id" [(ngModel)]="p.is_active" /> {{ 'admin.plans.active' | transloco }}</label>
           </div>
           <textarea class="input" rows="2" [name]="'desc' + p.id" [(ngModel)]="p.description" [attr.aria-label]="'admin.plans.description' | transloco"></textarea>

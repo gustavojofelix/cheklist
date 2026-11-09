@@ -21,7 +21,7 @@ import { Icon } from '../shared/ui/icon';
         <main class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-10">
           <router-outlet />
         </main>
-        <footer class="text-xs text-slate-400">© {{ year }} Checklist Legal</footer>
+        <footer class="text-xs text-slate-500">© {{ year }} Checklist Legal</footer>
       </div>
       <aside class="relative hidden overflow-hidden bg-gradient-to-br from-brand-700 to-slate-900 p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <p class="text-sm font-medium uppercase tracking-widest text-brand-100">{{ 'auth.hero.kicker' | transloco }}</p>

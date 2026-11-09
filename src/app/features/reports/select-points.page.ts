@@ -47,7 +47,7 @@ interface Result { pdf_url: string; docx_url: string; preview_url: string }
     <div class="card">
       <label class="flex items-center gap-3 border-b border-slate-100 p-3 text-sm font-medium">
         <input type="checkbox" [checked]="allSelected()" (change)="toggleAll($any($event.target).checked)" />
-        {{ 'reports.selectAll' | transloco }} <span class="ml-auto text-xs text-slate-400">{{ selected().size }}/{{ leaves().length }}</span>
+        {{ 'reports.selectAll' | transloco }} <span class="ml-auto text-xs text-slate-500">{{ selected().size }}/{{ leaves().length }}</span>
       </label>
       @for (g of groups(); track g.cat.id) {
         <p class="bg-slate-50 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500">{{ tr(g.cat) }}</p>

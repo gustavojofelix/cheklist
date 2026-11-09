@@ -1,0 +1,71 @@
+# Nightly independent backup (in addition to Supabase's own daily backups / PITR):
+#   1. database dump (roles, schema, data) → encrypted with age → Cloudflare R2
+#   2. storage mirror (documents, reports, invoices, logos) → R2 via the Supabase Storage S3 protocol
+# Supabase's backups do NOT include Storage objects, so step 2 is essential.
+# Retention is enforced on the R2 bucket (lifecycle rules + object lock), not here.
+# Restore procedure: docs/runbooks/backup-restore.md
+name: Nightly backup
+
+on:
+  schedule:
+    - cron: '30 1 * * *'        # 01:30 UTC (03:30 Maputo)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    environment: production-backup          # protect these secrets with a GitHub environment
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}            # session-pooler URI, read-only role recommended
+      AGE_RECIPIENT: ${{ vars.BACKUP_AGE_RECIPIENT }}            # public key; the private key is kept offline
+      R2_BUCKET: ${{ vars.BACKUP_R2_BUCKET }}
+      RCLONE_CONFIG_R2_TYPE: s3
+      RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+      RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      RCLONE_CONFIG_R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      RCLONE_CONFIG_SB_TYPE: s3
+      RCLONE_CONFIG_SB_PROVIDER: Other
+      RCLONE_CONFIG_SB_ACCESS_KEY_ID: ${{ secrets.SUPABASE_S3_ACCESS_KEY_ID }}
+      RCLONE_CONFIG_SB_SECRET_ACCESS_KEY: ${{ secrets.SUPABASE_S3_SECRET_ACCESS_KEY }}
+      RCLONE_CONFIG_SB_ENDPOINT: ${{ secrets.SUPABASE_S3_ENDPOINT }}   # https://<ref>.supabase.co/storage/v1/s3
+      RCLONE_CONFIG_SB_REGION: ${{ vars.SUPABASE_REGION }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - name: Install age and rclone
+        run: sudo apt-get update && sudo apt-get install -y age rclone
+
+      - name: Dump database
+        run: |
+          set -euo pipefail
+          STAMP=$(date -u +%Y-%m-%dT%H%M%SZ)
+          echo "STAMP=$STAMP" >> "$GITHUB_ENV"
+          mkdir -p dump
+          npx supabase db dump --remote="$SUPABASE_DB_URL" --role-only -f dump/roles.sql
+          npx supabase db dump --remote="$SUPABASE_DB_URL" -f dump/schema.sql
+          npx supabase db dump --remote="$SUPABASE_DB_URL" --data-only --use-copy -f dump/data.sql
+          # the audit schema is append-only and must be kept: verify it is in the dump
+          grep -q 'audit.log' dump/data.sql
+          tar -czf - dump | age -r "$AGE_RECIPIENT" > "db-$STAMP.tar.gz.age"
+          sha256sum "db-$STAMP.tar.gz.age" > "db-$STAMP.sha256"
+
+      - name: Upload database dump
+        run: |
+          rclone copyto "db-$STAMP.tar.gz.age" "r2:$R2_BUCKET/db/daily/db-$STAMP.tar.gz.age"
+          rclone copyto "db-$STAMP.sha256"     "r2:$R2_BUCKET/db/daily/db-$STAMP.sha256"
+          if [ "$(date -u +%d)" = "01" ]; then
+            rclone copyto "db-$STAMP.tar.gz.age" "r2:$R2_BUCKET/db/monthly/db-$STAMP.tar.gz.age"
+          fi
+
+      - name: Mirror storage buckets
+        run: |
+          for b in documents reports invoices logos; do
+            rclone copy "sb:$b" "r2:$R2_BUCKET/storage/$b" --checksum --transfers 8 --s3-no-check-bucket
+          done
+          # copy (not sync): files deleted in the app stay in the backup until the bucket's lifecycle rule expires them

@@ -65,7 +65,7 @@ interface Invitation { id: string; email: string; role: OrgRole; created_at: str
 
       @case ('utilizadores') {
         <section class="card p-5">
-          <h2 class="font-semibold text-slate-900">{{ 'company.members.title' | transloco }} <span class="text-slate-400">({{ members().length }})</span></h2>
+          <h2 class="font-semibold text-slate-900">{{ 'company.members.title' | transloco }} <span class="text-slate-500">({{ members().length }})</span></h2>
           @if (isAdmin() && !readOnly()) {
             <form class="mt-4 flex flex-wrap gap-2" (ngSubmit)="invite()">
               <input type="email" class="input max-w-xs" name="email" [(ngModel)]="inviteEmail" placeholder="email@empresa.co.mz" required
@@ -116,7 +116,7 @@ interface Invitation { id: string; email: string; role: OrgRole; created_at: str
               @for (i of invitations(); track i.id) {
                 <li class="flex flex-wrap items-center justify-between gap-2 py-2">
                   <span>{{ i.email }} · {{ 'roles.' + i.role | transloco }}
-                    <span class="text-xs text-slate-400">· {{ 'company.members.expires' | transloco: { date: (i.expires_at | date: 'dd/MM/yyyy') } }}</span></span>
+                    <span class="text-xs text-slate-500">· {{ 'company.members.expires' | transloco: { date: (i.expires_at | date: 'dd/MM/yyyy') } }}</span></span>
                   @if (isAdmin()) {
                     <span class="flex gap-1">
                       <button type="button" class="btn-ghost !py-1" (click)="resend(i)">{{ 'company.members.resend' | transloco }}</button>

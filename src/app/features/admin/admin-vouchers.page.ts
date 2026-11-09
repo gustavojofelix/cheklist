@@ -46,7 +46,7 @@ interface Voucher { id: string; code: string; name: string; discount_type: 'perc
               <td><label class="flex items-center gap-1.5 text-sm"><input type="checkbox" [checked]="v.is_active" (change)="toggle(v, $any($event.target).checked)" />
                 {{ (v.is_active ? 'admin.plans.active' : 'admin.vouchers.inactive') | transloco }}</label></td>
             </tr>
-          } @empty { <tr><td colspan="6" class="py-8 text-center text-slate-400">{{ 'admin.vouchers.empty' | transloco }}</td></tr> }
+          } @empty { <tr><td colspan="6" class="py-8 text-center text-slate-500">{{ 'admin.vouchers.empty' | transloco }}</td></tr> }
         </tbody>
       </table>
     </div>

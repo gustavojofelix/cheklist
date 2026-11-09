@@ -76,7 +76,7 @@ interface Purchase { price?: Price; plan?: Plan; addon?: 'storage_5gb' }
             @if (quote()?.voucher_valid === false) { <p class="field-error">{{ 'billing.invalidVoucher' | transloco }}</p> }
             @if (quote(); as q) {
               <p class="mt-3 text-2xl font-semibold">{{ q.amount | number: '1.2-2' }} {{ q.currency }}
-                @if (q.discount > 0) { <span class="ml-2 text-sm font-normal text-slate-400 line-through">{{ q.original | number: '1.2-2' }}</span> }</p>
+                @if (q.discount > 0) { <span class="ml-2 text-sm font-normal text-slate-500 line-through">{{ q.original | number: '1.2-2' }}</span> }</p>
             }
           </div>
           <fieldset>
@@ -121,7 +121,7 @@ interface Purchase { price?: Price; plan?: Plan; addon?: 'storage_5gb' }
           <p class="mt-1 text-sm text-slate-500">{{ lang() === 'en' ? (p.translations.en?.description ?? p.description) : p.description }}</p>
           <p class="mt-4 text-2xl font-semibold">
             @if (pr) { {{ pr.amount | number: '1.2-2' }} MZN<span class="text-sm font-normal text-slate-500"> / {{ 'admin.period.' + pr.period | transloco }}</span> }
-            @else { <span class="text-base font-normal text-slate-400">{{ 'billing.notInPeriod' | transloco }}</span> }
+            @else { <span class="text-base font-normal text-slate-500">{{ 'billing.notInPeriod' | transloco }}</span> }
           </p>
           <ul class="mt-4 space-y-1 text-sm text-slate-600">
             <li>{{ 'billing.upToUsers' | transloco: { n: p.max_users ?? '∞' } }}</li>
@@ -142,7 +142,7 @@ interface Purchase { price?: Price; plan?: Plan; addon?: 'storage_5gb' }
             @for (i of invoices(); track i.id) {
               <tr><td class="font-mono text-xs">{{ i.number }}</td><td>{{ i.amount | number: '1.2-2' }} {{ i.currency }}</td>
                 <td>{{ i.due_date | date: 'dd/MM/yyyy' }}</td><td><span class="chip bg-slate-100 text-slate-700">{{ 'billing.invoiceStatus.' + i.status | transloco }}</span></td></tr>
-            } @empty { <tr><td colspan="4" class="py-4 text-center text-slate-400">—</td></tr> }
+            } @empty { <tr><td colspan="4" class="py-4 text-center text-slate-500">—</td></tr> }
           </tbody>
         </table>
       </section>
@@ -152,9 +152,9 @@ interface Purchase { price?: Price; plan?: Plan; addon?: 'storage_5gb' }
           <thead><tr><th>{{ 'billing.date' | transloco }}</th><th>{{ 'billing.description' | transloco }}</th><th>{{ 'billing.amount' | transloco }}</th><th>{{ 'common.status' | transloco }}</th></tr></thead>
           <tbody>
             @for (p of payments(); track p.id) {
-              <tr><td class="text-slate-500">{{ p.created_at | date: 'dd/MM/yyyy' }}</td><td>{{ p.description }}<span class="block text-xs text-slate-400">{{ 'billing.methods.' + p.gateway | transloco }}</span></td>
+              <tr><td class="text-slate-500">{{ p.created_at | date: 'dd/MM/yyyy' }}</td><td>{{ p.description }}<span class="block text-xs text-slate-500">{{ 'billing.methods.' + p.gateway | transloco }}</span></td>
                 <td>{{ p.amount | number: '1.2-2' }} {{ p.currency }}</td><td><span class="chip bg-slate-100 text-slate-700">{{ 'billing.paymentStatus.' + p.status | transloco }}</span></td></tr>
-            } @empty { <tr><td colspan="4" class="py-4 text-center text-slate-400">—</td></tr> }
+            } @empty { <tr><td colspan="4" class="py-4 text-center text-slate-500">—</td></tr> }
           </tbody>
         </table>
       </section>

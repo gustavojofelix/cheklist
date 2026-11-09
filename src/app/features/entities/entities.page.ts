@@ -36,7 +36,7 @@ interface EntityCard {
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       @for (e of cards(); track e.id) {
         <article class="card flex flex-col p-5">
-          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
             {{ (e.parent_id ? 'entities.branch' : 'entities.parent') | transloco }} · {{ refs.label('entity_subtype', e.entity_subtype) }}
           </p>
           <h2 class="mt-1 text-lg font-semibold text-slate-900">{{ e.name }}</h2>

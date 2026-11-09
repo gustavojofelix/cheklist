@@ -142,6 +142,50 @@
 - pgTAP: 67/67 passing on the hosted project. All Edge Functions type-check with `deno check`.
 - **Needs from you:** `ANTHROPIC_API_KEY` as an Edge Function secret (see docs/runbooks/secrets.md). Until then the screens report "not configured".
 
+## Iteration 8 (hardening)
+- **Supabase advisors** (security and performance), fixed in migrations 0018 and 0019:
+  - `auth.uid()` in seven RLS policies is now evaluated once per query instead of once per row;
+  - ten "admin" policies are split per command so each SELECT is evaluated by a single policy;
+  - fixed `search_path` on `audit.block_mutation`;
+  - `my_context()` is no longer callable anonymously (the default PUBLIC grant is removed too).
+- **Advisor findings remaining, all by design:**
+  - authenticated SECURITY DEFINER RPCs, each checking its caller and covered by pgTAP;
+  - `invitation_preview` is anonymous on purpose;
+  - `rls_auto_enable` is Supabase's own event trigger;
+  - leaked-password protection is a dashboard switch you need to turn on (Authentication → Passwords).
+- **End-to-end tests** (Playwright, `e2e/`): 15 passing, desktop and mobile:
+  - sign-in (including wrong passwords), PT/EN switching, sign-out;
+  - role and route protection: customers cannot open the back office, managers cannot open billing;
+  - inline edit that persists, document upload, recycle bin;
+  - **axe WCAG 2.2 AA scans** of 9 front-office and 5 back-office screens;
+  - a mobile check: navigation drawer and no horizontal scrolling.
+- **Accessibility fixes found by the scans:**
+  - text contrast (slate-400 → slate-500 throughout, and the chip text);
+  - the language button's accessible name now includes its visible label;
+  - checkbox and radio touch targets enlarged.
+- **CI** (`.github/workflows/ci.yml`):
+  - production build, PT/EN translation-key parity, and a `deno check` of the functions;
+  - on push to main: migrations to dev + pgTAP, then Playwright.
+- **Nightly backup** (`.github/workflows/backup.yml`):
+  - the database dump (roles, schema, data, including the audit log) is encrypted with age and stored in Cloudflare R2;
+  - the storage buckets are mirrored to R2 over Supabase's S3 protocol.
+  - Restore procedures and the quarterly drill are in [docs/runbooks/backup-restore.md](../runbooks/backup-restore.md).
+- Not yet run: the backup workflow and the GitHub CI jobs. They need the GitHub secrets and the R2 bucket set up first.
+
+## Status against the 10 evaluation areas
+| # | Area | Status |
+|---|---|---|
+| 1 | Security, data management & integrity | RLS on every table, 67 pgTAP checks, advisor findings fixed, signed URLs, download OTP, operator consent, CSP/HSTS. Two authorisation bugs were found and fixed by the tests. **Open:** leaked-password switch; MFA for staff. |
+| 2 | Hosting | Supabase (dev project, eu-west-1) + Netlify with security headers. **Open:** a separate production project on Pro, and custom domains. |
+| 3 | Front/back office & sync | Every Phase 1 screen is rebuilt, plus the back office; realtime sync in the entity checklist. |
+| 4 | UI/UX | PT/EN, responsive, WCAG 2.2 AA scans passing. **Open:** design review with Mobilelegis. |
+| 5 | Sites | App on Netlify. **Open:** public marketing site and domains. |
+| 6 | Business-flow validation | Rules enforced in Postgres, covered by pgTAP (67) and Playwright (15). |
+| 7 | Performance & stability | RLS init-plan fixes, indexes, keyset paging, lazy routes (148 kB gzipped initial). **Open:** load test, error monitoring (Sentry). |
+| 8 | Subscription & payment | Quotes, vouchers, lifecycle, bank-transfer invoices, Stripe (code complete). **Open:** Stripe keys; SISLOG and Officegest API specs. |
+| 9 | Activity logging & audit | Append-only, hash-chained audit log, CSV export (itself audited), platform-wide view. |
+| 10 | Data recovery & backups | Recycle bin, audit history, nightly encrypted dump + storage mirror, runbook. **Open:** Pro + PITR, R2 bucket, first restore drill. |
+
 ### Next
 - Iteration 5: back office (templates and versioning, plans, vouchers, operator access, settings).
 - Iteration 6: billing (Stripe, SISLOG, manual invoices, lifecycle cron, Officegest).

@@ -87,7 +87,7 @@ const LISTS = ['entity_type', 'entity_subtype', 'company_size', 'province', 'sec
               <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ t.key }} · {{ t.locale }}</p>
               <input class="input" [(ngModel)]="t.subject" [attr.aria-label]="'admin.emails.subject' | transloco" />
               <textarea class="input font-mono text-xs" rows="7" [(ngModel)]="t.body_md" aria-label="Body"></textarea>
-              <div class="flex items-center justify-between"><span class="text-xs text-slate-400">{{ 'admin.settings.placeholders' | transloco }}</span>
+              <div class="flex items-center justify-between"><span class="text-xs text-slate-500">{{ 'admin.settings.placeholders' | transloco }}</span>
                 <button type="button" class="btn-primary !py-1" (click)="saveTemplate(t)">{{ 'common.save' | transloco }}</button></div>
             </div>
           }

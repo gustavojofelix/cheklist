@@ -35,3 +35,6 @@ body { @apply bg-slate-50 text-slate-800 antialiased; font-family: var(--font-sa
 
 /* CDK overlay (dialogs) */
 .cdk-overlay-dark-backdrop { background: rgb(15 23 42 / 0.45); }
+
+/* Touch targets (WCAG 2.2 target-size): checkboxes/radios at least 20px with room around them */
+input[type="checkbox"], input[type="radio"] { width: 1.25rem; height: 1.25rem; margin: 2px; accent-color: var(--color-brand-600); flex-shrink: 0; }

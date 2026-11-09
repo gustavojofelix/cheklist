@@ -32,7 +32,7 @@ interface Deleted { id: string; original_name: string; deleted_at: string; purge
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="4" class="py-10 text-center text-slate-400">{{ 'recycle.empty' | transloco }}</td></tr>
+            <tr><td colspan="4" class="py-10 text-center text-slate-500">{{ 'recycle.empty' | transloco }}</td></tr>
           }
         </tbody>
       </table>

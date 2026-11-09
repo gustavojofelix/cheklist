@@ -29,7 +29,7 @@ interface FeedRow { id: number; occurred_at: string; actor_name: string | null; 
         <div class="card p-4">
           <p class="flex items-center gap-2 text-sm text-slate-500"><span class="size-2 rounded-full" [class]="k.dot"></span>{{ 'dashboard.kpi.' + k.key | transloco }}</p>
           <p class="mt-2 text-3xl font-semibold text-slate-900">{{ k.value }}</p>
-          <p class="mt-1 text-xs text-slate-400">{{ 'dashboard.kpi.' + k.key + 'Hint' | transloco: k.params }}</p>
+          <p class="mt-1 text-xs text-slate-500">{{ 'dashboard.kpi.' + k.key + 'Hint' | transloco: k.params }}</p>
         </div>
       }
     </div>
@@ -39,7 +39,7 @@ interface FeedRow { id: number; occurred_at: string; actor_name: string | null; 
       <section class="card p-5 lg:col-span-2">
         <div class="flex items-center justify-between">
           <h2 class="font-semibold text-slate-900">{{ 'dashboard.status' | transloco }}</h2>
-          <span class="text-xs text-slate-400">{{ 'dashboard.live' | transloco }}</span>
+          <span class="text-xs text-slate-500">{{ 'dashboard.live' | transloco }}</span>
         </div>
         <div class="mt-4 flex flex-col items-center gap-8 sm:flex-row">
           <svg viewBox="0 0 42 42" class="size-44 -rotate-90" role="img" [attr.aria-label]="'dashboard.status' | transloco">
@@ -72,10 +72,10 @@ interface FeedRow { id: number; occurred_at: string; actor_name: string | null; 
           @for (r of feed(); track r.id) {
             <li class="py-2">
               <p class="font-medium text-slate-700">{{ 'audit.event.' + r.event | transloco }} — {{ r.record_title || ('audit.table.' + r.table_name | transloco) }}</p>
-              <p class="text-xs text-slate-400">{{ r.actor_name || ('audit.system' | transloco) }} · {{ r.occurred_at | date: 'short' : undefined : dateLocale() }}</p>
+              <p class="text-xs text-slate-500">{{ r.actor_name || ('audit.system' | transloco) }} · {{ r.occurred_at | date: 'short' : undefined : dateLocale() }}</p>
             </li>
           } @empty {
-            <li class="py-6 text-center text-slate-400">{{ 'dashboard.noActivity' | transloco }}</li>
+            <li class="py-6 text-center text-slate-500">{{ 'dashboard.noActivity' | transloco }}</li>
           }
         </ul>
       </section>
@@ -96,7 +96,7 @@ interface FeedRow { id: number; occurred_at: string; actor_name: string | null; 
               <td><app-compliance-chip [state]="i.compliance_state" /></td>
             </tr>
           } @empty {
-            <tr><td colspan="5" class="py-6 text-center text-slate-400">{{ 'dashboard.noCritical' | transloco }}</td></tr>
+            <tr><td colspan="5" class="py-6 text-center text-slate-500">{{ 'dashboard.noCritical' | transloco }}</td></tr>
           }
         </tbody>
       </table>

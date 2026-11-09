@@ -1,0 +1,73 @@
+# Every push / PR: type-check + build the app, type-check the Edge Functions, run the pgTAP security suite
+# and the end-to-end tests against the DEV Supabase project. Production deploys are not done from here.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npx ng build --configuration production
+      - name: Check translation keys (pt.json and en.json must have the same keys)
+        run: |
+          node -e "
+            const f=(o,p='')=>Object.entries(o).flatMap(([k,v])=>v&&typeof v==='object'?f(v,p+k+'.'):[p+k]);
+            const pt=new Set(f(require('./public/i18n/pt.json'))), en=new Set(f(require('./public/i18n/en.json')));
+            const miss=[...pt].filter(k=>!en.has(k)).map(k=>'en missing '+k).concat([...en].filter(k=>!pt.has(k)).map(k=>'pt missing '+k));
+            if(miss.length){console.error(miss.join('\n'));process.exit(1)}"
+      - uses: denoland/setup-deno@v2
+        with: { deno-version: v2.5.x }
+      - name: Type-check Edge Functions
+        working-directory: supabase/functions
+        run: deno check --quiet --node-modules-dir=none --no-config */index.ts
+
+  database:
+    # pgTAP runs inside a transaction that is rolled back — it leaves no data behind.
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DEV_DB_PASSWORD }}
+      PROJECT_REF: ${{ vars.SUPABASE_DEV_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npx supabase link --project-ref "$PROJECT_REF"
+      - run: npx supabase db push --remote --yes          # dev project only
+      - run: npx supabase test db --remote --yes
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [build, database]
+    if: ${{ github.event_name == 'push' }}
+    env:
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+      E2E_MANAGER_PASSWORD: ${{ secrets.E2E_MANAGER_PASSWORD }}
+      E2E_SUPER_PASSWORD: ${{ secrets.E2E_SUPER_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: e2e-report, path: e2e-report, retention-days: 7 }

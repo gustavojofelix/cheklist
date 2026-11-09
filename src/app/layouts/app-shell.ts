@@ -51,7 +51,7 @@ const ADMIN: NavItem[] = [
           Checklist Legal
         </div>
         <nav class="flex-1 overflow-y-auto p-3" [attr.aria-label]="'nav.main' | transloco">
-          <p class="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          <p class="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
             {{ (isAdmin ? 'nav.backOffice' : 'nav.frontOffice') | transloco }}
           </p>
           @for (item of nav(); track item.path) {
@@ -73,7 +73,7 @@ const ADMIN: NavItem[] = [
         <!-- account switcher -->
         @if (!isAdmin && ctx.accounts().length) {
           <div class="border-t border-slate-100 p-3">
-            <p class="px-1 text-[11px] uppercase tracking-wider text-slate-400">{{ 'nav.activeOrg' | transloco }}</p>
+            <p class="px-1 text-[11px] uppercase tracking-wider text-slate-500">{{ 'nav.activeOrg' | transloco }}</p>
             @if (ctx.accounts().length > 1) {
               <select class="input mt-1 !py-1.5" [value]="ctx.active()?.id" (change)="switchOrg($any($event.target).value)"
                       [attr.aria-label]="'nav.activeOrg' | transloco">

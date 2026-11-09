@@ -26,10 +26,10 @@ export interface VersionOffer {
       <div class="mt-6 grid gap-4 lg:grid-cols-2">
         @for (sec of sections(o); track sec.key) {
           <section class="card p-4">
-            <h2 class="font-semibold">{{ 'version.' + sec.key | transloco }} <span class="text-slate-400">({{ sec.rows.length }})</span></h2>
+            <h2 class="font-semibold">{{ 'version.' + sec.key | transloco }} <span class="text-slate-500">({{ sec.rows.length }})</span></h2>
             <ul class="mt-2 space-y-1 text-sm">
               @for (r of sec.rows; track $index) { <li><span class="font-mono text-xs text-brand-700">{{ r.code }}</span> {{ r.text }}</li> }
-              @empty { <li class="text-slate-400">—</li> }
+              @empty { <li class="text-slate-500">—</li> }
             </ul>
           </section>
         }

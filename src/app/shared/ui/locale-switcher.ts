@@ -8,7 +8,7 @@ import { Icon } from './icon';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CdkMenuTrigger, CdkMenu, CdkMenuItem, Icon],
   template: `
-    <button type="button" class="btn-ghost !px-2 !py-1.5" [cdkMenuTriggerFor]="menu" aria-label="Idioma / Language">
+    <button type="button" class="btn-ghost !px-2 !py-1.5" [cdkMenuTriggerFor]="menu" [attr.aria-label]="lang().toUpperCase() + ' — Idioma / Language'">
       <app-icon name="globe" [size]="16" /> <span class="text-xs font-semibold uppercase">{{ lang() }}</span>
     </button>
     <ng-template #menu>

@@ -49,3 +49,7 @@ supabase/.temp
 supabase/functions/.env
 .env
 .env.*
+
+# Playwright
+/e2e-report
+/test-results

@@ -58,7 +58,7 @@ const PAGE = 50;
                 <td class="font-mono text-xs text-slate-500">{{ r.ip }}</td>
               </tr>
             } @empty {
-              <tr><td colspan="6" class="py-8 text-center text-slate-400">{{ (loading() ? 'common.loading' : 'audit.empty') | transloco }}</td></tr>
+              <tr><td colspan="6" class="py-8 text-center text-slate-500">{{ (loading() ? 'common.loading' : 'audit.empty') | transloco }}</td></tr>
             }
           </tbody>
         </table>

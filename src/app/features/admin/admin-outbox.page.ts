@@ -32,7 +32,7 @@ interface Mail { id: string; to_email: string; template: string; subject: string
               <tr><td colspan="5"><pre class="whitespace-pre-wrap rounded bg-slate-50 p-3 text-xs text-slate-700">{{ m.body_text }}</pre></td></tr>
             }
           } @empty {
-            <tr><td colspan="5" class="py-8 text-center text-slate-400">{{ 'admin.emails.empty' | transloco }}</td></tr>
+            <tr><td colspan="5" class="py-8 text-center text-slate-500">{{ 'admin.emails.empty' | transloco }}</td></tr>
           }
         </tbody>
       </table>

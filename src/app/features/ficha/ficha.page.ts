@@ -74,7 +74,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
     <!-- filters -->
     <div class="card mb-4 flex flex-wrap items-center gap-2 p-3">
       <div class="relative min-w-56 flex-1">
-        <span class="pointer-events-none absolute top-2.5 left-2.5 text-slate-400"><app-icon name="search" [size]="16" /></span>
+        <span class="pointer-events-none absolute top-2.5 left-2.5 text-slate-500"><app-icon name="search" [size]="16" /></span>
         <input class="input !pl-8" [(ngModel)]="search" [placeholder]="'ficha.search' | transloco" [attr.aria-label]="'ficha.search' | transloco" />
       </div>
       <select class="input !w-40" [(ngModel)]="stateFilter" [attr.aria-label]="'ficha.state' | transloco">
@@ -87,7 +87,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
     </div>
 
     @if (loading()) {
-      <p class="py-12 text-center text-slate-400">{{ 'common.loading' | transloco }}</p>
+      <p class="py-12 text-center text-slate-500">{{ 'common.loading' | transloco }}</p>
     }
 
     @for (cat of visible(); track cat.item.id; let ci = $index) {
@@ -144,7 +144,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
                     <td class="min-w-56">
                       @if (it.bound_field) {
                         <span class="text-slate-700">{{ answerDisplay(it) || '—' }}</span>
-                        <span class="block text-[11px] text-slate-400">{{ 'ficha.boundHint' | transloco }}</span>
+                        <span class="block text-[11px] text-slate-500">{{ 'ficha.boundHint' | transloco }}</span>
                       } @else if (editingAnswer() === it.id) {
                         <textarea class="input !py-1" rows="2" [ngModel]="it.answer" #ans
                                   (keydown.enter)="$event.preventDefault(); saveAnswer(it, ans.value)" (blur)="saveAnswer(it, ans.value)"
@@ -172,7 +172,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
                                     (click)="readDoc(d)" [title]="'ocr.read' | transloco" [attr.aria-label]="'ocr.read' | transloco"><app-icon name="sparkles" [size]="12" /></button>
                           }
                           @if (canWrite()) {
-                            <button type="button" class="text-slate-400 hover:text-red-600" (click)="deleteDoc(d)" [attr.aria-label]="'common.delete' | transloco">✕</button>
+                            <button type="button" class="text-slate-500 hover:text-red-600" (click)="deleteDoc(d)" [attr.aria-label]="'common.delete' | transloco">✕</button>
                           }
                         </div>
                       }
@@ -189,7 +189,7 @@ interface Proposal { id: string; field: 'answer' | 'due_date'; proposed_value: s
                     }
                   </tr>
                 } @empty {
-                  <tr><td colspan="7" class="py-4 text-center text-slate-400">{{ 'ficha.noItems' | transloco }}</td></tr>
+                  <tr><td colspan="7" class="py-4 text-center text-slate-500">{{ 'ficha.noItems' | transloco }}</td></tr>
                 }
               </tbody>
             </table>

@@ -26,7 +26,7 @@ interface Row { id: string; title: string; organization_id: string; org_name: st
           <a class="btn-primary" [routerLink]="['/reports', r.id]"><app-icon name="report" [size]="16" /> {{ 'reports.generate' | transloco }}</a>
         </div>
       } @empty {
-        <p class="p-8 text-center text-slate-400">{{ 'common.loading' | transloco }}</p>
+        <p class="p-8 text-center text-slate-500">{{ 'common.loading' | transloco }}</p>
       }
     </div>
   `,

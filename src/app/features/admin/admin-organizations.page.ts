@@ -50,7 +50,7 @@ interface Price { id: string; period: string; amount: number; currency: string; 
                 <td>@if (o.subscriptions; as s) { <span class="chip bg-slate-100 text-slate-700">{{ 'billing.status.' + s.status | transloco }}</span> }</td>
                 <td>{{ o.branches[0]?.count ?? 0 }}</td>
                 <td>@if (o.platform_access_authorized_at) { <span class="chip bg-emerald-100 text-emerald-800">{{ 'admin.orgs.authorized' | transloco }}</span> }
-                    @else { <span class="chip bg-slate-100 text-slate-500">{{ 'admin.orgs.notAuthorized' | transloco }}</span> }</td>
+                    @else { <span class="chip bg-slate-100 text-slate-600">{{ 'admin.orgs.notAuthorized' | transloco }}</span> }</td>
                 <td class="text-slate-500">{{ o.created_at | date: 'dd/MM/yyyy' }}</td>
                 <td class="whitespace-nowrap text-right">
                   @if (isSuper()) { <button type="button" class="btn-ghost !py-1" (click)="openPlan(o)">{{ 'admin.orgs.assignPlan' | transloco }}</button> }
@@ -59,7 +59,7 @@ interface Price { id: string; period: string; amount: number; currency: string; 
                 </td>
               </tr>
             } @empty {
-              <tr><td colspan="8" class="py-8 text-center text-slate-400">{{ 'common.loading' | transloco }}</td></tr>
+              <tr><td colspan="8" class="py-8 text-center text-slate-500">{{ 'common.loading' | transloco }}</td></tr>
             }
           </tbody>
         </table>
